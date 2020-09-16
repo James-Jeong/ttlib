@@ -31,6 +31,29 @@ TestSuitPtr NewTestSuit()
     return testSuit;
 }
 
+void RegisterInitializers(TestSuitPtr testSuit, TestSuitInitializer **initializers)
+{
+    if (testSuit == NULL || initializers == NULL)
+    {
+        return;
+    }
+
+    TestSuitInitializer *initializer = NULL;
+    int count = 0;
+    while ((initializer = *initializers++) != NULL)
+    {
+        count++;
+    }
+
+    if (count > 0)
+    {
+        if (testSuit->initializers == NULL)
+        {
+
+        }
+    }
+}
+
 TestPtr AddTest(TestSuitPtr testSuit, Test test)
 {
     // Check parameter
@@ -57,7 +80,7 @@ TestPtr AddTest(TestSuitPtr testSuit, Test test)
 
         return NULL;
     }
-    
+
     // Setup members of Test instance
     newTest->testCase = testCase;
     newTest->testName = testName;
@@ -156,6 +179,11 @@ void RunAllTests(TestSuitPtr testSuit)
 static void initializeTests(TestSuitPtr testSuit)
 {
     TestSuitInitializer *initializers = testSuit->initializers;
+    if (initializers == NULL)
+    {
+        return;
+    }
+    
     TestSuitInitializer initializer = NULL;
     while ((initializer = *initializers++) != NULL)
     {
