@@ -49,6 +49,8 @@ if (_testSuit == NULL) {                                \
 
 #define RUN_ALL_TESTS() RunAllTests(_testSuit)
 #define CLEAN_UP_TESTSUIT() DeleteTestSuit(&_testSuit)
+#define CHECK_SUCCESS_TESTSUIT() CheckSuccessTestSuit(_testSuit)
+#define CHECK_FAIL_TESTSUIT() CheckFailTestSuit(_testSuit)
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Print Macro Functions
@@ -64,8 +66,8 @@ if (_testSuit == NULL) {                                \
 /// Compare Macro Functions
 //////////////////////////////////////////////////////////////////////////////////
 
-#define EXPECT_NUM_EQUAL(actual, expected) ((actual) == (expected)) ? TEST_SUCCESS(#actual" == "#expected) : TEST_NONFATAL_FAIL(#actual" != "#expected)
-#define EXPECT_NUM_NOT_EQUAL(actual, expected) ((actual) != (expected)) ? TEST_SUCCESS(#actual" != "#expected) : TEST_NONFATAL_FAIL(#actual" == "#expected)
+#define EXPECT_NUM_EQUAL(actual, expected) ((actual) == (expected)) ? (TEST_SUCCESS(#actual" == "#expected)) : TEST_NONFATAL_FAIL(#actual" != "#expected)
+#define EXPECT_NUM_NOT_EQUAL(actual, expected) ((actual) != (expected)) ? (TEST_SUCCESS(#actual" != "#expected)) : TEST_NONFATAL_FAIL(#actual" == "#expected)
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Definitions
@@ -83,6 +85,8 @@ typedef struct _test_t
     char *testCase;
     char *testName;
     TestFunc testFunc;
+	int totalNumOfSuccess;
+	int totalNumOfFail;
 } Test, *TestPtr;
 
 // 모든 사용자 테스트를 관리하기 위한 구조체
@@ -90,6 +94,7 @@ typedef struct _test_suit_t
 {
     int numberOfTests;
 	int totalNumOfSuccess;
+	int totalNumOfFail;
     TestSuitInitializer *initializers;
     TestPtr tests;
 } TestSuit, *TestSuitPtr, **TestSuitPtrContainer;
@@ -103,6 +108,8 @@ void DeleteTestSuit(TestSuitPtrContainer testSuitContainer);
 
 TestPtr AddTest(TestSuitPtr testSuit, Test test);
 void RunAllTests(TestSuitPtr testSuit);
+void CheckSuccessTestSuit(TestSuitPtr testSuit);
+void CheckFailTestSuit(TestSuitPtr testSuit);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Util Function

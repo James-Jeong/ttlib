@@ -27,6 +27,7 @@ TestSuitPtr NewTestSuit()
     // Initialize other members
     testSuit->initializers = NULL;
     testSuit->numberOfTests = 0;
+	testSuit->totalNumOfSuccess = 0;
 
     return testSuit;
 }
@@ -85,6 +86,8 @@ TestPtr AddTest(TestSuitPtr testSuit, Test test)
     newTest->testCase = testCase;
     newTest->testName = testName;
     newTest->testFunc = test.testFunc;
+	newTest->totalNumOfSuccess = 0;
+	newTest->totalNumOfFail = 0;
 
     // Reallocate memory for tests in TestSuit instance
     int numberOfTests = testSuit->numberOfTests;
@@ -162,14 +165,59 @@ void RunAllTests(TestSuitPtr testSuit)
                 break;
             }
             test->testFunc(testSuit);
+	    	printf("성공 : %d 개 / 실패 : %d 개\n", test->totalNumOfSuccess, test->totalNumOfFail);
         }
         puts("\ncalling tests done.\n");
-	    printf("총 성공 테스트 수: %d 개 / 실패 테스트 수 : %d 개\n", testSuit->totalNumOfSuccess, testSuit->numberOfTests);
+	    printf("총 성공 테스트 수: %d 개 / 실패 테스트 수 : %d 개\n", testSuit->totalNumOfSuccess,  testSuit->totalNumOfFail);
     }
 	else
 	{
         puts("\n테스트가 존재하지 않음.\n");
 	}
+}
+
+void CheckSuccessTestSuit(TestSuitPtr testSuit)
+{
+    // Check parameter
+    if (testSuit == NULL)
+    {
+        return;
+    }
+
+	testSuit->totalNumOfSuccess++;
+}
+
+void CheckFailTestSuit(TestSuitPtr testSuit)
+{
+    // Check parameter
+    if (testSuit == NULL)
+    {
+        return;
+    }
+
+	testSuit->totalNumOfFail++;
+}
+
+void CheckSuccessTest(TestPtr test)
+{
+    // Check parameter
+    if (test == NULL)
+    {
+        return;
+    }
+
+	test->totalNumOfSuccess++;
+}
+
+void CheckFailTest(TestPtr test)
+{
+    // Check parameter
+    if (test == NULL)
+    {
+        return;
+    }
+
+	test->totalNumOfFail++;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -201,8 +249,6 @@ static void deleteTest(TestPtr test)
     free(test->testName);
     free(test);
 }
-
-static void 
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Util Functions
