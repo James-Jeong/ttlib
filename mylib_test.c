@@ -47,4 +47,6 @@ int main()
     RUN_ALL_TESTS();
 
     CLEAN_UP_TESTSUIT();
+
+	return True;
 }

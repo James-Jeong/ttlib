@@ -1,7 +1,10 @@
 #ifndef __TTLIB_H__
 #define __TTLIB_H__
 
-// -> enum
+////////////////////////////////////////////////////////////////////////////////
+/// Enum
+//////////////////////////////////////////////////////////////////////////////////
+
 typedef enum TEST_RESULT TEST_RESULT;
 enum TEST_RESULT
 {
@@ -10,6 +13,10 @@ enum TEST_RESULT
 	NON_FATAL_FAIL	// Test is failed but the test can continue.
 };
 
+////////////////////////////////////////////////////////////////////////////////
+/// Macros
+//////////////////////////////////////////////////////////////////////////////////
+
 #ifndef TRUE
 #define TRUE 1
 #endif
@@ -17,6 +24,10 @@ enum TEST_RESULT
 #ifndef FALSE
 #define FALSE 0
 #endif
+
+////////////////////////////////////////////////////////////////////////////////
+/// Control Macro Functions
+//////////////////////////////////////////////////////////////////////////////////
 
 #define DECLARE_TEST() static TestSuitPtr _testSuit = NULL;
 #define TEST(C, T, F)                                   \
@@ -35,8 +46,13 @@ if (_testSuit == NULL) {                                \
     _testSuit->initializers = (TestSuitInitializer[]){ \
         X,                                             \
         NULL};
+
 #define RUN_ALL_TESTS() RunAllTests(_testSuit)
 #define CLEAN_UP_TESTSUIT() DeleteTestSuit(&_testSuit)
+
+////////////////////////////////////////////////////////////////////////////////
+/// Print Macro Functions
+//////////////////////////////////////////////////////////////////////////////////
 
 #define TEST_MESSAGE(msg, test_result_type) print_message_helper(__FILE__, __LINE__, msg, test_result_type)
 
@@ -44,8 +60,16 @@ if (_testSuit == NULL) {                                \
 #define TEST_FATAL_FAIL(msg) TEST_MESSAGE(msg, FATAL_FAIL)
 #define TEST_NONFATAL_FAIL(msg) TEST_MESSAGE(msg, NON_FATAL_FAIL)
 
+////////////////////////////////////////////////////////////////////////////////
+/// Compare Macro Functions
+//////////////////////////////////////////////////////////////////////////////////
+
 #define EXPECT_NUM_EQUAL(actual, expected) ((actual) == (expected)) ? TEST_SUCCESS(#actual" == "#expected) : TEST_NONFATAL_FAIL(#actual" != "#expected)
 #define EXPECT_NUM_NOT_EQUAL(actual, expected) ((actual) != (expected)) ? TEST_SUCCESS(#actual" != "#expected) : TEST_NONFATAL_FAIL(#actual" == "#expected)
+
+////////////////////////////////////////////////////////////////////////////////
+/// Definitions
+//////////////////////////////////////////////////////////////////////////////////
 
 struct _test_t;
 struct _test_suit_t;
@@ -69,12 +93,19 @@ typedef struct _test_suit_t
     TestPtr tests;
 } TestSuit, *TestSuitPtr, **TestSuitPtrContainer;
 
+////////////////////////////////////////////////////////////////////////////////
+/// Local Functions
+//////////////////////////////////////////////////////////////////////////////////
 
 TestSuitPtr NewTestSuit();
 void DeleteTestSuit(TestSuitPtrContainer testSuitContainer);
 
 TestPtr AddTest(TestSuitPtr testSuit, Test test);
 void RunAllTests(TestSuitPtr testSuit);
+
+////////////////////////////////////////////////////////////////////////////////
+/// Util Function
+//////////////////////////////////////////////////////////////////////////////////
 
 void print_message_helper(const char *file_name, int line_number, const char *msg, TEST_RESULT test_result_type);
 

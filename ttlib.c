@@ -4,8 +4,16 @@
 
 #include "ttlib.h"
 
+////////////////////////////////////////////////////////////////////////////////
+/// Predefitions of Static Functions
+//////////////////////////////////////////////////////////////////////////////////
+
 static void initializeTests(TestSuitPtr testSuit);
 static void deleteTest(TestPtr test);
+
+////////////////////////////////////////////////////////////////////////////////
+/// Local Functions
+//////////////////////////////////////////////////////////////////////////////////
 
 TestSuitPtr NewTestSuit()
 {
@@ -41,10 +49,6 @@ TestPtr AddTest(TestSuitPtr testSuit, Test test)
     // Allocate required memory for the created instance
     char *testCase = strdup(test.testCase);
     char *testName = strdup(test.testName);
-    // int lengthOfTestCase = strlen(test.testCase) + 1;
-    // int lengthOfTestName = strlen(test.testName) + 1;
-    // char *testCase = (char *)calloc(1, lengthOfTestCase);
-    // char *testName = (char*)calloc(1, lengthOfTestName);
     if (testCase == NULL || testName == NULL)
     {
         free(testCase);
@@ -53,8 +57,6 @@ TestPtr AddTest(TestSuitPtr testSuit, Test test)
 
         return NULL;
     }
-    // memcpy(testCase, test.testCase, lengthOfTestCase);
-    // memcpy(testName, test.testName, lengthOfTestName);
     
     // Setup members of Test instance
     newTest->testCase = testCase;
@@ -63,7 +65,7 @@ TestPtr AddTest(TestSuitPtr testSuit, Test test)
 
     // Reallocate memory for tests in TestSuit instance
     int numberOfTests = testSuit->numberOfTests;
-    int newSize = 0;
+    size_t newSize = 0;
     TestPtr allocatedTests = NULL;
     if (testSuit->tests == NULL) // None of tests registered yet.
     {
@@ -71,7 +73,7 @@ TestPtr AddTest(TestSuitPtr testSuit, Test test)
     }
     else    // One or more tests exist already.
     {
-        newSize = sizeof(Test) * (numberOfTests + 1);
+        newSize = sizeof(Test) * (size_t)(numberOfTests + 1);
         allocatedTests = (TestPtr)realloc(testSuit->tests, newSize);
     }
     if (allocatedTests == NULL)
@@ -102,7 +104,8 @@ void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)
     TestSuitPtr testSuit = *testSuitContainer;
     // release memory allocated to the array of Test instances
     TestPtr test = NULL;
-    for (int t = 0; t < testSuit->numberOfTests; t++)
+	int t = 0;
+    for (; t < testSuit->numberOfTests; t++)
     {
         test = &testSuit->tests[t];
         free(test->testCase);
@@ -121,12 +124,13 @@ void RunAllTests(TestSuitPtr testSuit)
 
     printf("총 테스트 수: %d 개\n", testSuit->numberOfTests);
 
+	int t = 0;
     int count = testSuit->numberOfTests;
     if (count >= 1)
     {
         // Call all test functions in the array
         TestPtr test = NULL;
-        for (int t = 0; t < count; t++)
+        for (t = 0; t < count; t++)
         {
             test = &testSuit->tests[t];
             printf("테스트 케이스: %s, 테스트: %s\n", test->testCase, test->testName);
@@ -140,7 +144,11 @@ void RunAllTests(TestSuitPtr testSuit)
     }
 }
 
-void initializeTests(TestSuitPtr testSuit)
+////////////////////////////////////////////////////////////////////////////////
+/// Static Functions
+//////////////////////////////////////////////////////////////////////////////////
+
+static void initializeTests(TestSuitPtr testSuit)
 {
     TestSuitInitializer *initializers = testSuit->initializers;
     TestSuitInitializer initializer = NULL;
@@ -150,7 +158,7 @@ void initializeTests(TestSuitPtr testSuit)
     }
 }
 
-void deleteTest(TestPtr test)
+static void deleteTest(TestPtr test)
 {
     if (test == NULL)
     {
@@ -160,6 +168,10 @@ void deleteTest(TestPtr test)
     free(test->testName);
     free(test);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Util Functions
+//////////////////////////////////////////////////////////////////////////////////
 
 void print_message_helper(const char *file_name, int line_number, const char *msg, TEST_RESULT test_result_type)
 {
