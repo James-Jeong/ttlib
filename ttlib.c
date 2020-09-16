@@ -39,10 +39,12 @@ TestPtr AddTest(TestSuitPtr testSuit, Test test)
     }
 
     // Allocate required memory for the created instance
-    int lengthOfTestCase = strlen(test.testCase) + 1;
-    int lengthOfTestName = strlen(test.testName) + 1;
-    char *testCase = (char *)calloc(1, lengthOfTestCase);
-    char *testName = (char*)calloc(1, lengthOfTestName);
+    char *testCase = strdup(test.testCase);
+    char *testName = strdup(test.testName);
+    // int lengthOfTestCase = strlen(test.testCase) + 1;
+    // int lengthOfTestName = strlen(test.testName) + 1;
+    // char *testCase = (char *)calloc(1, lengthOfTestCase);
+    // char *testName = (char*)calloc(1, lengthOfTestName);
     if (testCase == NULL || testName == NULL)
     {
         free(testCase);
@@ -51,8 +53,8 @@ TestPtr AddTest(TestSuitPtr testSuit, Test test)
 
         return NULL;
     }
-    memcpy(testCase, test.testCase, lengthOfTestCase);
-    memcpy(testName, test.testName, lengthOfTestName);
+    // memcpy(testCase, test.testCase, lengthOfTestCase);
+    // memcpy(testName, test.testName, lengthOfTestName);
     
     // Setup members of Test instance
     newTest->testCase = testCase;
@@ -157,4 +159,23 @@ void deleteTest(TestPtr test)
     free(test->testCase);
     free(test->testName);
     free(test);
+}
+
+void print_message_helper(const char *file_name, int line_number, const char *msg, TEST_RESULT test_result_type)
+{
+	switch(test_result_type)
+	{
+		case SUCCESS:
+			printf("[SUCCESS]\n");
+			break;
+		case FATAL_FAIL:
+			printf("[FAIL] %s (file:%s, line:%d)\nTest aborted.\n", msg, file_name, line_number);
+			break;
+		case NON_FATAL_FAIL:
+			printf("[FAIL] %s (file:%s, line:%d)\n", msg, file_name, line_number);
+			break;
+		default:
+			printf("[UNKNOWN] %s (file:%s, line:%d)\n", msg, file_name, line_number);
+			break;
+	}	
 }
