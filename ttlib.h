@@ -89,6 +89,7 @@ typedef struct _test_t
 typedef struct _test_suit_t
 {
     int numberOfTests;
+	int totalNumOfSuccess;
     TestSuitInitializer *initializers;
     TestPtr tests;
 } TestSuit, *TestSuitPtr, **TestSuitPtrContainer;

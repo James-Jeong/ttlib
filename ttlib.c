@@ -133,15 +133,20 @@ void RunAllTests(TestSuitPtr testSuit)
         for (t = 0; t < count; t++)
         {
             test = &testSuit->tests[t];
-            printf("테스트 케이스: %s, 테스트: %s\n", test->testCase, test->testName);
+            printf("\n테스트 케이스: %s, 테스트: %s\n", test->testCase, test->testName);
             if (test->testFunc == NULL) // testSuit->tests is a NULL-terninated array
             {
                 break;
             }
             test->testFunc(testSuit);
         }
-        puts("calling tests done.");
+        puts("\ncalling tests done.\n");
+	    printf("총 성공 테스트 수: %d 개 / 실패 테스트 수 : %d 개\n", testSuit->totalNumOfSuccess, testSuit->numberOfTests);
     }
+	else
+	{
+        puts("\n테스트가 존재하지 않음.\n");
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -168,6 +173,8 @@ static void deleteTest(TestPtr test)
     free(test->testName);
     free(test);
 }
+
+static void 
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Util Functions
