@@ -19,6 +19,7 @@ TEST(IsDigit, AcceptableValues, {
     EXPECT_NUM_EQUAL(IsDigit('2'), True);
     EXPECT_NUM_EQUAL(IsDigit('3'), True);
     EXPECT_NUM_EQUAL(IsDigit('4'), True);
+    //ASSERT_NUM_EQUAL(IsDigit('5'), False);
     EXPECT_NUM_EQUAL(IsDigit('5'), False);
     EXPECT_NUM_EQUAL(IsDigit('6'), True);
     EXPECT_NUM_EQUAL(IsDigit('7'), True);

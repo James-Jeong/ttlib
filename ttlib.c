@@ -4,7 +4,7 @@
 /// Predefitions of Static Functions
 //////////////////////////////////////////////////////////////////////////////////
 
-static int initializeTests(TestSuitPtr testSuit);
+static FUNCTION_RESULT initializeTests(TestSuitPtr testSuit);
 static TestPtrContainer newTests(size_t numberOfTests);
 static void deleteTest(TestPtr test);
 static void printTests(const TestPtrContainer tests, int numberOfTests);
@@ -36,6 +36,7 @@ TestSuitPtr NewTestSuit()
 	testSuit->numberOfFailTests = 0;
 	testSuit->totalNumOfSuccessTestFuncs = 0;
 	testSuit->totalNumOfFailTestFuncs = 0;
+	testSuit->onGoing = 0;
 
     return testSuit;
 }
@@ -200,7 +201,7 @@ void RunAllTests(TestSuitPtr testSuit)
             }
 
             printf("\n{ (테스트 번호: %d) 테스트 케이스: %s, 테스트 이름: %s }\n", (testIndex + 1), test->testCase, test->testName);
-            test->testFunc(testSuit);
+			test->testFunc(testSuit);
 
 			test->numberOfSuccessTestFunc = testSuit->totalNumOfSuccessTestFuncs - prevNumOfSuccessTestFuncs;
 			test->numberOfFailTestFunc = testSuit->totalNumOfFailTestFuncs - prevNumOfFailTestFuncs;
@@ -216,6 +217,11 @@ void RunAllTests(TestSuitPtr testSuit)
 				testSuit->failTests[(testSuit->numberOfFailTests++)] = test;
 			}
 	    	printf("{ 성공: %d 개 / 실패: %d 개 }\n", test->numberOfSuccessTestFunc, test->numberOfFailTestFunc);
+
+			if(testSuit->onGoing == EXIT)
+			{
+				break;
+			}
         }
 
     	printf("\n--------------------------------\n");
@@ -241,7 +247,7 @@ void RunAllTests(TestSuitPtr testSuit)
  * @fn void ProcessSuccessTestSuit(TestSuitPtr testSuit, const char *msg)
  * @brief 테스트 성공 시 테스트 성공 횟수를 하나 증가하고 성공 메시지를 출력하는 함수
  * @param testSuit 전체 테스트 관리 구조체(출력)
- * @param msg 성공 메시지(입력)
+ * @param msg 성공 메시지(입력, 읽기 전용)
  * @return 반환값 없음
  */
 void ProcessSuccessTestSuit(TestSuitPtr testSuit, const char *msg)
@@ -256,21 +262,51 @@ void ProcessSuccessTestSuit(TestSuitPtr testSuit, const char *msg)
 
 	if(msg != NULL)
 	{
-		TEST_SUCCESS(msg);
+		PRINT_SUCCESS(msg);
 	}
 }
 
 /**
- * @fn void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber)
+ * @fn FUNCTION_RESULT ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber)
  * @brief 테스트 실패 시 테스트 실패 횟수를 하나 증가하고 실패 메시지를 출력하는 함수
  * @param testSuit 전체 테스트 관리 구조체(출력)
  * @param msg 실패 메시지(입력, 읽기 전용)
  * @param functionName 실패한 함수 이름(입력, 읽기 전용)
  * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
  * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
+ * @return 현재 진행 중인 테스트 종료하면 EXIT, 계속 진행하면 CONTINUE, 실패하면 FAIL 반환
+ */
+FUNCTION_RESULT ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber)
+{
+	// Check parameter
+    if (testSuit == NULL)
+    {
+        return FAIL;
+    }
+
+	testSuit->totalNumOfFailTestFuncs++;
+
+	if(functionName != NULL && functionName[0] == 'A')
+	{
+		PRINT_FATAL_FAIL(msg, functionName, fileName, lineNumber);
+		return EXIT;
+	}
+
+	if(functionName != NULL && fileName != NULL && msg != NULL && lineNumber > 0)
+	{
+		PRINT_NONFATAL_FAIL(msg, functionName, fileName, lineNumber);
+	}
+
+	return CONTINUE;
+}
+
+/**
+ * @fn void SetExitTestSuit(TestSuitPtr testSuit)
+ * @brief ASSERT 함수 호출인 경우 테스트 함수 동작 실패 시 테스트를 종료하도록 설정하는 함수
+ * @param testSuit 전체 테스트 관리 구조체(출력)
  * @return 반환값 없음
  */
-void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber)
+void SetExitTestSuit(TestSuitPtr testSuit)
 {
 	// Check parameter
     if (testSuit == NULL)
@@ -278,12 +314,24 @@ void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *func
         return;
     }
 
-	testSuit->totalNumOfFailTestFuncs++;
+	testSuit->onGoing = EXIT;
+}
 
-	if(functionName != NULL && fileName != NULL && msg != NULL && lineNumber > 0)
-	{
-		TEST_NONFATAL_FAIL(msg, functionName, fileName, lineNumber);
-	}
+/**
+ * @fn void SetContinueTestSuit(TestSuitPtr testSuit)
+ * @brief ASSERT 함수 호출인 경우 테스트 함수 동작 성공 시 테스트를 계속 진행하도록 설정하는 함수
+ * @param testSuit 전체 테스트 관리 구조체(출력)
+ * @return 반환값 없음
+ */
+void SetContinueTestSuit(TestSuitPtr testSuit)
+{
+	// Check parameter
+    if (testSuit == NULL)
+    {
+        return;
+    }
+
+	testSuit->onGoing = CONTINUE;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -291,13 +339,13 @@ void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *func
 //////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @fn static int initializeTests(TestSuitPtr testSuit)
+ * @fn static FUNCTION_RESULT initializeTests(TestSuitPtr testSuit)
  * @brief 사용자가 작성한 테스트 함수들을 전체 테스트 관리 구조체(TestSuit)에 등록하는 함수
  * RunAllTests 함수에서 호출되기 때문에 전달받은 구조체 포인터에 대한 NULL 체크를 수행하지 않는다.
  * @param testSuit 전체 테스트 관리 구조체(입력 및 출력)
  * @return 성공 시 SUCCESS, 실패 시 FAIL 반환
  */
-static int initializeTests(TestSuitPtr testSuit)
+static FUNCTION_RESULT initializeTests(TestSuitPtr testSuit)
 {
     TestSuitInitializer *initializers = testSuit->initializers;
     if (initializers == NULL)
@@ -421,13 +469,13 @@ void printMessageHelper(const char *functionName, const char *file_name, int lin
 {
 	switch(testResultType)
 	{
-		case SUCCESS:
+		case TEST_SUCCESS:
 			printf("[SUCCESS]\n");
 			break;
-		case FATAL_FAIL:
+		case TEST_FATAL_FAIL:
 			printf("[%s FAIL] %s (file:%s, line:%d)\nTest aborted.\n", functionName, msg, file_name, line_number);
 			break;
-		case NON_FATAL_FAIL:
+		case TEST_NON_FATAL_FAIL:
 			printf("[%s FAIL] %s (file:%s, line:%d)\n", functionName, msg, file_name, line_number);
 			break;
 		default:
