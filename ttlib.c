@@ -142,7 +142,9 @@ void RunAllTests(TestSuitPtr testSuit)
     int count = testSuit->numberOfTests;
 	int prevNumOfSuccessTestFuncs = 0, prevNumOfFailTestFuncs = 0;
 
-    printf("\n[ 총 테스트 수: %d 개 ]\n", count);
+   	printf("--------------------------------\n");
+    printf("[ 총 테스트 수: %d 개 ]\n", count);
+   	printf("--------------------------------\n");
 
     if (count >= 1)
     {
@@ -176,7 +178,7 @@ void RunAllTests(TestSuitPtr testSuit)
 	    	printf("{ 성공: %d 개 / 실패: %d 개 }\n", test->numberOfSuccessTestFunc, test->numberOfFailTestFunc);
         }
 
-        puts("\ncalling tests done.\n");
+    	printf("\n--------------------------------\n");
 	    printf("[ 총 성공 테스트 함수 개수: %d 개 / 실패 테스트 함수 개수: %d 개 ]\n", testSuit->totalNumOfSuccessTestFuncs, testSuit->totalNumOfFailTestFuncs);
 	    printf("[ 총 성공 테스트 수: %d 개 / 실패 테스트 수: %d 개 ]\n\n", testSuit->numberOfSuccessTests, testSuit->numberOfFailTests);
 
@@ -189,8 +191,8 @@ void RunAllTests(TestSuitPtr testSuit)
 			{
 			    printf("{ %s : %s }\n", (testSuit->failTests[failTestsIndex])->testCase, (testSuit->failTests[failTestsIndex])->testName);
 			}
-			printf("\n");
 		}
+   		printf("--------------------------------\n");
     }
 	else
 	{
