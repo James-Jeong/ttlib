@@ -277,7 +277,7 @@ void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *func
 
 	testSuit->totalNumOfFailTestFuncs++;
 
-	if(msg != NULL)
+	if(functionName != NULL && fileName != NULL && msg != NULL && lineNumber > 0)
 	{
 		TEST_NONFATAL_FAIL(msg, functionName, fileName, lineNumber);
 	}
@@ -290,6 +290,7 @@ void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *func
 /**
  * @fn static void initializeTests(TestSuitPtr testSuit)
  * @brief 사용자가 작성한 테스트 함수들을 전체 테스트 관리 구조체(TestSuit)에 등록하는 함수
+ * RunAllTests 함수에서 호출되기 때문에 전달받은 구조체 포인터에 대한 NULL 체크를 수행하지 않는다.
  * @param testSuit 전체 테스트 관리 구조체(입력)
  * @return 반환값 없음
  */
@@ -329,6 +330,7 @@ static void initializeTests(TestSuitPtr testSuit)
 /**
  * @fn static TestPtrContainer newTests(size_t numberOfTests)
  * @brief TestPtrContainer 를 새로 생성하는 함수
+ * initializeTests 함수에서 호출되기 때문에 전달받은 크기 체크를 수행하지 않는다.
  * @param numberOfTests 저장할 Test 구조체 포인터의 개수(입력)
  * @return 성공 시 새로 생성된 TestPtrContainer 객체, 실패 시 NULL 반환
  */
@@ -352,17 +354,12 @@ static TestPtrContainer newTests(size_t numberOfTests)
 /**
  * @fn static void deleteTest(TestPtr test)
  * @brief Test 구조체를 삭제하는 함수
+ * AddTest 함수에서 호출되기 때문에 전달받은 구조체 포인터에 대한 NULL 체크를 수행하지 않는다.
  * @param test 삭제할 Test 구조체(입력)
  * @return 반환값 없음
  */
 static void deleteTest(TestPtr test)
 {
-    // Check parameter
-    if (test == NULL)
-    {
-        return;
-    }
-
     free(test->testCase);
     free(test->testName);
     free(test);
@@ -400,6 +397,7 @@ static void printTests(const TestPtrContainer tests, int numberOfTests)
 /**
  * @fn void printMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TEST_RESULT testResultType)
  * @brief 함수 결과에 따라 출력 방법을 다르게 설정하여 지정한 메시지를 출력하는 함수
+ * ProcessFailTestSuit 함수에서 호출되기 때문에 전달받은 문자열에 대한 NULL 체크를 수행하지 않는다.
  * @param functionName 실패한 함수 이름(입력, 읽기 전용)
  * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
  * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
