@@ -38,13 +38,13 @@ TEST(IsDigit, InvalidValues, {
 })
 
 TEST(CompareNumbers, Equal, {
-	EXPECT_NUM_EQUAL(1, 1);
-	EXPECT_NUM_EQUAL(1, 2);
+    EXPECT_NUM_EQUAL(1, 1);
+    EXPECT_NUM_EQUAL(1, 2);
 })
 
 TEST(CompareNumbers, NotEqual, {
-	EXPECT_NUM_NOT_EQUAL(1, 1);
-	EXPECT_NUM_NOT_EQUAL(1, 2);
+    EXPECT_NUM_NOT_EQUAL(1, 1);
+    EXPECT_NUM_NOT_EQUAL(1, 2);
 })
 
 TEST(CompareNumbers, Less, {
@@ -80,38 +80,37 @@ TEST(CheckNumberType, Odd, {
 //////////////////////////////////////////////////////////////////////////////////
 
 TEST(CompareStrings, Equal, {
-	EXPECT_STR_EQUAL("abc", "ab");
-	EXPECT_STR_EQUAL("abc", "abc");
+    EXPECT_STR_EQUAL("abc", "ab");
+    EXPECT_STR_EQUAL("abc", "abc");
 })
 
 TEST(CompareStrings, NotEqual, {
-	EXPECT_STR_NOT_EQUAL("abc", "ab");
-	EXPECT_STR_NOT_EQUAL("abc", "abc");
+    EXPECT_STR_NOT_EQUAL("abc", "ab");
+    EXPECT_STR_NOT_EQUAL("abc", "abc");
 })
 
 //<-- Test Codes ends here
 ///////////////////////////////////////////////////////////////////////////////
 
-int main() 
+int main()
 {
     CREATE_TESTSUIT();
 
     REGISTER_TESTS(
         Test_IsDigit_AcceptableValues,
         Test_IsDigit_InvalidValues,
-		Test_CompareNumbers_Equal,
-		Test_CompareNumbers_NotEqual,
-		Test_CompareNumbers_Less,
-		Test_CompareNumbers_Greater,
-		Test_CheckNumberType_Even,
-		Test_CheckNumberType_Odd,
-		Test_CompareStrings_Equal,
-		Test_CompareStrings_NotEqual
-    );
+        Test_CompareNumbers_Equal,
+        Test_CompareNumbers_NotEqual,
+        Test_CompareNumbers_Less,
+        Test_CompareNumbers_Greater,
+        Test_CheckNumberType_Even,
+        Test_CheckNumberType_Odd,
+        Test_CompareStrings_Equal,
+        Test_CompareStrings_NotEqual);
 
     RUN_ALL_TESTS();
 
     CLEAN_UP_TESTSUIT();
 
-	return True;
+    return True;
 }
