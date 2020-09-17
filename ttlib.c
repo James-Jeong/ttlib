@@ -230,7 +230,7 @@ void RunAllTests(TestSuitPtr testSuit)
     }
 	else
 	{
-        puts("\n[ 테스트가 존재하지 않음. ]\n\n");
+        puts("\n[ 테스트가 존재하지 않음. ]\n");
 	}
 }
 
@@ -377,6 +377,12 @@ static void printTests(const TestPtrContainer tests, int numberOfTests)
     // Check parameter
 	if(tests == NULL)
 	{
+		return;
+	}
+
+	if(numberOfTests <= 0)
+	{
+        puts("{ 없음 }");
 		return;
 	}
 

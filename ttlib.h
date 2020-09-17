@@ -15,9 +15,12 @@
  */
 typedef enum TEST_RESULT
 {
-	SUCCESS = 1,    // Test result is success.
-	FATAL_FAIL,		// Test is failed and the test should be terminated.
-	NON_FATAL_FAIL	// Test is failed but the test can continue.
+	// 테스트 성공
+	SUCCESS = 1,
+	// 테스트 실패(fatal, 테스트 계속 진행)
+	FATAL_FAIL,
+	// 테스트 실패(nonfatal, 테스트 종료)
+	NON_FATAL_FAIL
 }TEST_RESULT;
 
 //////////////////////////////////////////////////////////////////////////////////

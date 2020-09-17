@@ -42,7 +42,7 @@ TEST(CompareNumbers, Equal, {
 })
 
 TEST(CompareNumbers, NotEqual, {
-	EXPECT_NUM_NOT_EQUAL(2, 1);
+	EXPECT_NUM_NOT_EQUAL(1, 1);
 	EXPECT_NUM_NOT_EQUAL(1, 2);
 })
 
