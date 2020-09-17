@@ -4,7 +4,7 @@
 /// Predefitions of Static Functions
 //////////////////////////////////////////////////////////////////////////////////
 
-static void initializeTests(TestSuitPtr testSuit);
+static int initializeTests(TestSuitPtr testSuit);
 static TestPtrContainer newTests(size_t numberOfTests);
 static void deleteTest(TestPtr test);
 static void printTests(const TestPtrContainer tests, int numberOfTests);
@@ -131,10 +131,10 @@ void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)
 	{
 		TestPtr test = NULL;
 
-		int t = 0;
-		for (; t < testSuit->numberOfTests; t++)
+		int testIndex = 0;
+		for (; testIndex < testSuit->numberOfTests; testIndex++)
 		{
-			test = &testSuit->tests[t];
+			test = &testSuit->tests[testIndex];
 			free(test->testCase);
 			free(test->testName);
 		}
@@ -162,7 +162,7 @@ void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)
 /**
  * @fn void RunAllTests(TestSuitPtr testSuit)
  * @brief 전체 테스트들을 실행하는 함수
- * @param testSuit 전체 테스트 관리 구조체(입력)
+ * @param testSuit 전체 테스트 관리 구조체(입력 및 출력)
  * @return 반환값 없음
  */
 void RunAllTests(TestSuitPtr testSuit)
@@ -174,9 +174,12 @@ void RunAllTests(TestSuitPtr testSuit)
 	}
 
     // Add user tests into TestSuit instance
-    initializeTests(testSuit);
+    if(initializeTests(testSuit) == FAIL)
+	{
+		return;
+	}
 
-	int t = 0;
+	int testIndex = 0;
     int numberOfTests = testSuit->numberOfTests;
 	int prevNumOfSuccessTestFuncs = 0, prevNumOfFailTestFuncs = 0;
 
@@ -188,15 +191,15 @@ void RunAllTests(TestSuitPtr testSuit)
     {
         // Call all test functions in the array
         TestPtr test = NULL;
-        for (t = 0; t < numberOfTests; t++)
+        for (testIndex = 0; testIndex < numberOfTests; testIndex++)
         {
-            test = &testSuit->tests[t];
+            test = &testSuit->tests[testIndex];
             if (test->testFunc == NULL) // testSuit->tests is a NULL-terninated array
             {
                 break;
             }
 
-            printf("\n{ (테스트 번호: %d) 테스트 케이스: %s, 테스트 이름: %s }\n", (t + 1), test->testCase, test->testName);
+            printf("\n{ (테스트 번호: %d) 테스트 케이스: %s, 테스트 이름: %s }\n", (testIndex + 1), test->testCase, test->testName);
             test->testFunc(testSuit);
 
 			test->numberOfSuccessTestFunc = testSuit->totalNumOfSuccessTestFuncs - prevNumOfSuccessTestFuncs;
@@ -288,18 +291,18 @@ void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *func
 //////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @fn static void initializeTests(TestSuitPtr testSuit)
+ * @fn static int initializeTests(TestSuitPtr testSuit)
  * @brief 사용자가 작성한 테스트 함수들을 전체 테스트 관리 구조체(TestSuit)에 등록하는 함수
  * RunAllTests 함수에서 호출되기 때문에 전달받은 구조체 포인터에 대한 NULL 체크를 수행하지 않는다.
- * @param testSuit 전체 테스트 관리 구조체(입력)
- * @return 반환값 없음
+ * @param testSuit 전체 테스트 관리 구조체(입력 및 출력)
+ * @return 성공 시 SUCCESS, 실패 시 FAIL 반환
  */
-static void initializeTests(TestSuitPtr testSuit)
+static int initializeTests(TestSuitPtr testSuit)
 {
     TestSuitInitializer *initializers = testSuit->initializers;
     if (initializers == NULL)
     {
-        return;
+        return FAIL;
     }
 
     TestSuitInitializer initializer = NULL;
@@ -316,15 +319,18 @@ static void initializeTests(TestSuitPtr testSuit)
 		testSuit->failTests = newTests(numberOfTests);
 		if(testSuit->failTests == NULL)
 		{
-			return;
+			return FAIL;
 		}
 
 		testSuit->successTests = newTests(numberOfTests);
 		if(testSuit->successTests == NULL)
 		{
-			return;
+			return FAIL;
 		}
 	}
+	else return FAIL;
+
+	return SUCCESS;
 }
 
 /**
