@@ -15,7 +15,7 @@ TEST(IsDigit, AcceptableValues, {
     EXPECT_NUM_EQUAL(IsDigit('2'), True);
     EXPECT_NUM_EQUAL(IsDigit('3'), True);
     EXPECT_NUM_EQUAL(IsDigit('4'), True);
-    EXPECT_NUM_EQUAL(IsDigit('5'), True);
+    EXPECT_NUM_EQUAL(IsDigit('5'), False);
     EXPECT_NUM_EQUAL(IsDigit('6'), True);
     EXPECT_NUM_EQUAL(IsDigit('7'), True);
     EXPECT_NUM_EQUAL(IsDigit('8'), True);
@@ -32,6 +32,16 @@ TEST(IsDigit, InvalidValues, {
     EXPECT_NUM_NOT_EQUAL(IsDigit('+'), True);
 })
 
+TEST(IsEqualString, SameStrings, {
+	EXPECT_STR_EQUAL("abc", "ab");
+	EXPECT_STR_EQUAL("abc", "abc");
+})
+
+TEST(IsEqualString, NotSameStrings, {
+	EXPECT_STR_NOT_EQUAL("abc", "ab");
+	EXPECT_STR_NOT_EQUAL("abc", "abc");
+})
+
 //<-- Test Codes ends here
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -41,7 +51,9 @@ int main()
 
     REGISTER_TESTS(
         Test_IsDigit_AcceptableValues,
-        Test_IsDigit_InvalidValues
+        Test_IsDigit_InvalidValues,
+		Test_IsEqualString_SameStrings,
+		Test_IsEqualString_NotSameStrings
     );
 
     RUN_ALL_TESTS();

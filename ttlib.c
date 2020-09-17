@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "ttlib.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -26,48 +22,29 @@ TestSuitPtr NewTestSuit()
 
     // Initialize other members
     testSuit->initializers = NULL;
+	testSuit->failTests = NULL;
     testSuit->numberOfTests = 0;
-	testSuit->totalNumOfSuccess = 0;
+	testSuit->numberOfSuccessTests = 0;
+	testSuit->numberOfFailTests = 0;
+	testSuit->totalNumOfSuccessTestFuncs = 0;
+	testSuit->totalNumOfFailTestFuncs = 0;
 
     return testSuit;
 }
 
-void RegisterInitializers(TestSuitPtr testSuit, TestSuitInitializer **initializers)
-{
-    if (testSuit == NULL || initializers == NULL)
-    {
-        return;
-    }
-
-    TestSuitInitializer *initializer = NULL;
-    int count = 0;
-    while ((initializer = *initializers++) != NULL)
-    {
-        count++;
-    }
-
-    if (count > 0)
-    {
-        if (testSuit->initializers == NULL)
-        {
-
-        }
-    }
-}
-
-TestPtr AddTest(TestSuitPtr testSuit, Test test)
+void AddTest(TestSuitPtr testSuit, Test test)
 {
     // Check parameter
     if (testSuit == NULL)
     {
-        return NULL;
+        return;
     }
 
     // Create a new Test instance
     TestPtr newTest = (TestPtr)malloc(sizeof(Test));
     if (newTest == NULL)
     {
-        return NULL;
+        return;
     }
 
     // Allocate required memory for the created instance
@@ -78,16 +55,15 @@ TestPtr AddTest(TestSuitPtr testSuit, Test test)
         free(testCase);
         free(testName);
         free(newTest);
-
-        return NULL;
+        return;
     }
 
     // Setup members of Test instance
     newTest->testCase = testCase;
     newTest->testName = testName;
     newTest->testFunc = test.testFunc;
-	newTest->totalNumOfSuccess = 0;
-	newTest->totalNumOfFail = 0;
+	newTest->numberOfSuccessTestFunc = 0;
+	newTest->numberOfFailTestFunc = 0;
 
     // Reallocate memory for tests in TestSuit instance
     int numberOfTests = testSuit->numberOfTests;
@@ -104,9 +80,9 @@ TestPtr AddTest(TestSuitPtr testSuit, Test test)
     }
     if (allocatedTests == NULL)
     {
-        puts("realloc failed!");
+        puts("realloc failed! (allocatedTests)");
         deleteTest(newTest);
-        return NULL;
+        return;
     }
 
     // Add new Test instance at the end of the TestSuit instance
@@ -116,7 +92,7 @@ TestPtr AddTest(TestSuitPtr testSuit, Test test)
     testSuit->tests = allocatedTests;
     testSuit->numberOfTests++;
 
-    return newTest;
+	free(newTest);
 }
 
 void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)
@@ -128,17 +104,31 @@ void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)
     }
 
     TestSuitPtr testSuit = *testSuitContainer;
+
     // release memory allocated to the array of Test instances
-    TestPtr test = NULL;
-	int t = 0;
-    for (; t < testSuit->numberOfTests; t++)
-    {
-        test = &testSuit->tests[t];
-        free(test->testCase);
-        free(test->testName);
-    }
+	if(testSuit->tests != NULL)
+	{
+		TestPtr test = NULL;
+
+		int t = 0;
+		for (; t < testSuit->numberOfTests; t++)
+		{
+			test = &testSuit->tests[t];
+			free(test->testCase);
+			free(test->testName);
+		}
+
+		free(testSuit->tests);
+	}
+
+	if(testSuit->failTests != NULL)
+	{
+		free(testSuit->failTests);
+	}
+
     // release memory allocated to the TestSuit instance
     free(testSuit);
+
     // set NULL to the container of pointer to TestSuit instance
     *testSuitContainer = NULL;
 }
@@ -148,10 +138,12 @@ void RunAllTests(TestSuitPtr testSuit)
     // Add user tests into TestSuit instance
     initializeTests(testSuit);
 
-    printf("총 테스트 수: %d 개\n", testSuit->numberOfTests);
-
 	int t = 0;
     int count = testSuit->numberOfTests;
+	int prevNumOfSuccessTestFuncs = 0, prevNumOfFailTestFuncs = 0;
+
+    printf("\n[ 총 테스트 수: %d 개 ]\n", count);
+
     if (count >= 1)
     {
         // Call all test functions in the array
@@ -159,24 +151,54 @@ void RunAllTests(TestSuitPtr testSuit)
         for (t = 0; t < count; t++)
         {
             test = &testSuit->tests[t];
-            printf("\n테스트 케이스: %s, 테스트: %s\n", test->testCase, test->testName);
             if (test->testFunc == NULL) // testSuit->tests is a NULL-terninated array
             {
                 break;
             }
+
+            printf("\n{ (테스트 번호: %d) 테스트 케이스: %s, 테스트 이름: %s }\n", (t + 1), test->testCase, test->testName);
             test->testFunc(testSuit);
-	    	printf("성공 : %d 개 / 실패 : %d 개\n", test->totalNumOfSuccess, test->totalNumOfFail);
+
+			test->numberOfSuccessTestFunc = testSuit->totalNumOfSuccessTestFuncs - prevNumOfSuccessTestFuncs;
+			test->numberOfFailTestFunc = testSuit->totalNumOfFailTestFuncs - prevNumOfFailTestFuncs;
+			prevNumOfSuccessTestFuncs = testSuit->totalNumOfSuccessTestFuncs;
+			prevNumOfFailTestFuncs = testSuit->totalNumOfFailTestFuncs;
+
+			if(test->numberOfFailTestFunc == 0)
+			{
+				testSuit->numberOfSuccessTests++;
+				printf("< 모든 테스트 케이스 성공 >\n");
+			}
+			else{
+				testSuit->failTests[t] = test;
+				testSuit->numberOfFailTests++;
+			}
+	    	printf("{ 성공: %d 개 / 실패: %d 개 }\n", test->numberOfSuccessTestFunc, test->numberOfFailTestFunc);
         }
+
         puts("\ncalling tests done.\n");
-	    printf("총 성공 테스트 수: %d 개 / 실패 테스트 수 : %d 개\n", testSuit->totalNumOfSuccess,  testSuit->totalNumOfFail);
+	    printf("[ 총 성공 테스트 함수 개수: %d 개 / 실패 테스트 함수 개수: %d 개 ]\n", testSuit->totalNumOfSuccessTestFuncs, testSuit->totalNumOfFailTestFuncs);
+	    printf("[ 총 성공 테스트 수: %d 개 / 실패 테스트 수: %d 개 ]\n\n", testSuit->numberOfSuccessTests, testSuit->numberOfFailTests);
+
+		if(testSuit->failTests != NULL)
+		{
+			printf("[ 실패한 테스트 목록 ]\n");
+			printf("{ (테스트 케이스) : (테스트 이름) }\n");
+			int failTestsIndex = 0;
+			for( ; failTestsIndex < count; failTestsIndex++)
+			{
+			    printf("{ %s : %s }\n", (testSuit->failTests[failTestsIndex])->testCase, (testSuit->failTests[failTestsIndex])->testName);
+			}
+			printf("\n");
+		}
     }
 	else
 	{
-        puts("\n테스트가 존재하지 않음.\n");
+        puts("\n[ 테스트가 존재하지 않음. ]\n\n");
 	}
 }
 
-void CheckSuccessTestSuit(TestSuitPtr testSuit)
+void ProcessSuccessTestSuit(TestSuitPtr testSuit, const char *msg)
 {
     // Check parameter
     if (testSuit == NULL)
@@ -184,40 +206,28 @@ void CheckSuccessTestSuit(TestSuitPtr testSuit)
         return;
     }
 
-	testSuit->totalNumOfSuccess++;
+	testSuit->totalNumOfSuccessTestFuncs++;
+
+	if(msg != NULL)
+	{
+		TEST_SUCCESS(msg);
+	}
 }
 
-void CheckFailTestSuit(TestSuitPtr testSuit)
+void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *fileName, int lineNumber)
 {
-    // Check parameter
+	// Check parameter
     if (testSuit == NULL)
     {
         return;
     }
 
-	testSuit->totalNumOfFail++;
-}
+	testSuit->totalNumOfFailTestFuncs++;
 
-void CheckSuccessTest(TestPtr test)
-{
-    // Check parameter
-    if (test == NULL)
-    {
-        return;
-    }
-
-	test->totalNumOfSuccess++;
-}
-
-void CheckFailTest(TestPtr test)
-{
-    // Check parameter
-    if (test == NULL)
-    {
-        return;
-    }
-
-	test->totalNumOfFail++;
+	if(msg != NULL)
+	{
+		TEST_NONFATAL_FAIL(msg, fileName, lineNumber);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -231,12 +241,22 @@ static void initializeTests(TestSuitPtr testSuit)
     {
         return;
     }
-    
+
     TestSuitInitializer initializer = NULL;
     while ((initializer = *initializers++) != NULL)
     {
         initializer();
     }
+
+	// initialize failTests in testSuit
+	if(testSuit->numberOfTests > 0)
+	{
+		testSuit->failTests = (TestPtrContainer)malloc(sizeof(TestPtr) * (size_t)(testSuit->numberOfTests));
+		if(testSuit->failTests == NULL)
+		{
+			return;
+		}
+	}
 }
 
 static void deleteTest(TestPtr test)
@@ -254,9 +274,9 @@ static void deleteTest(TestPtr test)
 /// Util Functions
 //////////////////////////////////////////////////////////////////////////////////
 
-void print_message_helper(const char *file_name, int line_number, const char *msg, TEST_RESULT test_result_type)
+void printMessageHelper(const char *file_name, int line_number, const char *msg, TEST_RESULT testResultType)
 {
-	switch(test_result_type)
+	switch(testResultType)
 	{
 		case SUCCESS:
 			printf("[SUCCESS]\n");

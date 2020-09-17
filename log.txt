@@ -1,0 +1,99 @@
+==15187== Memcheck, a memory error detector
+==15187== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==15187== Using Valgrind-3.15.0-608cb11914-20190413 and LibVEX; rerun with -h for copyright info
+==15187== Command: ./run
+==15187== Parent PID: 10400
+==15187== 
+--15187-- 
+--15187-- Valgrind options:
+--15187--    --leak-check=full
+--15187--    --show-leak-kinds=all
+--15187--    --log-file=log.txt
+--15187--    -v
+--15187--    --error-limit=no
+--15187--    --track-origins=yes
+--15187-- Contents of /proc/version:
+--15187--   Linux version 3.10.0-862.el7.x86_64 (builder@kbuilder.dev.centos.org) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-28) (GCC) ) #1 SMP Fri Apr 20 16:44:24 UTC 2018
+--15187-- 
+--15187-- Arch and hwcaps: AMD64, LittleEndian, amd64-rdtscp-sse3-ssse3
+--15187-- Page sizes: currently 4096, max supported 4096
+--15187-- Valgrind library directory: /usr/libexec/valgrind
+--15187-- Reading syms from /home/dev1/src_test/ttlib/run
+--15187-- Reading syms from /usr/lib64/ld-2.17.so
+--15187-- Reading syms from /usr/libexec/valgrind/memcheck-amd64-linux
+--15187--    object doesn't have a symbol table
+--15187--    object doesn't have a dynamic symbol table
+--15187-- Scheduler: using generic scheduler lock implementation.
+--15187-- Reading suppressions file: /usr/libexec/valgrind/default.supp
+==15187== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-15187-by-dev1-on-dev1
+==15187== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-15187-by-dev1-on-dev1
+==15187== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-15187-by-dev1-on-dev1
+==15187== 
+==15187== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==15187== don't want to do, unless you know exactly what you're doing,
+==15187== or are doing some strange experiment):
+==15187==   /usr/libexec/valgrind/../../bin/vgdb --pid=15187 ...command...
+==15187== 
+==15187== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==15187==   /path/to/gdb ./run
+==15187== and then give GDB the following command
+==15187==   target remote | /usr/libexec/valgrind/../../bin/vgdb --pid=15187
+==15187== --pid is optional if only one valgrind process is running
+==15187== 
+--15187-- REDIR: 0x4019e30 (ld-linux-x86-64.so.2:strlen) redirected to 0x580c7ed5 (???)
+--15187-- REDIR: 0x4019c00 (ld-linux-x86-64.so.2:index) redirected to 0x580c7eef (???)
+--15187-- Reading syms from /usr/libexec/valgrind/vgpreload_core-amd64-linux.so
+--15187-- Reading syms from /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so
+==15187== WARNING: new redirection conflicts with existing -- ignoring it
+--15187--     old: 0x04019e30 (strlen              ) R-> (0000.0) 0x580c7ed5 ???
+--15187--     new: 0x04019e30 (strlen              ) R-> (2007.0) 0x04c2d1b0 strlen
+--15187-- REDIR: 0x4019db0 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4c2e300 (strcmp)
+--15187-- REDIR: 0x401aa70 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4c31f90 (mempcpy)
+--15187-- Reading syms from /usr/lib64/libc-2.17.so
+--15187-- REDIR: 0x4ec7130 (libc.so.6:strcasecmp) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
+--15187-- REDIR: 0x4ec3eb0 (libc.so.6:strnlen) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
+--15187-- REDIR: 0x4ec9400 (libc.so.6:strncasecmp) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
+--15187-- REDIR: 0x4ec6910 (libc.so.6:memset) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
+--15187-- REDIR: 0x4ec68c0 (libc.so.6:memcpy@GLIBC_2.2.5) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
+--15187-- REDIR: 0x4ec58a0 (libc.so.6:__GI_strrchr) redirected to 0x4c2cb70 (__GI_strrchr)
+--15187-- REDIR: 0x4ebc6b0 (libc.so.6:malloc) redirected to 0x4c29eec (malloc)
+--15187-- REDIR: 0x4ec3dd0 (libc.so.6:__GI_strlen) redirected to 0x4c2d110 (__GI_strlen)
+--15187-- REDIR: 0x4ecbb40 (libc.so.6:__GI_memcpy) redirected to 0x4c2efb0 (__GI_memcpy)
+==15187== Conditional jump or move depends on uninitialised value(s)
+==15187==    at 0x40100F: AddTest (in /home/dev1/src_test/ttlib/run)
+==15187==    by 0x400A97: Test_IsDigit_AcceptableValues (in /home/dev1/src_test/ttlib/run)
+==15187==    by 0x4014CE: initializeTests (in /home/dev1/src_test/ttlib/run)
+==15187==    by 0x4011AD: RunAllTests (in /home/dev1/src_test/ttlib/run)
+==15187==    by 0x400E7C: main (in /home/dev1/src_test/ttlib/run)
+==15187==  Uninitialised value was created by a heap allocation
+==15187==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
+==15187==    by 0x400EC2: NewTestSuit (in /home/dev1/src_test/ttlib/run)
+==15187==    by 0x400E0F: main (in /home/dev1/src_test/ttlib/run)
+==15187== 
+--15187-- REDIR: 0x4ecbad0 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
+--15187-- REDIR: 0x4ebcad0 (libc.so.6:free) redirected to 0x4c2afe6 (free)
+--15187-- REDIR: 0x4ebcbb0 (libc.so.6:realloc) redirected to 0x4c2c1c5 (realloc)
+--15187-- REDIR: 0x4ecd3c0 (libc.so.6:strchrnul) redirected to 0x4c31ab0 (strchrnul)
+--15187-- REDIR: 0x4ec6ae0 (libc.so.6:__GI_mempcpy) redirected to 0x4c31cc0 (__GI_mempcpy)
+==15187== 
+==15187== HEAP SUMMARY:
+==15187==     in use at exit: 0 bytes in 0 blocks
+==15187==   total heap usage: 18 allocs, 18 frees, 630 bytes allocated
+==15187== 
+==15187== All heap blocks were freed -- no leaks are possible
+==15187== 
+==15187== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==15187== 
+==15187== 1 errors in context 1 of 1:
+==15187== Conditional jump or move depends on uninitialised value(s)
+==15187==    at 0x40100F: AddTest (in /home/dev1/src_test/ttlib/run)
+==15187==    by 0x400A97: Test_IsDigit_AcceptableValues (in /home/dev1/src_test/ttlib/run)
+==15187==    by 0x4014CE: initializeTests (in /home/dev1/src_test/ttlib/run)
+==15187==    by 0x4011AD: RunAllTests (in /home/dev1/src_test/ttlib/run)
+==15187==    by 0x400E7C: main (in /home/dev1/src_test/ttlib/run)
+==15187==  Uninitialised value was created by a heap allocation
+==15187==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
+==15187==    by 0x400EC2: NewTestSuit (in /home/dev1/src_test/ttlib/run)
+==15187==    by 0x400E0F: main (in /home/dev1/src_test/ttlib/run)
+==15187== 
+==15187== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

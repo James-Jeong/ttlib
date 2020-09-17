@@ -1,6 +1,10 @@
 #ifndef __TTLIB_H__
 #define __TTLIB_H__
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 ////////////////////////////////////////////////////////////////////////////////
 /// Enum
 //////////////////////////////////////////////////////////////////////////////////
@@ -30,18 +34,20 @@ enum TEST_RESULT
 //////////////////////////////////////////////////////////////////////////////////
 
 #define DECLARE_TEST() static TestSuitPtr _testSuit = NULL;
-#define TEST(C, T, F)                                   \
-    void _##C##_##T(TestSuitPtr t) F;                   \
-    void Test_##C##_##T()                               \
-    {                                                   \
-        AddTest(_testSuit, (Test){#C, #T, _##C##_##T}); \
+#define TEST(C, T, F)                                         \
+    void _##C##_##T(TestSuitPtr t) F;                         \
+    void Test_##C##_##T()                                     \
+    {                                                         \
+        AddTest(_testSuit, (Test){#C, #T, _##C##_##T, 0, 0}); \
     }
+
 #define CREATE_TESTSUIT()                               \
 _testSuit = NewTestSuit();                              \
 if (_testSuit == NULL) {                                \
     printf("failed to create a test suit instance!\n"); \
     exit(-1);                                           \
 }
+
 #define REGISTER_TESTS(X...)                           \
     _testSuit->initializers = (TestSuitInitializer[]){ \
         X,                                             \
@@ -49,25 +55,26 @@ if (_testSuit == NULL) {                                \
 
 #define RUN_ALL_TESTS() RunAllTests(_testSuit)
 #define CLEAN_UP_TESTSUIT() DeleteTestSuit(&_testSuit)
-#define CHECK_SUCCESS_TESTSUIT() CheckSuccessTestSuit(_testSuit)
-#define CHECK_FAIL_TESTSUIT() CheckFailTestSuit(_testSuit)
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Print Macro Functions
 //////////////////////////////////////////////////////////////////////////////////
 
-#define TEST_MESSAGE(msg, test_result_type) print_message_helper(__FILE__, __LINE__, msg, test_result_type)
+#define TEST_MESSAGE(msg, testResultType, fileName, lineNumber) printMessageHelper(fileName, lineNumber, msg, testResultType)
 
-#define TEST_SUCCESS(msg) TEST_MESSAGE(msg, SUCCESS)
-#define TEST_FATAL_FAIL(msg) TEST_MESSAGE(msg, FATAL_FAIL)
-#define TEST_NONFATAL_FAIL(msg) TEST_MESSAGE(msg, NON_FATAL_FAIL)
+#define TEST_SUCCESS(msg) TEST_MESSAGE(msg, SUCCESS, NULL, 0)
+#define TEST_FATAL_FAIL(msg, fileName, lineNumber) TEST_MESSAGE(msg, FATAL_FAIL, fileName, lineNumber)
+#define TEST_NONFATAL_FAIL(msg, fileName, lineNumber) TEST_MESSAGE(msg, NON_FATAL_FAIL, fileName, lineNumber)
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Compare Macro Functions
 //////////////////////////////////////////////////////////////////////////////////
 
-#define EXPECT_NUM_EQUAL(actual, expected) ((actual) == (expected)) ? (TEST_SUCCESS(#actual" == "#expected)) : TEST_NONFATAL_FAIL(#actual" != "#expected)
-#define EXPECT_NUM_NOT_EQUAL(actual, expected) ((actual) != (expected)) ? (TEST_SUCCESS(#actual" != "#expected)) : TEST_NONFATAL_FAIL(#actual" == "#expected)
+#define EXPECT_NUM_EQUAL(actual, expected) ((actual) == (expected)) ? (ProcessSuccessTestSuit(_testSuit, NULL)) : (ProcessFailTestSuit(_testSuit, #actual" 값과 "#expected" 값이 같지 않고 다름.", __FILE__, __LINE__))
+#define EXPECT_NUM_NOT_EQUAL(actual, expected) ((actual) != (expected)) ? (ProcessSuccessTestSuit(_testSuit, NULL)) : (ProcessFailTestSuit(_testSuit, #actual" 값과 "#expected" 값이 다르지 않고 같음.", __FILE__, __LINE__))
+
+#define EXPECT_STR_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) == 0) ? (ProcessSuccessTestSuit(_testSuit, NULL)) : (ProcessFailTestSuit(_testSuit, #actual" 문자열과 "#expected" 문자열이 같지 않고 다름.", __FILE__, __LINE__ ))
+#define EXPECT_STR_NOT_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) != 0) ? (ProcessSuccessTestSuit(_testSuit, NULL)) : (ProcessFailTestSuit(_testSuit, #actual" 문자열과 "#expected" 문자열이 다르지 않고 같음.", __FILE__, __LINE__ ))
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Definitions
@@ -85,18 +92,21 @@ typedef struct _test_t
     char *testCase;
     char *testName;
     TestFunc testFunc;
-	int totalNumOfSuccess;
-	int totalNumOfFail;
-} Test, *TestPtr;
+	int numberOfSuccessTestFunc;
+	int numberOfFailTestFunc;
+} Test, *TestPtr, **TestPtrContainer;
 
 // 모든 사용자 테스트를 관리하기 위한 구조체
 typedef struct _test_suit_t
 {
     int numberOfTests;
-	int totalNumOfSuccess;
-	int totalNumOfFail;
+	int numberOfSuccessTests;
+	int numberOfFailTests;
+	int totalNumOfSuccessTestFuncs;
+	int totalNumOfFailTestFuncs;
     TestSuitInitializer *initializers;
     TestPtr tests;
+	TestPtrContainer failTests;
 } TestSuit, *TestSuitPtr, **TestSuitPtrContainer;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,15 +116,16 @@ typedef struct _test_suit_t
 TestSuitPtr NewTestSuit();
 void DeleteTestSuit(TestSuitPtrContainer testSuitContainer);
 
-TestPtr AddTest(TestSuitPtr testSuit, Test test);
+void AddTest(TestSuitPtr testSuit, Test test);
 void RunAllTests(TestSuitPtr testSuit);
-void CheckSuccessTestSuit(TestSuitPtr testSuit);
-void CheckFailTestSuit(TestSuitPtr testSuit);
+
+void ProcessSuccessTestSuit(TestSuitPtr testSuit, const char *msg);
+void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *fileName, int lineNumber);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Util Function
 //////////////////////////////////////////////////////////////////////////////////
 
-void print_message_helper(const char *file_name, int line_number, const char *msg, TEST_RESULT test_result_type);
+void printMessageHelper(const char *file_name, int line_number, const char *msg, TEST_RESULT test_result_type);
 
 #endif
