@@ -7,12 +7,17 @@
 static void initializeTests(TestSuitPtr testSuit);
 static TestPtrContainer newTests(size_t numberOfTests);
 static void deleteTest(TestPtr test);
-static void printTests(TestPtrContainer tests, int numberOfTests);
+static void printTests(const TestPtrContainer tests, int numberOfTests);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Local Functions
 //////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @fn TestSuitPtr NewTestSuit()
+ * @brief 전체 테스트 관리를 위한 TestSuit 객체를 새로 생성하는 함수
+ * @return 성공 시 새로 생성된 TestSuit 객체, 실패 시 NULL 반환
+ */
 TestSuitPtr NewTestSuit()
 {
     // Create a TestSuit instance
@@ -35,6 +40,13 @@ TestSuitPtr NewTestSuit()
     return testSuit;
 }
 
+/**
+ * @fn void AddTest(TestSuitPtr testSuit, Test test)
+ * @brief 테스트를 추가하는 함수
+ * @param testSuit 전체 테스트 관리 구조체(출력)
+ * @param test 추가할 테스트(입력)
+ * @return 반환값 없음
+ */
 void AddTest(TestSuitPtr testSuit, Test test)
 {
     // Check parameter
@@ -98,6 +110,12 @@ void AddTest(TestSuitPtr testSuit, Test test)
 	free(newTest);
 }
 
+/**
+ * @fn void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)
+ * @brief 전체 테스트 관리 구조체를 삭제하는 함수
+ * @param testSuitContainer 전체 테스트 관리 구조체의 주소를 가지는 포인터(입력, 이중 포인터)
+ * @return 반환값 없음
+ */
 void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)
 {
     // Check parameter
@@ -141,6 +159,12 @@ void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)
     *testSuitContainer = NULL;
 }
 
+/**
+ * @fn void RunAllTests(TestSuitPtr testSuit)
+ * @brief 전체 테스트들을 실행하는 함수
+ * @param testSuit 전체 테스트 관리 구조체(입력)
+ * @return 반환값 없음
+ */
 void RunAllTests(TestSuitPtr testSuit)
 {
     // Check parameter
@@ -210,6 +234,13 @@ void RunAllTests(TestSuitPtr testSuit)
 	}
 }
 
+/**
+ * @fn void ProcessSuccessTestSuit(TestSuitPtr testSuit, const char *msg)
+ * @brief 테스트 성공 시 테스트 성공 횟수를 하나 증가하고 성공 메시지를 출력하는 함수
+ * @param testSuit 전체 테스트 관리 구조체(출력)
+ * @param msg 성공 메시지(입력)
+ * @return 반환값 없음
+ */
 void ProcessSuccessTestSuit(TestSuitPtr testSuit, const char *msg)
 {
     // Check parameter
@@ -226,6 +257,16 @@ void ProcessSuccessTestSuit(TestSuitPtr testSuit, const char *msg)
 	}
 }
 
+/**
+ * @fn void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber)
+ * @brief 테스트 실패 시 테스트 실패 횟수를 하나 증가하고 실패 메시지를 출력하는 함수
+ * @param testSuit 전체 테스트 관리 구조체(출력)
+ * @param msg 실패 메시지(입력, 읽기 전용)
+ * @param functionName 실패한 함수 이름(입력, 읽기 전용)
+ * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
+ * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
+ * @return 반환값 없음
+ */
 void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber)
 {
 	// Check parameter
@@ -246,6 +287,12 @@ void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *func
 /// Static Functions
 //////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @fn static void initializeTests(TestSuitPtr testSuit)
+ * @brief 사용자가 작성한 테스트 함수들을 전체 테스트 관리 구조체(TestSuit)에 등록하는 함수
+ * @param testSuit 전체 테스트 관리 구조체(입력)
+ * @return 반환값 없음
+ */
 static void initializeTests(TestSuitPtr testSuit)
 {
     TestSuitInitializer *initializers = testSuit->initializers;
@@ -279,6 +326,12 @@ static void initializeTests(TestSuitPtr testSuit)
 	}
 }
 
+/**
+ * @fn static TestPtrContainer newTests(size_t numberOfTests)
+ * @brief TestPtrContainer 를 새로 생성하는 함수
+ * @param numberOfTests 저장할 Test 구조체 포인터의 개수(입력)
+ * @return 성공 시 새로 생성된 TestPtrContainer 객체, 실패 시 NULL 반환
+ */
 static TestPtrContainer newTests(size_t numberOfTests)
 {
 	TestPtrContainer tests = (TestPtrContainer)malloc(sizeof(TestPtr) * numberOfTests);
@@ -296,6 +349,12 @@ static TestPtrContainer newTests(size_t numberOfTests)
 	return tests;
 }
 
+/**
+ * @fn static void deleteTest(TestPtr test)
+ * @brief Test 구조체를 삭제하는 함수
+ * @param test 삭제할 Test 구조체(입력)
+ * @return 반환값 없음
+ */
 static void deleteTest(TestPtr test)
 {
     // Check parameter
@@ -309,7 +368,14 @@ static void deleteTest(TestPtr test)
     free(test);
 }
 
-static void printTests(TestPtrContainer tests, int numberOfTests)
+/**
+ * @fn static void printTests(TestPtrContainer tests, int numberOfTests)
+ * @brief 전체 Test 들의 목록을 출력하는 함수
+ * @param tests 전체 Test 들의 목록(입력, 읽기 전용)
+ * @param numberOfTests 출력할 Test 전체 개수
+ * @return 반환값 없음
+ */
+static void printTests(const TestPtrContainer tests, int numberOfTests)
 {
     // Check parameter
 	if(tests == NULL)
@@ -331,6 +397,16 @@ static void printTests(TestPtrContainer tests, int numberOfTests)
 /// Util Functions
 //////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @fn void printMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TEST_RESULT testResultType)
+ * @brief 함수 결과에 따라 출력 방법을 다르게 설정하여 지정한 메시지를 출력하는 함수
+ * @param functionName 실패한 함수 이름(입력, 읽기 전용)
+ * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
+ * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
+ * @param msg 출력할 메시지(입력, 읽기 전용)
+ * @param testResultType 테스트 함수 실행 결과(입력)
+ * @return 반환값 없음
+ */
 void printMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TEST_RESULT testResultType)
 {
 	switch(testResultType)
