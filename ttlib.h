@@ -67,18 +67,62 @@ if (_testSuit == NULL) {                                \
 #define TEST_NONFATAL_FAIL(msg, functionName, fileName, lineNumber) TEST_MESSAGE(msg, NON_FATAL_FAIL, functionName, fileName, lineNumber)
 
 //////////////////////////////////////////////////////////////////////////////////
-/// Compare Macro Functions
+/// Number Macro Functions
 //////////////////////////////////////////////////////////////////////////////////
 
-#define EXPECT_NUM_EQUAL(actual, expected) ((actual) == (expected)) ? (ProcessSuccessTestSuit(_testSuit, NULL)) : (ProcessFailTestSuit(_testSuit, #actual" 값과 "#expected" 값이 같지 않고 다름.", "EXPECT_NUM_EQUAL", __FILE__, __LINE__))
-#define EXPECT_NUM_NOT_EQUAL(actual, expected) ((actual) != (expected)) ? (ProcessSuccessTestSuit(_testSuit, NULL)) : (ProcessFailTestSuit(_testSuit, #actual" 값과 "#expected" 값이 다르지 않고 같음.", "EXPECT_NUM_NOT_EQUAL", __FILE__, __LINE__))
-#define EXPECT_NUM_LESS_EQUAL(actual, expected) ((actual) <= (expected)) ? (ProcessSuccessTestSuit(_testSuit, NULL)) : (ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 큼.", "EXPECT_NUM_LESS_EQUAL", __FILE__, __LINE__))
-#define EXPECT_NUM_LESS_THAN(actual, expected) ((actual) < (expected)) ? (ProcessSuccessTestSuit(_testSuit, NULL)) : (ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 크거나 같음.", "EXPECT_NUM_LESS_THAN", __FILE__, __LINE__))
-#define EXPECT_NUM_GREATER_EQUAL(actual, expected) ((actual) >= (expected)) ? (ProcessSuccessTestSuit(_testSuit, NULL)) : (ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 작음.", "EXPECT_NUM_GREATER_EQUAL", __FILE__, __LINE__))
-#define EXPECT_NUM_GREATER_THAN(actual, expected) ((actual) > (expected)) ? (ProcessSuccessTestSuit(_testSuit, NULL)) : (ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 작거나 같음.", "EXPECT_NUM_GREATER_THAN", __FILE__, __LINE__))
+#define EXPECT_NUM_EQUAL(actual, expected) ((actual) == (expected)) ?                \
+	(ProcessSuccessTestSuit(_testSuit, NULL)) :                                      \
+	(ProcessFailTestSuit(_testSuit, #actual" 값과 "#expected" 값이 같지 않고 다름.", \
+		"EXPECT_NUM_EQUAL", __FILE__, __LINE__))
 
-#define EXPECT_STR_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) == 0) ? (ProcessSuccessTestSuit(_testSuit, NULL)) : (ProcessFailTestSuit(_testSuit, #actual" 문자열과 "#expected" 문자열이 같지 않고 다름.", "EXPECT_STR_EQUAL", __FILE__, __LINE__ ))
-#define EXPECT_STR_NOT_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) != 0) ? (ProcessSuccessTestSuit(_testSuit, NULL)) : (ProcessFailTestSuit(_testSuit, #actual" 문자열과 "#expected" 문자열이 다르지 않고 같음.", "EXPECT_STR_NOT_EQUAL", __FILE__, __LINE__ ))
+#define EXPECT_NUM_NOT_EQUAL(actual, expected) ((actual) != (expected)) ?              \
+	(ProcessSuccessTestSuit(_testSuit, NULL)) :                                        \
+	(ProcessFailTestSuit(_testSuit, #actual" 값과 "#expected" 값이 다르지 않고 같음.", \
+		"EXPECT_NUM_NOT_EQUAL", __FILE__, __LINE__))
+
+#define EXPECT_NUM_LESS_EQUAL(actual, expected) ((actual) <= (expected)) ? \
+	(ProcessSuccessTestSuit(_testSuit, NULL)) :                            \
+	(ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 큼.", \
+		"EXPECT_NUM_LESS_EQUAL", __FILE__, __LINE__))
+
+#define EXPECT_NUM_LESS_THAN(actual, expected) ((actual) < (expected)) ?            \
+	(ProcessSuccessTestSuit(_testSuit, NULL)) :                                     \
+	(ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 크거나 같음.", \
+		"EXPECT_NUM_LESS_THAN", __FILE__, __LINE__))
+
+#define EXPECT_NUM_GREATER_EQUAL(actual, expected) ((actual) >= (expected)) ?       \
+	(ProcessSuccessTestSuit(_testSuit, NULL)) :                                     \
+	(ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 작음.",        \
+		"EXPECT_NUM_GREATER_EQUAL", __FILE__, __LINE__))
+
+#define EXPECT_NUM_GREATER_THAN(actual, expected) ((actual) > (expected)) ?         \
+	(ProcessSuccessTestSuit(_testSuit, NULL)) :                                     \
+	(ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 작거나 같음.", \
+		"EXPECT_NUM_GREATER_THAN", __FILE__, __LINE__))
+
+#define EXPECT_NUM_EVEN(number) ((number) % 2 == 0) ?            \
+	(ProcessSuccessTestSuit(_testSuit, NULL)) :                  \
+	(ProcessFailTestSuit(_testSuit, #number" 값은 짝수가 아님.", \
+		"EXPECT_NUM_EVEN", __FILE__, __LINE__))
+
+#define EXPECT_NUM_ODD(number) ((number) % 2 == 1) ?             \
+	(ProcessSuccessTestSuit(_testSuit, NULL)) :                  \
+	(ProcessFailTestSuit(_testSuit, #number" 값은 홀수가 아님.", \
+		"EXPECT_NUM_ODD", __FILE__, __LINE__))
+
+//////////////////////////////////////////////////////////////////////////////////
+/// String Macro Functions
+//////////////////////////////////////////////////////////////////////////////////
+
+#define EXPECT_STR_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) == 0) ? \
+	(ProcessSuccessTestSuit(_testSuit, NULL)) :                                                           \
+	(ProcessFailTestSuit(_testSuit, #actual" 문자열과 "#expected" 문자열이 같지 않고 다름.",              \
+		"EXPECT_STR_EQUAL", __FILE__, __LINE__ ))
+
+#define EXPECT_STR_NOT_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) != 0) ? \
+	(ProcessSuccessTestSuit(_testSuit, NULL)) :                                                               \
+	(ProcessFailTestSuit(_testSuit, #actual" 문자열과 "#expected" 문자열이 다르지 않고 같음.",                \
+		"EXPECT_STR_NOT_EQUAL", __FILE__, __LINE__ ))
 
 //////////////////////////////////////////////////////////////////////////////////
 /// Definitions
@@ -111,6 +155,7 @@ typedef struct _test_suit_t
     TestSuitInitializer *initializers;
     TestPtr tests;
 	TestPtrContainer failTests;
+	TestPtrContainer successTests;
 } TestSuit, *TestSuitPtr, **TestSuitPtrContainer;
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -130,6 +175,6 @@ void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *func
 /// Util Function
 //////////////////////////////////////////////////////////////////////////////////
 
-void printMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TEST_RESULT test_result_type);
+void printMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TEST_RESULT testResultType);
 
 #endif

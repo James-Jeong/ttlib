@@ -5,7 +5,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 static void initializeTests(TestSuitPtr testSuit);
+static TestPtrContainer newTests(size_t numberOfTests);
 static void deleteTest(TestPtr test);
+static void printTests(TestPtrContainer tests, int numberOfTests);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Local Functions
@@ -23,6 +25,7 @@ TestSuitPtr NewTestSuit()
     // Initialize other members
     testSuit->initializers = NULL;
 	testSuit->failTests = NULL;
+	testSuit->successTests = NULL;
     testSuit->numberOfTests = 0;
 	testSuit->numberOfSuccessTests = 0;
 	testSuit->numberOfFailTests = 0;
@@ -126,6 +129,11 @@ void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)
 		free(testSuit->failTests);
 	}
 
+	if(testSuit->successTests != NULL)
+	{
+		free(testSuit->successTests);
+	}
+
     // release memory allocated to the TestSuit instance
     free(testSuit);
 
@@ -135,22 +143,28 @@ void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)
 
 void RunAllTests(TestSuitPtr testSuit)
 {
+    // Check parameter
+	if(testSuit == NULL)
+	{
+		return;
+	}
+
     // Add user tests into TestSuit instance
     initializeTests(testSuit);
 
 	int t = 0;
-    int count = testSuit->numberOfTests;
+    int numberOfTests = testSuit->numberOfTests;
 	int prevNumOfSuccessTestFuncs = 0, prevNumOfFailTestFuncs = 0;
 
    	printf("--------------------------------\n");
-    printf("[ 총 테스트 수: %d 개 ]\n", count);
+    printf("[ 총 테스트 수: %d 개 ]\n", numberOfTests);
    	printf("--------------------------------\n");
 
-    if (count >= 1)
+    if (numberOfTests >= 1)
     {
         // Call all test functions in the array
         TestPtr test = NULL;
-        for (t = 0; t < count; t++)
+        for (t = 0; t < numberOfTests; t++)
         {
             test = &testSuit->tests[t];
             if (test->testFunc == NULL) // testSuit->tests is a NULL-terninated array
@@ -168,12 +182,11 @@ void RunAllTests(TestSuitPtr testSuit)
 
 			if(test->numberOfFailTestFunc == 0)
 			{
-				testSuit->numberOfSuccessTests++;
-				printf("< 모든 테스트 케이스 성공 >\n");
+				testSuit->successTests[(testSuit->numberOfSuccessTests++)] = test;
+				printf("< 모든 테스트 함수 성공 >\n");
 			}
 			else{
-				testSuit->failTests[t] = test;
-				testSuit->numberOfFailTests++;
+				testSuit->failTests[(testSuit->numberOfFailTests++)] = test;
 			}
 	    	printf("{ 성공: %d 개 / 실패: %d 개 }\n", test->numberOfSuccessTestFunc, test->numberOfFailTestFunc);
         }
@@ -182,16 +195,13 @@ void RunAllTests(TestSuitPtr testSuit)
 	    printf("[ 총 성공 테스트 함수 개수: %d 개 / 실패 테스트 함수 개수: %d 개 ]\n", testSuit->totalNumOfSuccessTestFuncs, testSuit->totalNumOfFailTestFuncs);
 	    printf("[ 총 성공 테스트 수: %d 개 / 실패 테스트 수: %d 개 ]\n\n", testSuit->numberOfSuccessTests, testSuit->numberOfFailTests);
 
-		if(testSuit->failTests != NULL)
-		{
-			printf("[ 실패한 테스트 목록 ]\n");
-			printf("{ (테스트 케이스) : (테스트 이름) }\n");
-			int failTestsIndex = 0;
-			for( ; failTestsIndex < count; failTestsIndex++)
-			{
-			    printf("{ %s : %s }\n", (testSuit->failTests[failTestsIndex])->testCase, (testSuit->failTests[failTestsIndex])->testName);
-			}
-		}
+		printf("[ 성공한 테스트 목록 ]\n");
+		printTests(testSuit->successTests, testSuit->numberOfSuccessTests);
+		printf("\n");
+
+		printf("[ 실패한 테스트 목록 ]\n");
+		printTests(testSuit->failTests, testSuit->numberOfFailTests);
+
    		printf("--------------------------------\n");
     }
 	else
@@ -253,16 +263,42 @@ static void initializeTests(TestSuitPtr testSuit)
 	// initialize failTests in testSuit
 	if(testSuit->numberOfTests > 0)
 	{
-		testSuit->failTests = (TestPtrContainer)malloc(sizeof(TestPtr) * (size_t)(testSuit->numberOfTests));
+		size_t numberOfTests = (size_t)testSuit->numberOfTests;
+
+		testSuit->failTests = newTests(numberOfTests);
 		if(testSuit->failTests == NULL)
+		{
+			return;
+		}
+
+		testSuit->successTests = newTests(numberOfTests);
+		if(testSuit->successTests == NULL)
 		{
 			return;
 		}
 	}
 }
 
+static TestPtrContainer newTests(size_t numberOfTests)
+{
+	TestPtrContainer tests = (TestPtrContainer)malloc(sizeof(TestPtr) * numberOfTests);
+	if(tests == NULL)
+	{
+		return NULL;
+	}
+
+	size_t testIndex = 0;
+	for( ; testIndex < numberOfTests; testIndex++)
+	{
+		tests[testIndex] = NULL;
+	}
+
+	return tests;
+}
+
 static void deleteTest(TestPtr test)
 {
+    // Check parameter
     if (test == NULL)
     {
         return;
@@ -271,6 +307,24 @@ static void deleteTest(TestPtr test)
     free(test->testCase);
     free(test->testName);
     free(test);
+}
+
+static void printTests(TestPtrContainer tests, int numberOfTests)
+{
+    // Check parameter
+	if(tests == NULL)
+	{
+		return;
+	}
+
+	printf("{ (테스트 케이스) : (테스트 이름) }\n");
+	int testIndex = 0;
+	TestPtr test = NULL;
+	for( ; testIndex < numberOfTests; testIndex++)
+	{
+		test = tests[testIndex];
+		if(test != NULL) printf("{ %s : %s }\n", test->testCase, test->testName);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////

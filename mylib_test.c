@@ -36,6 +36,16 @@ TEST(IsDigit, InvalidValues, {
     EXPECT_NUM_NOT_EQUAL(IsDigit('+'), True);
 })
 
+TEST(CompareNumbers, Equal, {
+	EXPECT_NUM_EQUAL(1, 1);
+	EXPECT_NUM_EQUAL(1, 2);
+})
+
+TEST(CompareNumbers, NotEqual, {
+	EXPECT_NUM_NOT_EQUAL(2, 1);
+	EXPECT_NUM_NOT_EQUAL(1, 2);
+})
+
 TEST(CompareNumbers, Less, {
     EXPECT_NUM_LESS_EQUAL(1, 1);
     EXPECT_NUM_LESS_EQUAL(1, 2);
@@ -54,16 +64,26 @@ TEST(CompareNumbers, Greater, {
     EXPECT_NUM_GREATER_THAN(2, 1);
 })
 
+TEST(CheckNumberType, Even, {
+    EXPECT_NUM_EVEN(1234);
+    EXPECT_NUM_EVEN(2345);
+})
+
+TEST(CheckNumberType, Odd, {
+    EXPECT_NUM_ODD(1234);
+    EXPECT_NUM_ODD(2345);
+})
+
 //////////////////////////////////////////////////////////////////////////////////
 /// String Tests
 //////////////////////////////////////////////////////////////////////////////////
 
-TEST(IsEqualString, SameStrings, {
+TEST(CompareStrings, Equal, {
 	EXPECT_STR_EQUAL("abc", "ab");
 	EXPECT_STR_EQUAL("abc", "abc");
 })
 
-TEST(IsEqualString, NotSameStrings, {
+TEST(CompareStrings, NotEqual, {
 	EXPECT_STR_NOT_EQUAL("abc", "ab");
 	EXPECT_STR_NOT_EQUAL("abc", "abc");
 })
@@ -78,10 +98,14 @@ int main()
     REGISTER_TESTS(
         Test_IsDigit_AcceptableValues,
         Test_IsDigit_InvalidValues,
-		Test_IsEqualString_SameStrings,
-		Test_IsEqualString_NotSameStrings,
+		Test_CompareNumbers_Equal,
+		Test_CompareNumbers_NotEqual,
 		Test_CompareNumbers_Less,
-		Test_CompareNumbers_Greater
+		Test_CompareNumbers_Greater,
+		Test_CheckNumberType_Even,
+		Test_CheckNumberType_Odd,
+		Test_CompareStrings_Equal,
+		Test_CompareStrings_NotEqual
     );
 
     RUN_ALL_TESTS();
