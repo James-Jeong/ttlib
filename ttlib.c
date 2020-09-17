@@ -214,7 +214,7 @@ void ProcessSuccessTestSuit(TestSuitPtr testSuit, const char *msg)
 	}
 }
 
-void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *fileName, int lineNumber)
+void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber)
 {
 	// Check parameter
     if (testSuit == NULL)
@@ -226,7 +226,7 @@ void ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *file
 
 	if(msg != NULL)
 	{
-		TEST_NONFATAL_FAIL(msg, fileName, lineNumber);
+		TEST_NONFATAL_FAIL(msg, functionName, fileName, lineNumber);
 	}
 }
 
@@ -265,6 +265,7 @@ static void deleteTest(TestPtr test)
     {
         return;
     }
+
     free(test->testCase);
     free(test->testName);
     free(test);
@@ -274,7 +275,7 @@ static void deleteTest(TestPtr test)
 /// Util Functions
 //////////////////////////////////////////////////////////////////////////////////
 
-void printMessageHelper(const char *file_name, int line_number, const char *msg, TEST_RESULT testResultType)
+void printMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TEST_RESULT testResultType)
 {
 	switch(testResultType)
 	{
@@ -282,13 +283,13 @@ void printMessageHelper(const char *file_name, int line_number, const char *msg,
 			printf("[SUCCESS]\n");
 			break;
 		case FATAL_FAIL:
-			printf("[FAIL] %s (file:%s, line:%d)\nTest aborted.\n", msg, file_name, line_number);
+			printf("[%s FAIL] %s (file:%s, line:%d)\nTest aborted.\n", functionName, msg, file_name, line_number);
 			break;
 		case NON_FATAL_FAIL:
-			printf("[FAIL] %s (file:%s, line:%d)\n", msg, file_name, line_number);
+			printf("[%s FAIL] %s (file:%s, line:%d)\n", functionName, msg, file_name, line_number);
 			break;
 		default:
-			printf("[UNKNOWN] %s (file:%s, line:%d)\n", msg, file_name, line_number);
+			printf("[%s UNKNOWN] %s (file:%s, line:%d)\n", functionName, msg, file_name, line_number);
 			break;
 	}	
 }

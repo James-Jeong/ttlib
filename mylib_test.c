@@ -9,6 +9,10 @@ DECLARE_TEST()
 ///////////////////////////////////////////////////////////////////////////////
 // Test Codes comes here -->
 
+//////////////////////////////////////////////////////////////////////////////////
+/// Number Tests
+//////////////////////////////////////////////////////////////////////////////////
+
 TEST(IsDigit, AcceptableValues, {
     EXPECT_NUM_EQUAL(IsDigit('0'), True);
     EXPECT_NUM_EQUAL(IsDigit('1'), True);
@@ -32,6 +36,28 @@ TEST(IsDigit, InvalidValues, {
     EXPECT_NUM_NOT_EQUAL(IsDigit('+'), True);
 })
 
+TEST(CompareNumbers, Less, {
+    EXPECT_NUM_LESS_EQUAL(1, 1);
+    EXPECT_NUM_LESS_EQUAL(1, 2);
+    EXPECT_NUM_LESS_EQUAL(2, 1);
+    EXPECT_NUM_LESS_THAN(1, 1);
+    EXPECT_NUM_LESS_THAN(1, 2);
+    EXPECT_NUM_LESS_THAN(2, 1);
+})
+
+TEST(CompareNumbers, Greater, {
+    EXPECT_NUM_GREATER_EQUAL(1, 1);
+    EXPECT_NUM_GREATER_EQUAL(1, 2);
+    EXPECT_NUM_GREATER_EQUAL(2, 1);
+    EXPECT_NUM_GREATER_THAN(1, 1);
+    EXPECT_NUM_GREATER_THAN(1, 2);
+    EXPECT_NUM_GREATER_THAN(2, 1);
+})
+
+//////////////////////////////////////////////////////////////////////////////////
+/// String Tests
+//////////////////////////////////////////////////////////////////////////////////
+
 TEST(IsEqualString, SameStrings, {
 	EXPECT_STR_EQUAL("abc", "ab");
 	EXPECT_STR_EQUAL("abc", "abc");
@@ -53,7 +79,9 @@ int main()
         Test_IsDigit_AcceptableValues,
         Test_IsDigit_InvalidValues,
 		Test_IsEqualString_SameStrings,
-		Test_IsEqualString_NotSameStrings
+		Test_IsEqualString_NotSameStrings,
+		Test_CompareNumbers_Less,
+		Test_CompareNumbers_Greater
     );
 
     RUN_ALL_TESTS();
