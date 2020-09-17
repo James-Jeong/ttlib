@@ -157,7 +157,7 @@ if (_testSuit == NULL) {                                \
 /// Definitions
 //////////////////////////////////////////////////////////////////////////////////
 
-// 테스트 관련 구조체 미리 정의
+// 테스트와 관련된 구조체들을 미리 정의
 struct _test_t;
 struct _test_suit_t;
 
@@ -169,24 +169,38 @@ typedef void (*TestSuitInitializer)();
 // 사용자의 테스트 함수에 대한 정보를 관리하기 위한 구조체
 typedef struct _test_t
 {
+	// 테스트 케이스 이름
     char *testCase;
+	// 테스트 이름
     char *testName;
-    TestFunc testFunc;
+	// 실행될 테스트 함수
+	TestFunc testFunc;
+	// 테스트 함수 성공 횟수
 	int numberOfSuccessTestFunc;
+	// 테스트 함수 실패 횟수
 	int numberOfFailTestFunc;
 } Test, *TestPtr, **TestPtrContainer;
 
 // 모든 사용자 테스트를 관리하기 위한 구조체
 typedef struct _test_suit_t
 {
+	// 전체 테스트 개수
     int numberOfTests;
+	// 테스트 전체 성공 횟수
 	int numberOfSuccessTests;
+	// 테스트 전체 실패 횟수
 	int numberOfFailTests;
+	// 테스트 함수 전체 성공 횟수
 	int totalNumOfSuccessTestFuncs;
+	// 테스트 함수 전체 실패 횟수
 	int totalNumOfFailTestFuncs;
+	// 사용자가 작성한 테스트 등록 및 초기화를 담당하는 객체
     TestSuitInitializer *initializers;
+	// 사용자가 작성한 테스트 리스트
     TestPtr tests;
+	// 실패한 테스트 리스트
 	TestPtrContainer failTests;
+	// 성공한 테스트 리스트
 	TestPtrContainer successTests;
 } TestSuit, *TestSuitPtr, **TestSuitPtrContainer;
 
