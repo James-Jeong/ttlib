@@ -105,6 +105,23 @@ if (_testSuit == NULL) {                                \
 #define PRINT_NONFATAL_FAIL(msg, functionName, fileName, lineNumber) PRINT_MESSAGE(msg, TEST_NON_FATAL_FAIL, functionName, fileName, lineNumber)
 
 //////////////////////////////////////////////////////////////////////////////////
+/// (EXPECT) NULL Macro Functions
+/// 실패해도 현재 진행 중인 테스트가 종료되지 않는다.
+//////////////////////////////////////////////////////////////////////////////////
+
+// 실제 값과 기대하는 값이 같은지 검사하는 함수
+#define EXPECT_NULL(actual) ((actual) == NULL) ?                \
+	(ProcessSuccessTestSuit(_testSuit, NULL)) :                  \
+	(ProcessFailTestSuit(_testSuit, #actual" 값이 NULL 이어야 함.", \
+		"EXPECT_NULL", __FILE__, __LINE__))
+
+// 실제 값과 기대하는 값이 같은지 검사하는 함수
+#define EXPECT_NOT_NULL(actual) ((actual) != NULL) ?               \
+	(ProcessSuccessTestSuit(_testSuit, NULL)) :                   \
+	(ProcessFailTestSuit(_testSuit, #actual" 값이 NULL 이 아니어야 함.", \
+		"EXPECT_NOT_NULL", __FILE__, __LINE__))
+
+//////////////////////////////////////////////////////////////////////////////////
 /// (EXPECT) Number Macro Functions
 /// 실패해도 현재 진행 중인 테스트가 종료되지 않는다.
 //////////////////////////////////////////////////////////////////////////////////
