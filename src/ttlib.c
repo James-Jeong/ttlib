@@ -29,12 +29,8 @@ TestSuitPtr NewTestSuit()
 
 	// Initialize other members
 	testSuit->initializers = NULL;
-	testSuit->failTests = NULL;
-	testSuit->successTests = NULL;
 	testSuit->numberOfTests = 0;
-	testSuit->numberOfSuccessTests = 0;
 	testSuit->numberOfFailTests = 0;
-	testSuit->totalNumOfSuccessTestFuncs = 0;
 	testSuit->totalNumOfFailTestFuncs = 0;
 	testSuit->onGoing = 0;
 
@@ -78,8 +74,6 @@ void AddTest(TestSuitPtr testSuit, Test test)
 	newTest->testCase = testCase;
 	newTest->testName = testName;
 	newTest->testFunc = test.testFunc;
-	newTest->numberOfSuccessTestFunc = 0;
-	newTest->numberOfFailTestFunc = 0;
 
 	// Reallocate memory for tests in TestSuit instance
 	int numberOfTests = testSuit->numberOfTests;
@@ -101,6 +95,7 @@ void AddTest(TestSuitPtr testSuit, Test test)
 		return;
 	}
 
+	//TODO
 	// Add new Test instance at the end of the TestSuit instance
 	memcpy(allocatedTests + numberOfTests, newTest, sizeof(Test));
 
@@ -143,16 +138,6 @@ void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)
 		free(testSuit->tests);
 	}
 
-	if (testSuit->failTests != NULL)
-	{
-		free(testSuit->failTests);
-	}
-
-	if (testSuit->successTests != NULL)
-	{
-		free(testSuit->successTests);
-	}
-
 	// release memory allocated to the TestSuit instance
 	free(testSuit);
 
@@ -182,7 +167,6 @@ void RunAllTests(TestSuitPtr testSuit)
 
 	int testIndex = 0;
 	int numberOfTests = testSuit->numberOfTests;
-	int prevNumOfSuccessTestFuncs = 0, prevNumOfFailTestFuncs = 0;
 
 	printf("--------------------------------\n");
 	printf("[ 총 테스트 수: %d 개 ]\n", numberOfTests);
@@ -201,31 +185,17 @@ void RunAllTests(TestSuitPtr testSuit)
 			}
 
 			printf("\n{ (테스트 번호: %d) 테스트 케이스: %s, 테스트 이름: %s }\n", (testIndex + 1), test->testCase, test->testName);
+
 			test->testFunc(testSuit);
-
-			test->numberOfSuccessTestFunc = testSuit->totalNumOfSuccessTestFuncs - prevNumOfSuccessTestFuncs;
-			test->numberOfFailTestFunc = testSuit->totalNumOfFailTestFuncs - prevNumOfFailTestFuncs;
-			prevNumOfSuccessTestFuncs = testSuit->totalNumOfSuccessTestFuncs;
-			prevNumOfFailTestFuncs = testSuit->totalNumOfFailTestFuncs;
-
-			if (test->numberOfFailTestFunc == 0)
-			{
-				testSuit->successTests[(testSuit->numberOfSuccessTests++)] = test;
-				printf("< 모든 테스트 함수 성공 >\n");
-			}
-			else
-			{
-				testSuit->failTests[(testSuit->numberOfFailTests++)] = test;
-			}
-
-			if (testSuit->onGoing == TestInitializationResultFail)
+			if (testSuit->onGoing == TestExit)
 			{
 				break;
 			}
 		}
 
 		printf("\n--------------------------------\n");
-		printf("[ 총 성공 테스트 수: %d 개 / 실패 테스트 수: %d 개 ]\n", testSuit->numberOfSuccessTests, testSuit->numberOfFailTests);
+		printf("[ 총 성공 테스트 수: %d 개 / 실패 테스트 수: %d 개 ]\n", numberOfTests - testSuit->totalNumOfFailTestFuncs, 
+				testSuit->totalNumOfFailTestFuncs);
 		printf("--------------------------------\n");
 	}
 	else
@@ -235,52 +205,29 @@ void RunAllTests(TestSuitPtr testSuit)
 }
 
 /**
- * @fn void ProcessSuccessTestSuit(TestSuitPtr testSuit, const char *msg)
- * @brief 테스트 성공 시 테스트 성공 횟수를 하나 증가하고 성공 메시지를 출력하는 함수
- * @param testSuit 전체 테스트 관리 구조체(출력)
- * @param msg 성공 메시지(입력, 읽기 전용)
- * @return 반환값 없음
- */
-void ProcessSuccessTestSuit(TestSuitPtr testSuit, const char *msg)
-{
-	// Check parameter
-	if (testSuit == NULL)
-	{
-		return;
-	}
-
-	testSuit->totalNumOfSuccessTestFuncs++;
-
-	if (msg != NULL)
-	{
-		PRINT_SUCCESS(msg);
-	}
-}
-
-/**
- * @fn TestInitializationResult ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber)
+ * @fn TestResult ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber, int failCount)
  * @brief 테스트 실패 시 테스트 실패 횟수를 하나 증가하고 실패 메시지를 출력하는 함수
  * @param testSuit 전체 테스트 관리 구조체(출력)
  * @param msg 실패 메시지(입력, 읽기 전용)
  * @param functionName 실패한 함수 이름(입력, 읽기 전용)
  * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
  * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
- * @return 현재 진행 중인 테스트 종료하면 TestInitializationResultExit, 계속 진행하면 TestInitializationResultContinue, 실패하면 TestInitializationResultFail 반환
+ * @return 현재 진행 중인 테스트 종료하면 TestExit, 계속 진행하면 TestContinue, 실패하면 TestFail 반환
  */
-TestInitializationResult ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber)
+TestResult ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber, int failCount)
 {
 	// Check parameter
 	if (testSuit == NULL)
 	{
-		return TestInitializationResultFail;
+		return TestFail;
 	}
 
-	testSuit->totalNumOfFailTestFuncs++;
+	testSuit->totalNumOfFailTestFuncs += failCount;
 
 	if (functionName != NULL && functionName[0] == 'A')
 	{
 		PRINT_FATAL(msg, functionName, fileName, lineNumber);
-		return TestInitializationResultExit;
+		return TestExit;
 	}
 
 	if (functionName != NULL && fileName != NULL && msg != NULL && lineNumber > 0)
@@ -288,7 +235,7 @@ TestInitializationResult ProcessFailTestSuit(TestSuitPtr testSuit, const char *m
 		PRINT_NONFATAL(msg, functionName, fileName, lineNumber);
 	}
 
-	return TestInitializationResultContinue;
+	return TestContinue;
 }
 
 /**
@@ -305,7 +252,7 @@ void SetExitTestSuit(TestSuitPtr testSuit)
 		return;
 	}
 
-	testSuit->onGoing = TestInitializationResultExit;
+	testSuit->onGoing = TestExit;
 }
 
 /**
@@ -322,7 +269,7 @@ void SetContinueTestSuit(TestSuitPtr testSuit)
 		return;
 	}
 
-	testSuit->onGoing = TestInitializationResultContinue;
+	testSuit->onGoing = TestContinue;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -349,26 +296,6 @@ static TestInitializationResult initializeTests(TestSuitPtr testSuit)
 	{
 		initializer();
 	}
-
-	// initialize failTests in testSuit
-	if (testSuit->numberOfTests > 0)
-	{
-		size_t numberOfTests = (size_t)testSuit->numberOfTests;
-
-		testSuit->failTests = newTests(numberOfTests);
-		if (testSuit->failTests == NULL)
-		{
-			return TestInitializationResultFail;
-		}
-
-		testSuit->successTests = newTests(numberOfTests);
-		if (testSuit->successTests == NULL)
-		{
-			return TestInitializationResultFail;
-		}
-	}
-	else
-		return TestInitializationResultFail;
 
 	return TestInitializationResultSuccess;
 }
@@ -430,13 +357,13 @@ void printMessageHelper(const char *functionName, const char *file_name, int lin
 {
 	switch (testResultType)
 	{
-	case TEST_SUCCESS:
-		printf("[SUCCESS]\n");
+	case TestSuccess:
+		//printf("[SUCCESS]\n");
 		break;
-	case TEST_FATAL:
+	case TestFatal:
 		printf("[%s FAIL] %s (file:%s, line:%d)\nTest aborted.\n", functionName, msg, file_name, line_number);
 		break;
-	case TEST_NON_FATAL:
+	case TestNonFatal:
 		printf("[%s FAIL] %s (file:%s, line:%d)\n", functionName, msg, file_name, line_number);
 		break;
 	default:
@@ -444,3 +371,52 @@ void printMessageHelper(const char *functionName, const char *file_name, int lin
 		break;
 	}
 }
+
+/**
+ * @fn int CheckIsUpperString(const char *string)
+ * @brief 지정한 문자열 전체가 대문자로 구성되어 있는지 검사하는 함수
+ * @param actual 검사할 문자열(입력, 읽기 전용)
+ * @return 성공 시 소문자 개수, 실패 시 -1 반환
+ */
+int CheckIsUpperString(const char *string)
+{
+	if(string == NULL)
+	{
+		return -1;
+	}
+
+	int failCount = 0;
+	int charIndex = 0;
+	int length = strlen(string);
+	for( ; charIndex < length; charIndex++)
+	{
+		if(isupper(string[charIndex]) == 0) failCount++;
+	}
+
+	return failCount;
+}
+
+/**
+ * @fn int CheckIsLowerString(const char *string)
+ * @brief 지정한 문자열 전체가 소문자로 구성되어 있는지 검사하는 함수
+ * @param actual 검사할 문자열(입력, 읽기 전용)
+ * @return 성공 시 대문자 개수, 실패 시 -1 반환
+ */
+int CheckIsLowerString(const char *string)
+{
+	if(string == NULL)
+	{
+		return -1;
+	}
+
+	int failCount = 0;
+	int charIndex = 0;
+	int length = strlen(string);
+	for( ; charIndex < length; charIndex++)
+	{
+		if(islower(string[charIndex]) == 0) failCount++;
+	}
+
+	return failCount;
+}
+

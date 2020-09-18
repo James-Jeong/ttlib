@@ -17,5 +17,6 @@ size_t GetLength(StringPtr str);
 char* GetPtr(StringPtr str);
 
 char* SetString(StringPtr str, char *s);
+char* ConvertToUpperCase(StringPtr str);
 
 #endif

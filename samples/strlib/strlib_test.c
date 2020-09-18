@@ -1,7 +1,7 @@
 #include "ttlib.h"
 #include "strlib.h"
 
-DECLARE_TEST()
+DECLARE_TEST();
 
 TEST(NewString, InstanceCreation, {
     char *s = "my string";
@@ -65,6 +65,7 @@ TEST(CloneString, InstanceClone, {
     EXPECT_NUM_EQUAL(GetLength(str1), GetLength(str2));
     DeleteString(&str1);
 
+	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
     str2 = CloneString(NULL);
     EXPECT_NULL(str2);
 })
@@ -79,12 +80,41 @@ TEST(SetString, SetNewValue, {
     EXPECT_STR_EQUAL(str->data, cloned->data);
 
     EXPECT_STR_EQUAL(SetString(str, expected), expected);
+
+	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
     EXPECT_NULL(SetString(str, NULL));
     EXPECT_NULL(SetString(NULL, expected));
 
+    // 빈 문자열을 정상처리해야 한다.
     expected = "";
     EXPECT_STR_EQUAL(SetString(str, expected), expected);
     EXPECT_NUM_EQUAL(GetLength(str), strlen(expected));
+
+    DeleteString(&str);
+})
+
+TEST(ConvertToUpperCase, UpperString, {
+	char *s = "abcd";
+	char *expected = "ABCD"; 
+    StringPtr str = NewString(s);
+
+	EXPECT_NOT_NULL(ConvertToUpperCase(str));
+	EXPECT_STR_EQUAL(ConvertToUpperCase(str), expected);
+	EXPECT_STR_UPPER_CASE(ConvertToUpperCase(str));
+
+    // 빈 문자열을 정상처리해야 한다.
+	expected = "";
+    EXPECT_STR_EQUAL(SetString(str, expected), expected);
+	EXPECT_STR_EQUAL(ConvertToUpperCase(str), expected);
+	EXPECT_STR_UPPER_CASE(ConvertToUpperCase(str));
+
+	// str->data가 NULL 이면 NULL을 반환해야 한다.
+	free(str->data);
+	str->data = NULL;
+	EXPECT_NULL(ConvertToUpperCase(str));
+
+	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	EXPECT_NULL(ConvertToUpperCase(NULL));
 
     DeleteString(&str);
 })
@@ -99,7 +129,8 @@ int main()
         Test_GetLength_LengthOfString,
         Test_GetPtr_PointerToStringData,
         Test_CloneString_InstanceClone,
-        Test_SetString_SetNewValue
+        Test_SetString_SetNewValue,
+		Test_ConvertToUpperCase_UpperString
     );
 
     RUN_ALL_TESTS();

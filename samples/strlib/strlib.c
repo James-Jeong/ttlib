@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "strlib.h"
 
@@ -35,7 +36,11 @@ StringPtr NewString(char *s)
 
 void DeleteString(StringPtrContainer ptrContainer)
 {
-    free((*ptrContainer)->data);
+	if((*ptrContainer)->data != NULL)
+	{
+	    free((*ptrContainer)->data);
+	}
+
     free(*ptrContainer);
     *ptrContainer = NULL;
 }
@@ -113,3 +118,27 @@ char* SetString(StringPtr str, char *s)
 
     return str->data;
 }
+
+char* ConvertToUpperCase(StringPtr str)
+{
+	if(str == NULL)
+	{
+		return NULL;
+	}
+
+	if(str->data == NULL)
+	{
+		return NULL;
+	}
+
+	size_t strLength = str->length;
+	size_t strIndex = 0;
+
+	for( ; strIndex < strLength; strIndex++)
+	{
+		str->data[strIndex] = (char)toupper(str->data[strIndex]);
+	}
+
+	return str->data;
+}
+
