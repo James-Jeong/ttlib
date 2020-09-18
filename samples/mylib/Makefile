@@ -1,10 +1,10 @@
 include makefile.conf
 
-all: $(TARGET)
+all : $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(WOPTION) -c $(SRCS)
-	$(CC) -o $@ $^
+	$(CC) -o $@ $^ $(LIB_DIR) $(LIBS)
 
 clean:
 	$(RM) *.o

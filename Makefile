@@ -2,11 +2,10 @@ include makefile.conf
 
 all: $(TARGET)
 
-$(TARGET): $(OBJS)
-	$(CC) $(WOPTION) -c $(SRCS)
-	$(CC) -o $@ $^
+$(TARGET): $(TTLIB_OBJS)
+	$(AR) $@ $^
 
 clean:
-	$(RM) $(OBJS)
+	$(RM) $(TTLIB_OBJS)
 	$(RM) $(TARGET)
 

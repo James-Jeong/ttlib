@@ -10,34 +10,35 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @enum TEST_RESULT
+ * @enum TestResult
  * @brief 테스트 함수 실행 결과에 대한 상태값을 지정하기 위한 열거형
  */
-typedef enum TEST_RESULT
+typedef enum _TestResult_t
 {
 	// 테스트 성공
 	TEST_SUCCESS = 1,
 	// 테스트 실패(fatal, 테스트 계속 진행)
-	TEST_FATAL_FAIL,
+	TEST_FATAL,
 	// 테스트 실패(nonfatal, 테스트 종료)
-	TEST_NON_FATAL_FAIL
-}TEST_RESULT;
+	TEST_NON_FATAL
+} TestResult;
 
 /**
- * @enum FUNCTION_STATUS
+ * @enum TestInitializationResult
  * @brief 함수 실행 결과에 대한 상태값을 지정하기 위한 열거형
  */
-typedef enum FUNCTION_RESULT
+
+typedef enum _testInitializationResult_t
 {
-	// 실행 실패
-	FAIL = -1,
-	// 실행 성공
-	SUCCESS = 1,
-	// 계속 실행
-	CONTINUE,
-	// 실행 종료
-	EXIT
-}FUNCTION_RESULT;
+  // 실행 실패
+  TestInitializationResultFail = -1,
+  // 실행 성공
+  TestInitializationResultSuccess = 1,
+  // 계속 실행
+  TestInitializationResultContinue,
+  // 실행 종료
+  TestInitializationResultExit
+} TestInitializationResult;
 
 //////////////////////////////////////////////////////////////////////////////////
 /// Macros
@@ -99,10 +100,10 @@ if (_testSuit == NULL) {                                \
 #define PRINT_SUCCESS(msg) PRINT_MESSAGE(msg, TEST_SUCCESS, NULL, NULL, 0)
 
 // 테스트 실패 시(fatal) 출력할 내용을 지정하는 함수
-#define PRINT_FATAL_FAIL(msg, functionName, fileName, lineNumber) PRINT_MESSAGE(msg, TEST_FATAL_FAIL, functionName, fileName, lineNumber)
+#define PRINT_FATAL(msg, functionName, fileName, lineNumber) PRINT_MESSAGE(msg, TEST_FATAL, functionName, fileName, lineNumber)
 
 // 테스트 실패 시(nonfatal) 출력할 내용을 지정하는 함수
-#define PRINT_NONFATAL_FAIL(msg, functionName, fileName, lineNumber) PRINT_MESSAGE(msg, TEST_NON_FATAL_FAIL, functionName, fileName, lineNumber)
+#define PRINT_NONFATAL(msg, functionName, fileName, lineNumber) PRINT_MESSAGE(msg, TEST_NON_FATAL, functionName, fileName, lineNumber)
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (EXPECT) Number Macro Functions
@@ -183,49 +184,49 @@ if (_testSuit == NULL) {                                \
 #define ASSERT_NUM_EQUAL(actual, expected) ((actual) == (expected)) ?                \
 	(ProcessSuccessTestSuit(_testSuit, NULL)) :                                      \
 	(ProcessFailTestSuit(_testSuit, #actual" 값과 "#expected" 값이 같지 않고 다름.", \
-		"ASSERT_NUM_EQUAL", __FILE__, __LINE__) == EXIT ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+		"ASSERT_NUM_EQUAL", __FILE__, __LINE__) == TestInitializationResultExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
 
 // 실제 값과 기대하는 값이 다른지 검사하는 함수
 #define ASSERT_NUM_NOT_EQUAL(actual, expected) ((actual) != (expected)) ?              \
 	(ProcessSuccessTestSuit(_testSuit, NULL)) :                                        \
 	(ProcessFailTestSuit(_testSuit, #actual" 값과 "#expected" 값이 다르지 않고 같음.", \
-		"ASSERT_NUM_NOT_EQUAL", __FILE__, __LINE__) == EXIT ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+		"ASSERT_NUM_NOT_EQUAL", __FILE__, __LINE__) == TestInitializationResultExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
 
 // 실제 값이 기대하는 값보다 작거나 같은지 검사하는 함수
 #define ASSERT_NUM_LESS_EQUAL(actual, expected) ((actual) <= (expected)) ? \
 	(ProcessSuccessTestSuit(_testSuit, NULL)) :                            \
 	(ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 큼.", \
-		"ASSERT_NUM_LESS_EQUAL", __FILE__, __LINE__) == EXIT ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+		"ASSERT_NUM_LESS_EQUAL", __FILE__, __LINE__) == TestInitializationResultExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
 
 // 실제 값이 기대하는 값보다 작은지 검사하는 함수
 #define ASSERT_NUM_LESS_THAN(actual, expected) ((actual) < (expected)) ?            \
 	(ProcessSuccessTestSuit(_testSuit, NULL)) :                                     \
 	(ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 크거나 같음.", \
-		"ASSERT_NUM_LESS_THAN", __FILE__, __LINE__) == EXIT ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+		"ASSERT_NUM_LESS_THAN", __FILE__, __LINE__) == TestInitializationResultExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
 
 // 실제 값이 기대하는 값보다 크거나 같은지 검사하는 함수
 #define ASSERT_NUM_GREATER_EQUAL(actual, expected) ((actual) >= (expected)) ?       \
 	(ProcessSuccessTestSuit(_testSuit, NULL)) :                                     \
 	(ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 작음.",        \
-		"ASSERT_NUM_GREATER_EQUAL", __FILE__, __LINE__) == EXIT ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+		"ASSERT_NUM_GREATER_EQUAL", __FILE__, __LINE__) == TestInitializationResultExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
 
 // 실제 값이 기대하는 값보다 큰지 검사하는 함수
 #define ASSERT_NUM_GREATER_THAN(actual, expected) ((actual) > (expected)) ?         \
 	(ProcessSuccessTestSuit(_testSuit, NULL)) :                                     \
 	(ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 작거나 같음.", \
-		"ASSERT_NUM_GREATER_THAN", __FILE__, __LINE__) == EXIT ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+		"ASSERT_NUM_GREATER_THAN", __FILE__, __LINE__) == TestInitializationResultExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
 
 // 지정한 숫자가 짝수인지 검사하는 함수
 #define ASSERT_NUM_EVEN(number) ((number) % 2 == 0) ?            \
 	(ProcessSuccessTestSuit(_testSuit, NULL)) :                  \
 	(ProcessFailTestSuit(_testSuit, #number" 값은 짝수가 아님.", \
-		"ASSERT_NUM_EVEN", __FILE__, __LINE__) == EXIT ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+		"ASSERT_NUM_EVEN", __FILE__, __LINE__) == TestInitializationResultExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
 
 // 지정한 숫자가 홀수인지 검사하는 함수
 #define ASSERT_NUM_ODD(number) ((number) % 2 == 1) ?             \
 	(ProcessSuccessTestSuit(_testSuit, NULL)) :                  \
 	(ProcessFailTestSuit(_testSuit, #number" 값은 홀수가 아님.", \
-		"ASSERT_NUM_ODD", __FILE__, __LINE__) == EXIT ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+		"ASSERT_NUM_ODD", __FILE__, __LINE__) == TestInitializationResultExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (ASSERT) String Macro Functions
@@ -236,13 +237,13 @@ if (_testSuit == NULL) {                                \
 #define ASSERT_STR_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) == 0) ? \
 	(ProcessSuccessTestSuit(_testSuit, NULL)) :                                                           \
 	(ProcessFailTestSuit(_testSuit, #actual" 문자열과 "#expected" 문자열이 같지 않고 다름.",              \
-		"ASSERT_STR_EQUAL", __FILE__, __LINE__) == EXIT ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+		"ASSERT_STR_EQUAL", __FILE__, __LINE__) == TestInitializationResultExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
 
 // 실제 문자열과 기대하는 문자열이 다른지 검사하는 함수
 #define ASSERT_STR_NOT_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) != 0) ? \
 	(ProcessSuccessTestSuit(_testSuit, NULL)) :                                                               \
 	(ProcessFailTestSuit(_testSuit, #actual" 문자열과 "#expected" 문자열이 다르지 않고 같음.",                \
-		"ASSERT_STR_NOT_EQUAL", __FILE__, __LINE__) == EXIT ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+		"ASSERT_STR_NOT_EQUAL", __FILE__, __LINE__) == TestInitializationResultExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
 
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -310,7 +311,7 @@ void AddTest(TestSuitPtr testSuit, Test test);
 void RunAllTests(TestSuitPtr testSuit);
 
 void ProcessSuccessTestSuit(TestSuitPtr testSuit, const char *msg);
-FUNCTION_RESULT ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber);
+TestInitializationResult ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber);
 
 void SetExitTestSuit(TestSuitPtr testSuit);
 void SetContinueTestSuit(TestSuitPtr testSuit);
@@ -319,6 +320,6 @@ void SetContinueTestSuit(TestSuitPtr testSuit);
 /// Util Function
 //////////////////////////////////////////////////////////////////////////////////
 
-void printMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TEST_RESULT testResultType);
+void printMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TestResult testResultType);
 
 #endif

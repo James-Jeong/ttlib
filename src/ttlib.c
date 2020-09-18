@@ -4,7 +4,7 @@
 /// Predefitions of Static Functions
 //////////////////////////////////////////////////////////////////////////////////
 
-static FUNCTION_RESULT initializeTests(TestSuitPtr testSuit);
+static TestInitializationResult initializeTests(TestSuitPtr testSuit);
 static TestPtrContainer newTests(size_t numberOfTests);
 static void deleteTest(TestPtr test);
 static void printTests(const TestPtrContainer tests, int numberOfTests);
@@ -175,7 +175,7 @@ void RunAllTests(TestSuitPtr testSuit)
 	}
 
 	// Add user tests into TestSuit instance
-	if (initializeTests(testSuit) == FAIL)
+	if (initializeTests(testSuit) == TestInitializationResultFail)
 	{
 		return;
 	}
@@ -219,7 +219,7 @@ void RunAllTests(TestSuitPtr testSuit)
 			}
 			printf("{ 성공: %d 개 / 실패: %d 개 }\n", test->numberOfSuccessTestFunc, test->numberOfFailTestFunc);
 
-			if (testSuit->onGoing == EXIT)
+			if (testSuit->onGoing == TestInitializationResultFail)
 			{
 				break;
 			}
@@ -268,37 +268,37 @@ void ProcessSuccessTestSuit(TestSuitPtr testSuit, const char *msg)
 }
 
 /**
- * @fn FUNCTION_RESULT ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber)
+ * @fn TestInitializationResult ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber)
  * @brief 테스트 실패 시 테스트 실패 횟수를 하나 증가하고 실패 메시지를 출력하는 함수
  * @param testSuit 전체 테스트 관리 구조체(출력)
  * @param msg 실패 메시지(입력, 읽기 전용)
  * @param functionName 실패한 함수 이름(입력, 읽기 전용)
  * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
  * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
- * @return 현재 진행 중인 테스트 종료하면 EXIT, 계속 진행하면 CONTINUE, 실패하면 FAIL 반환
+ * @return 현재 진행 중인 테스트 종료하면 TestInitializationResultExit, 계속 진행하면 TestInitializationResultContinue, 실패하면 TestInitializationResultFail 반환
  */
-FUNCTION_RESULT ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber)
+TestInitializationResult ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber)
 {
 	// Check parameter
 	if (testSuit == NULL)
 	{
-		return FAIL;
+		return TestInitializationResultFail;
 	}
 
 	testSuit->totalNumOfFailTestFuncs++;
 
 	if (functionName != NULL && functionName[0] == 'A')
 	{
-		PRINT_FATAL_FAIL(msg, functionName, fileName, lineNumber);
-		return EXIT;
+		PRINT_FATAL(msg, functionName, fileName, lineNumber);
+		return TestInitializationResultExit;
 	}
 
 	if (functionName != NULL && fileName != NULL && msg != NULL && lineNumber > 0)
 	{
-		PRINT_NONFATAL_FAIL(msg, functionName, fileName, lineNumber);
+		PRINT_NONFATAL(msg, functionName, fileName, lineNumber);
 	}
 
-	return CONTINUE;
+	return TestInitializationResultContinue;
 }
 
 /**
@@ -315,7 +315,7 @@ void SetExitTestSuit(TestSuitPtr testSuit)
 		return;
 	}
 
-	testSuit->onGoing = EXIT;
+	testSuit->onGoing = TestInitializationResultExit;
 }
 
 /**
@@ -332,7 +332,7 @@ void SetContinueTestSuit(TestSuitPtr testSuit)
 		return;
 	}
 
-	testSuit->onGoing = CONTINUE;
+	testSuit->onGoing = TestInitializationResultContinue;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -340,18 +340,18 @@ void SetContinueTestSuit(TestSuitPtr testSuit)
 //////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @fn static FUNCTION_RESULT initializeTests(TestSuitPtr testSuit)
+ * @fn static TestInitializationResult initializeTests(TestSuitPtr testSuit)
  * @brief 사용자가 작성한 테스트 함수들을 전체 테스트 관리 구조체(TestSuit)에 등록하는 함수
  * RunAllTests 함수에서 호출되기 때문에 전달받은 구조체 포인터에 대한 NULL 체크를 수행하지 않는다.
  * @param testSuit 전체 테스트 관리 구조체(입력 및 출력)
- * @return 성공 시 SUCCESS, 실패 시 FAIL 반환
+ * @return 성공 시 TestInitializationResultSuccess, 실패 시 TestInitializationResultSuccessFail 반환
  */
-static FUNCTION_RESULT initializeTests(TestSuitPtr testSuit)
+static TestInitializationResult initializeTests(TestSuitPtr testSuit)
 {
 	TestSuitInitializer *initializers = testSuit->initializers;
 	if (initializers == NULL)
 	{
-		return FAIL;
+		return TestInitializationResultFail;
 	}
 
 	TestSuitInitializer initializer = NULL;
@@ -368,19 +368,19 @@ static FUNCTION_RESULT initializeTests(TestSuitPtr testSuit)
 		testSuit->failTests = newTests(numberOfTests);
 		if (testSuit->failTests == NULL)
 		{
-			return FAIL;
+			return TestInitializationResultFail;
 		}
 
 		testSuit->successTests = newTests(numberOfTests);
 		if (testSuit->successTests == NULL)
 		{
-			return FAIL;
+			return TestInitializationResultFail;
 		}
 	}
 	else
-		return FAIL;
+		return TestInitializationResultFail;
 
-	return SUCCESS;
+	return TestInitializationResultSuccess;
 }
 
 /**
@@ -458,7 +458,7 @@ static void printTests(const TestPtrContainer tests, int numberOfTests)
 //////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @fn void printMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TEST_RESULT testResultType)
+ * @fn void printMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TestResult testResultType)
  * @brief 함수 결과에 따라 출력 방법을 다르게 설정하여 지정한 메시지를 출력하는 함수
  * ProcessFailTestSuit 함수에서 호출되기 때문에 전달받은 문자열에 대한 NULL 체크를 수행하지 않는다.
  * @param functionName 실패한 함수 이름(입력, 읽기 전용)
@@ -468,17 +468,17 @@ static void printTests(const TestPtrContainer tests, int numberOfTests)
  * @param testResultType 테스트 함수 실행 결과(입력)
  * @return 반환값 없음
  */
-void printMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TEST_RESULT testResultType)
+void printMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TestResult testResultType)
 {
 	switch (testResultType)
 	{
 	case TEST_SUCCESS:
 		printf("[SUCCESS]\n");
 		break;
-	case TEST_FATAL_FAIL:
+	case TEST_FATAL:
 		printf("[%s FAIL] %s (file:%s, line:%d)\nTest aborted.\n", functionName, msg, file_name, line_number);
 		break;
-	case TEST_NON_FATAL_FAIL:
+	case TEST_NON_FATAL:
 		printf("[%s FAIL] %s (file:%s, line:%d)\n", functionName, msg, file_name, line_number);
 		break;
 	default:
