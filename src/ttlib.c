@@ -217,7 +217,6 @@ void RunAllTests(TestSuitPtr testSuit)
 			{
 				testSuit->failTests[(testSuit->numberOfFailTests++)] = test;
 			}
-			printf("{ 성공: %d 개 / 실패: %d 개 }\n", test->numberOfSuccessTestFunc, test->numberOfFailTestFunc);
 
 			if (testSuit->onGoing == TestInitializationResultFail)
 			{
@@ -226,16 +225,7 @@ void RunAllTests(TestSuitPtr testSuit)
 		}
 
 		printf("\n--------------------------------\n");
-		printf("[ 총 성공 테스트 함수 개수: %d 개 / 실패 테스트 함수 개수: %d 개 ]\n", testSuit->totalNumOfSuccessTestFuncs, testSuit->totalNumOfFailTestFuncs);
-		printf("[ 총 성공 테스트 수: %d 개 / 실패 테스트 수: %d 개 ]\n\n", testSuit->numberOfSuccessTests, testSuit->numberOfFailTests);
-
-		printf("[ 성공한 테스트 목록 ]\n");
-		printTests(testSuit->successTests, testSuit->numberOfSuccessTests);
-		printf("\n");
-
-		printf("[ 실패한 테스트 목록 ]\n");
-		printTests(testSuit->failTests, testSuit->numberOfFailTests);
-
+		printf("[ 총 성공 테스트 수: %d 개 / 실패 테스트 수: %d 개 ]\n", testSuit->numberOfSuccessTests, testSuit->numberOfFailTests);
 		printf("--------------------------------\n");
 	}
 	else
@@ -419,38 +409,6 @@ static void deleteTest(TestPtr test)
 	free(test->testCase);
 	free(test->testName);
 	free(test);
-}
-
-/**
- * @fn static void printTests(TestPtrContainer tests, int numberOfTests)
- * @brief 전체 Test 들의 목록을 출력하는 함수
- * @param tests 전체 Test 들의 목록(입력, 읽기 전용)
- * @param numberOfTests 출력할 Test 전체 개수
- * @return 반환값 없음
- */
-static void printTests(const TestPtrContainer tests, int numberOfTests)
-{
-	// Check parameter
-	if (tests == NULL)
-	{
-		return;
-	}
-
-	if (numberOfTests <= 0)
-	{
-		puts("{ 없음 }");
-		return;
-	}
-
-	printf("{ (테스트 케이스) : (테스트 이름) }\n");
-	int testIndex = 0;
-	TestPtr test = NULL;
-	for (; testIndex < numberOfTests; testIndex++)
-	{
-		test = tests[testIndex];
-		if (test != NULL)
-			printf("{ %s : %s }\n", test->testCase, test->testName);
-	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -47,7 +47,7 @@ StringPtr CloneString(StringPtr str)
         return NULL;
     }
 
-    int newLength = str->length;
+    size_t newLength = str->length;
     char *newData = (char*)malloc(newLength + 1);
     if(newData == NULL)
     {
@@ -70,11 +70,11 @@ StringPtr CloneString(StringPtr str)
     return newString;
 }
 
-int GetLength(StringPtr str)
+size_t GetLength(StringPtr str)
 {
     if(str == NULL)
     {
-        return -1;
+        return 0;
     }
 
     return str->length;
@@ -97,7 +97,7 @@ char* SetString(StringPtr str, char *s)
         return NULL;
     }
 
-    int length = strlen(s);
+    size_t length = strlen(s);
     char *newData = (char*)malloc(length + 1);
     if(newData == NULL)
     {

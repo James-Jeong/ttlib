@@ -3,7 +3,7 @@
 
 // 문자열 관리 구조체
 typedef struct _string_t {
-    int length;
+    size_t length;
     char *data;
 } String, *StringPtr, **StringPtrContainer;
 
@@ -13,7 +13,7 @@ StringPtr NewString(char *s);
 void DeleteString(StringPtrContainer pString);
 StringPtr CloneString(StringPtr str);
 
-int GetLength(StringPtr str);
+size_t GetLength(StringPtr str);
 char* GetPtr(StringPtr str);
 
 char* SetString(StringPtr str, char *s);

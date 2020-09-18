@@ -25,7 +25,7 @@ TEST(GetLength, LengthOfString, {
     // 정상적으로 문자열 개수를 반환해야 한다.
     char *s = "abcd";
     StringPtr str = NewString(s);
-    int expected = strlen(s);
+    size_t expected = strlen(s);
 
     EXPECT_NUM_EQUAL(GetLength(str), expected);
     DeleteString(&str);
@@ -37,8 +37,8 @@ TEST(GetLength, LengthOfString, {
     EXPECT_NUM_EQUAL(GetLength(str), expected);
     DeleteString(&str);
 
-    // NULL 값이 들어온 경우, -1을 반환해야 한다.
-    expected = -1;
+    // NULL 값이 들어온 경우, 0을 반환해야 한다.
+    expected = 0;
     EXPECT_NUM_EQUAL(GetLength(NULL), expected);
 })
 
