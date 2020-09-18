@@ -291,6 +291,7 @@ typedef struct _test_suit_t
 	// 사용자가 작성한 테스트 등록 및 초기화를 담당하는 객체
     TestSuitInitializer *initializers;
 	// 사용자가 작성한 테스트 리스트
+	// TODO TestPtrContainer
     TestPtr tests;
 	// 실패한 테스트 리스트
 	TestPtrContainer failTests;
