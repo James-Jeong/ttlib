@@ -33,7 +33,7 @@ TestSuitPtr NewTestSuit()
 	testSuit->numberOfFailTests = 0;
 	testSuit->totalNumOfFailTestFuncs = 0;
 	testSuit->testPtrContainer = NULL;
-	testSuit->onGoing = 0;
+	testSuit->onGoing = TestContinue;
 
 	return testSuit;
 }

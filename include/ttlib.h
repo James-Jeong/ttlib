@@ -15,8 +15,10 @@
  * @brief 테스트 함수 실행 결과에 대한 상태값을 지정하기 위한 열거형
  */
 typedef enum _TestResult_t
-{
-	// 테스트 실패(매크로 함수용)
+{	
+	// 테스트 종료
+	TestExit = -2,
+	// 테스트 실패(매크로 함수 실행 결과에 사용)
 	TestFail = -1,
 	// 테스트 성공
 	TestSuccess = 1,
@@ -25,9 +27,7 @@ typedef enum _TestResult_t
 	// 테스트 실패(non-fatal, 테스트 계속 진행)
 	TestNonFatal,
 	// 테스트 계속 실행
-	TestContinue,
-	// 테스트 종료
-	TestExit
+	TestContinue
 } TestResult;
 
 /**
@@ -79,7 +79,7 @@ void Test_##C##_##T() \
 { \
 	if(AddTest(_testSuit, (Test){#C, #T, _##C##_##T}) == NULL) { \
 		puts("테스트 추가 실패"); \
-		return; \
+		exit(TestExit); \
 	} \
 }
 
