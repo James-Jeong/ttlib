@@ -7,7 +7,7 @@
 static TestInitializationResult initializeTests(TestSuitPtr testSuit);
 static TestPtrContainer newTests(size_t numberOfTests);
 static void deleteTest(TestPtr test);
-static void printTests(const TestPtrContainer tests, int numberOfTests);
+static void printTests(const TestPtrContainer testPtrContainer, int numberOfTests);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Local Functions
@@ -32,31 +32,32 @@ TestSuitPtr NewTestSuit()
 	testSuit->numberOfTests = 0;
 	testSuit->numberOfFailTests = 0;
 	testSuit->totalNumOfFailTestFuncs = 0;
+	testSuit->testPtrContainer = NULL;
 	testSuit->onGoing = 0;
 
 	return testSuit;
 }
 
 /**
- * @fn void AddTest(TestSuitPtr testSuit, Test test)
+ * @fn TestPtr AddTest(TestSuitPtr testSuit, Test test)
  * @brief 테스트를 추가하는 함수
  * @param testSuit 전체 테스트 관리 구조체(출력)
  * @param test 추가할 테스트(입력)
- * @return 반환값 없음
+ * @return 성공 시 새로 추가된 테스트 구조체 주소, 실패 시 NULL 반환
  */
-void AddTest(TestSuitPtr testSuit, Test test)
+TestPtr AddTest(TestSuitPtr testSuit, Test test)
 {
 	// Check parameter
 	if (testSuit == NULL)
 	{
-		return;
+		return NULL;
 	}
 
 	// Create a new Test instance
 	TestPtr newTest = (TestPtr)malloc(sizeof(Test));
 	if (newTest == NULL)
 	{
-		return;
+		return NULL;
 	}
 
 	// Allocate required memory for the created instance
@@ -67,7 +68,7 @@ void AddTest(TestSuitPtr testSuit, Test test)
 		free(testCase);
 		free(testName);
 		free(newTest);
-		return;
+		return NULL;
 	}
 
 	// Setup members of Test instance
@@ -75,35 +76,34 @@ void AddTest(TestSuitPtr testSuit, Test test)
 	newTest->testName = testName;
 	newTest->testFunc = test.testFunc;
 
-	// Reallocate memory for tests in TestSuit instance
+	// Reallocate memory for testPtrContainer in TestSuit instance
 	int numberOfTests = testSuit->numberOfTests;
 	size_t newSize = 0;
-	TestPtr allocatedTests = NULL;
-	if (testSuit->tests == NULL) // None of tests registered yet.
+	TestPtrContainer newContainer = NULL;
+
+	if (testSuit->testPtrContainer == NULL) // None of testPtrContainer registered yet.
 	{
-		allocatedTests = (TestPtr)malloc(sizeof(Test));
+		newContainer = (TestPtrContainer)malloc(sizeof(TestPtr) * (size_t)(numberOfTests + 1));
 	}
-	else // One or more tests exist already.
+	else // One or more testPtrContainer exist already.
 	{
-		newSize = sizeof(Test) * (size_t)(numberOfTests + 1);
-		allocatedTests = (TestPtr)realloc(testSuit->tests, newSize);
+		newSize = sizeof(TestPtr) * (size_t)(numberOfTests + 1);
+		newContainer = (TestPtrContainer)realloc(testSuit->testPtrContainer, newSize);
 	}
-	if (allocatedTests == NULL)
+	if (newContainer == NULL)
 	{
-		puts("realloc failed! (allocatedTests)");
 		deleteTest(newTest);
-		return;
+		return NULL;
 	}
 
-	//TODO
-	// Add new Test instance at the end of the TestSuit instance
-	memcpy(allocatedTests + numberOfTests, newTest, sizeof(Test));
+	// Add new Test instance pointer at the end of the TestSuit instance
+	newContainer[testSuit->numberOfTests] = newTest;
 
 	// Apply results to any related members
-	testSuit->tests = allocatedTests;
+	testSuit->testPtrContainer = newContainer;
 	testSuit->numberOfTests++;
 
-	free(newTest);
+	return newTest;
 }
 
 /**
@@ -123,19 +123,23 @@ void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)
 	TestSuitPtr testSuit = *testSuitContainer;
 
 	// release memory allocated to the array of Test instances
-	if (testSuit->tests != NULL)
+	if (testSuit->testPtrContainer != NULL)
 	{
 		TestPtr test = NULL;
 
 		int testIndex = 0;
 		for (; testIndex < testSuit->numberOfTests; testIndex++)
 		{
-			test = &testSuit->tests[testIndex];
-			free(test->testCase);
-			free(test->testName);
+			test = testSuit->testPtrContainer[testIndex];
+			if(test != NULL)
+			{
+				free(test->testCase);
+				free(test->testName);
+				free(test);
+			}
 		}
 
-		free(testSuit->tests);
+		free(testSuit->testPtrContainer);
 	}
 
 	// release memory allocated to the TestSuit instance
@@ -159,7 +163,7 @@ void RunAllTests(TestSuitPtr testSuit)
 		return;
 	}
 
-	// Add user tests into TestSuit instance
+	// Add user testPtrContainer into TestSuit instance
 	if (initializeTests(testSuit) == TestInitializationResultFail)
 	{
 		return;
@@ -178,15 +182,15 @@ void RunAllTests(TestSuitPtr testSuit)
 		TestPtr test = NULL;
 		for (testIndex = 0; testIndex < numberOfTests; testIndex++)
 		{
-			test = &testSuit->tests[testIndex];
-			if (test->testFunc == NULL) // testSuit->tests is a NULL-terninated array
+			test = testSuit->testPtrContainer[testIndex];
+			if (test->testFunc == NULL) // testSuit->testPtrContainer is a NULL-terninated array
 			{
 				break;
 			}
 
 			printf("\n{ (테스트 번호: %d) 테스트 케이스: %s, 테스트 이름: %s }\n", (testIndex + 1), test->testCase, test->testName);
 
-			test->testFunc(testSuit);
+			test->testFunc();
 			if (testSuit->onGoing == TestExit)
 			{
 				break;
@@ -309,8 +313,8 @@ static TestInitializationResult initializeTests(TestSuitPtr testSuit)
  */
 static TestPtrContainer newTests(size_t numberOfTests)
 {
-	TestPtrContainer tests = (TestPtrContainer)malloc(sizeof(TestPtr) * numberOfTests);
-	if (tests == NULL)
+	TestPtrContainer testPtrContainer = (TestPtrContainer)malloc(sizeof(TestPtr) * numberOfTests);
+	if (testPtrContainer == NULL)
 	{
 		return NULL;
 	}
@@ -318,10 +322,10 @@ static TestPtrContainer newTests(size_t numberOfTests)
 	size_t testIndex = 0;
 	for (; testIndex < numberOfTests; testIndex++)
 	{
-		tests[testIndex] = NULL;
+		testPtrContainer[testIndex] = NULL;
 	}
 
-	return tests;
+	return testPtrContainer;
 }
 
 /**
@@ -357,18 +361,18 @@ void printMessageHelper(const char *functionName, const char *file_name, int lin
 {
 	switch (testResultType)
 	{
-	case TestSuccess:
-		//printf("[SUCCESS]\n");
-		break;
-	case TestFatal:
-		printf("[%s FAIL] %s (file:%s, line:%d)\nTest aborted.\n", functionName, msg, file_name, line_number);
-		break;
-	case TestNonFatal:
-		printf("[%s FAIL] %s (file:%s, line:%d)\n", functionName, msg, file_name, line_number);
-		break;
-	default:
-		printf("[%s UNKNOWN] %s (file:%s, line:%d)\n", functionName, msg, file_name, line_number);
-		break;
+		case TestSuccess:
+			//printf("[SUCCESS]\n");
+			break;
+		case TestFatal:
+			printf("[%s FAIL] %s (file:%s, line:%d)\nTest aborted.\n", functionName, msg, file_name, line_number);
+			break;
+		case TestNonFatal:
+			printf("[%s FAIL] %s (file:%s, line:%d)\n", functionName, msg, file_name, line_number);
+			break;
+		default:
+			printf("[%s UNKNOWN] %s (file:%s, line:%d)\n", functionName, msg, file_name, line_number);
+			break;
 	}
 }
 
