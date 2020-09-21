@@ -4,7 +4,7 @@
 /// Predefitions of Static Functions
 //////////////////////////////////////////////////////////////////////////////////
 
-static TestInitializationResult InitializeTests(TestSuitPtr testSuit);
+static TestInitializationResult InitializeTests(const TestSuitPtr testSuit);
 static TestPtrContainer NewTestPtrContainer(size_t numberOfTests);
 static void DeleteTest(TestPtr test);
 static void DeleteTestPtrContainer(TestPtrContainer testPtrContainer, int numberOfTests);
@@ -96,7 +96,7 @@ TestPtr AddTest(TestSuitPtr testSuit, Test test)
 		return NULL;
 	}
 
-	// Add new Test instance pointer at the end of the TestSuit instance
+	// Add new Test instance pointer at the end of the TestPtrContainer instance
 	newContainer[testSuit->numberOfTests] = newTest;
 
 	// Apply results to any related members
@@ -123,7 +123,7 @@ void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)
 	TestSuitPtr testSuit = *testSuitContainer;
 
 	// release memory allocated to the array of Test instances
-	if (testSuit->testPtrContainer != NULL)
+	if ((testSuit->testPtrContainer != NULL) && (testSuit->numberOfTests > 0))
 	{
 		DeleteTestPtrContainer(testSuit->testPtrContainer, testSuit->numberOfTests);
 	}
@@ -138,7 +138,7 @@ void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)
 /**
  * @fn void RunAllTests(TestSuitPtr testSuit)
  * @brief 전체 테스트들을 실행하는 함수
- * @param testSuit 전체 테스트 관리 구조체(입력 및 출력)
+ * @param testSuit 전체 테스트 관리 구조체(입력)
  * @return 반환값 없음
  */
 void RunAllTests(TestSuitPtr testSuit)
@@ -270,10 +270,10 @@ void SetContinueTestSuit(TestSuitPtr testSuit)
  * @fn static TestInitializationResult InitializeTests(TestSuitPtr testSuit)
  * @brief 사용자가 작성한 테스트 함수들을 전체 테스트 관리 구조체(TestSuit)에 등록하는 함수
  * RunAllTests 함수에서 호출되기 때문에 전달받은 구조체 포인터에 대한 NULL 체크를 수행하지 않는다.
- * @param testSuit 전체 테스트 관리 구조체(입력 및 출력)
+ * @param testSuit 전체 테스트 관리 구조체(입력, 읽기 전용)
  * @return 성공 시 TestInitializationResultSuccess, 실패 시 TestInitializationResultSuccessFail 반환
  */
-static TestInitializationResult InitializeTests(TestSuitPtr testSuit)
+static TestInitializationResult InitializeTests(const TestSuitPtr testSuit)
 {
 	TestSuitInitializer *initializers = testSuit->initializers;
 	if (initializers == NULL)
@@ -293,7 +293,6 @@ static TestInitializationResult InitializeTests(TestSuitPtr testSuit)
 /**
  * @fn static TestPtrContainer NewTestPtrContainer(size_t numberOfTests)
  * @brief TestPtrContainer 를 새로 생성하는 함수
- * InitializeTests 함수에서 호출되기 때문에 전달받은 크기 체크를 수행하지 않는다.
  * @param numberOfTests 저장할 Test 구조체 포인터의 개수(입력)
  * @return 성공 시 새로 생성된 TestPtrContainer 객체, 실패 시 NULL 반환
  */
@@ -317,8 +316,9 @@ static TestPtrContainer NewTestPtrContainer(size_t numberOfTests)
 /**
  * @fn static void DeleteTestPtrContainer(TestPtrContainer testPtrContainer, int numberOfTests)
  * @brief TestPtrContainer 를 삭제하는 함수
- * DeleteTestSuit 함수에서 호출되기 때문에 전달받은 구조체의 이중 포인터에 대한 NULL 체크를 수행하지 않는다.
- * @param testPtrContainer 삭제할 구조체의 포인터들을 가지는 이중 포인터
+ * DeleteTestSuit 함수에서 호출되기 때문에 전달받은 구조체의 이중 포인터에 대한 NULL 체크와 numberOfTests 에 대한 체크를 수행하지 않는다.
+ * @param testPtrContainer 삭제할 구조체의 포인터들을 가지는 이중 포인터(입력, 이중 포인터)
+ * @param numberOfTests 저장된 Test 구조체 포인터의 개수(입력)
  * @return 반환값 없음
  */
 static void DeleteTestPtrContainer(TestPtrContainer testPtrContainer, int numberOfTests)
