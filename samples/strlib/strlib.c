@@ -29,15 +29,15 @@ StringPtr NewString(const char *s)
         return NULL;
     }
     
-    size_t length = strlen(s);
-    newString->data = (char*)malloc(length + 1);
+    int length = (int)strlen(s);
+    newString->data = (char*)malloc((size_t)length + 1);
     if(newString->data == NULL)
     {
         free(newString);
         return NULL;
     }
 
-    memcpy(newString->data, s, length);
+    memcpy(newString->data, s, (size_t)length);
     *(newString->data + length) = '\0';
 
     newString->length = length;
@@ -75,14 +75,14 @@ StringPtr CloneString(const StringPtr str)
         return NULL;
     }
 
-    size_t newLength = str->length;
-    char *newData = (char*)malloc(newLength + 1);
+    int newLength = str->length;
+    char *newData = (char*)malloc((size_t)newLength + 1);
     if(newData == NULL)
     {
         return NULL;
     }
 
-    memcpy(newData, str->data, newLength);
+    memcpy(newData, str->data, (size_t)newLength);
     *(newData + newLength) = '\0';
 
     StringPtr newString = (String*)malloc(sizeof(String));
@@ -99,12 +99,12 @@ StringPtr CloneString(const StringPtr str)
 }
 
 /**
- * @fn size_t GetLength(const StringPtr str)
+ * @fn int GetLength(const StringPtr str)
  * @brief 구조체에서 관리하는 문자열의 길이를 반환하는 함수
  * @param str 길이 정보를 가지는 문자열 관리 구조체(입력, 읽기 전용)
  * @return 성공 시 관리하는 문자열의 길이, 실패 시 0 반환
  */
-size_t GetLength(const StringPtr str)
+int GetLength(const StringPtr str)
 {
     if(str == NULL)
     {
@@ -144,14 +144,14 @@ char* SetString(StringPtr str, const char *s)
         return NULL;
     }
 
-    size_t length = strlen(s);
-    char *newData = (char*)malloc(length + 1);
+    int length = (int)strlen(s);
+    char *newData = (char*)malloc((size_t)length + 1);
     if(newData == NULL)
     {
         return NULL;
     }
 
-    memcpy(newData, s, length);
+    memcpy(newData, s, (size_t)length);
     *(newData + length) = '\0';
 
     free(str->data);
@@ -179,8 +179,8 @@ char* ConvertToUpperCase(StringPtr str)
 		return NULL;
 	}
 
-	size_t strLength = str->length;
-	size_t strIndex = 0;
+	int strLength = str->length;
+	int strIndex = 0;
 
 	for( ; strIndex < strLength; strIndex++)
 	{
@@ -208,8 +208,8 @@ char* ConvertToLowerCase(StringPtr str)
 		return NULL;
 	}
 
-	size_t strLength = str->length;
-	size_t strIndex = 0;
+	int strLength = str->length;
+	int strIndex = 0;
 
 	for( ; strIndex < strLength; strIndex++)
 	{
@@ -237,9 +237,9 @@ char* RemoveLeftSpace(StringPtr str)
 		return NULL;
 	}
 
-	size_t strLength = str->length;
-	size_t strIndex = 0;
-	size_t leftSpaceCount = 0;
+	int strLength = str->length;
+	int strIndex = 0;
+	int leftSpaceCount = 0;
 
 	for( ; strIndex < strLength; strIndex++)
 	{
@@ -252,14 +252,14 @@ char* RemoveLeftSpace(StringPtr str)
 
 	if(leftSpaceCount > 0)
 	{
-		size_t newDataLength = strLength - leftSpaceCount + 1;
-		char *newData = (char*)malloc(newDataLength);
+		int newDataLength = strLength - leftSpaceCount + 1;
+		char *newData = (char*)malloc((size_t)newDataLength);
 		if(newData == NULL)
 		{
 			return NULL;
 		}
 
-		memcpy(newData, str->data + leftSpaceCount, newDataLength);
+		memcpy(newData, str->data + leftSpaceCount, (size_t)newDataLength);
 		*(newData + newDataLength) = '\0';
 
 		free(str->data);
@@ -287,9 +287,9 @@ char* RemoveRightSpace(StringPtr str)
 		return NULL;
 	}
 
-	size_t strLength = str->length;
-	int strIndex = (int)strLength - 1;
-	size_t rightSpaceCount = 0;
+	int strLength = str->length;
+	int strIndex = strLength - 1;
+	int rightSpaceCount = 0;
 
 	for( ; strIndex >= 0; strIndex--)
 	{
@@ -302,15 +302,15 @@ char* RemoveRightSpace(StringPtr str)
 
 	if(rightSpaceCount > 0)
 	{
-		size_t newDataLength = strLength - rightSpaceCount + 1;
-		char *newData = (char*)malloc(newDataLength);
+		int newDataLength = strLength - rightSpaceCount + 1;
+		char *newData = (char*)malloc((size_t)newDataLength);
 		if(newData == NULL)
 		{
 			return NULL;
 		}
 
 		str->data[strLength - rightSpaceCount] = '\0';
-		memcpy(newData, str->data, newDataLength);
+		memcpy(newData, str->data, (size_t)newDataLength);
 
 		free(str->data);
 		str->data = newData;
@@ -362,32 +362,45 @@ char* CopyString(StringPtr dstStr, const StringPtr srcStr)
 		return NULL;
 	}
 
-	size_t dstStrLength = dstStr->length;
-	size_t srcStrLength = srcStr->length;
+	int dstStrLength = dstStr->length;
+	int srcStrLength = srcStr->length;
 
-	if(dstStrLength < srcStrLength)// dstStr->data 를 srcStr->data 의 길이와 같은 문자열로 새로 생성한다.
+	// srcStrLength 가 dstStrLength 와 같지 않으면 해당 길이만큼 새로운 문자열 생성
+	if(dstStrLength != srcStrLength)
 	{
-		char *newData = (char*)malloc(srcStrLength);
+		char *newData = (char*)malloc((size_t)srcStrLength + 1);
 		if(newData == NULL)
 		{
 			return NULL;
 		}
+		memcpy(newData, srcStr->data, (size_t)srcStrLength);
 
 		free(dstStr->data);
 		dstStr->data = newData;
 	}
+	// 그렇지 않다면, 생성할 필요 없이 srcStrLength 만큼 그대로 복사
+	else
+	{
+		memcpy(dstStr->data, srcStr->data, (size_t)srcStrLength);
+	}
 
-	if(dstStrLength > srcStrLength) memset(dstStr->data, 0, dstStrLength);
-	else memset(dstStr->data, 0, srcStrLength);
-	memcpy(dstStr->data, srcStr->data, srcStrLength);
 	dstStr->length = srcStrLength;
+	dstStr->data[dstStr->length] = '\0';
 
 	return dstStr->data;
 }
 
-char* CopyNString(StringPtr dstStr, const StringPtr srcStr, size_t length)
+/**
+ * @fn char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
+ * @brief source 문자열 관리 구조체에서 destination 문자열 관리 구조체로 지정한 길이만큼 문자열을 복사하는 함수
+ * @param dstStr 복사될 문자열 관리 구조체(출력)
+ * @param srcStr 복사할 문자열 관리 구조체(입력, 읽기 전용)
+ * @param length 복사할 길이(입력)
+ * @return 성공 시 복사된 문자열의 주소, 실패 시 NULL 반환
+ */
+char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
 {
-	if(length == 0)
+	if(length <= 0)
 	{
 		return NULL;
 	}
@@ -402,8 +415,8 @@ char* CopyNString(StringPtr dstStr, const StringPtr srcStr, size_t length)
 		return NULL;
 	}
 
-	size_t dstStrLength = dstStr->length;
-	size_t srcStrLength = srcStr->length;
+	int dstStrLength = dstStr->length;
+	int srcStrLength = srcStr->length;
 
 	if(srcStrLength == 0)
 	{
@@ -418,42 +431,57 @@ char* CopyNString(StringPtr dstStr, const StringPtr srcStr, size_t length)
 		return dstStr->data;
 	}
 
-	if(srcStrLength < length) // 복사할 길이가 srcStrLength 보다 크면, srcStrLength 만큼 복사
+	// 복사할 길이가 srcStrLength 보다 크면, srcStrLength 만큼 복사
+	if(srcStrLength < length)
 	{
 		length = srcStrLength;
 	}
 
-	if(dstStrLength < length) // dstStrLength 가 복사할 길이보다 작으면, dstStr->data 를 복사할 길이와 같은 문자열로 새로 생성한다.
+	// 복사할 길이가 dstStrLength 와 같지 않으면 복사할 길이만큼 새로운 문자열 생성
+	if(dstStrLength != length)
 	{
-		char *newData = (char*)malloc(length);
+		char *newData = (char*)malloc((size_t)length + 1);
 		if(newData == NULL)
 		{
 			return NULL;
 		}
+		memcpy(newData, srcStr->data, (size_t)length);
 
 		free(dstStr->data);
 		dstStr->data = newData;
 	}
+	// 그렇지 않다면, 생성할 필요 없이 복사할 길이만큼 그대로 복사
+	else
+	{
+		memcpy(dstStr->data, srcStr->data, (size_t)length);
+	}
 
-	if(dstStrLength > length) memset(dstStr->data, 0, dstStrLength);
-	else memset(dstStr->data, 0, length);
-	memcpy(dstStr->data, srcStr->data, length);
 	dstStr->length = length;
+	dstStr->data[dstStr->length] = '\0';
 
 	return dstStr->data;
-
 }
 
+/**
+ * @fn char* FormatString(StringPtr str, const char* format, ...)
+ * @brief 지정한 출력 형식으로 문자열을 저장하는 함수
+ * @param str 출력된 문자열을 저장할 문자열 관리 구조체(출력)
+ * @param format 가변 문자열을 출력 형식을 저장한 문자열(입력, 읽기 전용)
+ * @param ... 가변 문자열(입력)
+ * @return 성공 시 출력된 문자열의 주소, 실패 시 NULL 반환
+ */
 char* FormatString(StringPtr str, const char* format, ...)
 {
 	va_list ap;
-	va_start(ap, format);
 
-	int newLength = vsnprintf(NULL, 0, format, ap) + 1;
-	if(newLength < 1)
+	va_start(ap, format);
+	int newLength = vsnprintf(NULL, 0, format, ap);
+	if(newLength < 0)
 	{
 		return NULL;
 	}
+	newLength += 1;
+	va_end(ap);
 
 	char *newData = (char*)calloc((size_t)newLength, sizeof(char));
 	if(newData == NULL)
@@ -461,19 +489,21 @@ char* FormatString(StringPtr str, const char* format, ...)
 		return NULL;
 	}
 
-	int result = vsnprintf(newData, sizeof(newData), format, ap);
-	if(result < 0 // glibc < 2.1
-		 || (size_t)result >= sizeof(newData)) // glibc >= 2.1
+	va_start(ap, format);
+	int copiedLength = vsnprintf(newData, (size_t)newLength, format, ap);
+	if(copiedLength < 0 // glibc < 2.1
+		 || (size_t)copiedLength >= sizeof(newData)) // glibc >= 2.1
 	{
 		free(newData);
 		return NULL;
 	}
-
+	newData[newLength] = '\0';
 	va_end(ap);
 
 	free(str->data);
 	str->data = newData;
-	str->length = (size_t)newLength;
+	str->length = newLength;
 
 	return str->data;
 }
+

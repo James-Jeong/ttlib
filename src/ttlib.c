@@ -195,16 +195,17 @@ void RunAllTests(TestSuitPtr testSuit)
 }
 
 /**
- * @fn TestResult ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber, int failCount)
- * @brief 테스트 실패 시 테스트 실패 횟수를 하나 증가하고 실패 메시지를 출력하는 함수
+ * @fn TestResult ProcessNum1TestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, int actual)
+ * @brief 테스트 실패 시 테스트 실패 횟수를 하나 증가하고 숫자 관련 테스트의 실패 메시지를 출력하는 함수(숫자 하나만 다루는 경우)
  * @param testSuit 전체 테스트 관리 구조체(출력)
- * @param msg 실패 메시지(입력, 읽기 전용)
  * @param functionName 실패한 함수 이름(입력, 읽기 전용)
  * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
  * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
+ * @param actual 실제 결과값(입력)
+ * @param expected 기대값(입력)
  * @return 현재 진행 중인 테스트 종료하면 TestExit, 계속 진행하면 TestContinue, 실패하면 TestFail 반환
  */
-TestResult ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber, int failCount)
+TestResult ProcessNum1TestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, int actual)
 {
 	// Check parameter
 	if (testSuit == NULL)
@@ -214,15 +215,149 @@ TestResult ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char
 
 	testSuit->totalNumOfFailTestFuncs += failCount;
 
-	if (functionName != NULL && functionName[0] == 'A')
+	if (functionName != NULL && fileName != NULL && lineNumber > 0)
 	{
-		PRINT_FATAL(msg, functionName, fileName, lineNumber);
+		PRINT_FAIL(functionName, fileName, lineNumber, "actual:%d", actual);
+	}
+
+	if (functionName[0] == 'A')
+	{
 		return TestExit;
 	}
 
-	if (functionName != NULL && fileName != NULL && msg != NULL && lineNumber > 0)
+	return TestContinue;
+}
+
+/**
+ * @fn TestResult ProcessNum2TestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, int actual, int expected)
+ * @brief 테스트 실패 시 테스트 실패 횟수를 하나 증가하고 숫자 관련 테스트의 실패 메시지를 출력하는 함수(숫자 두개를 다루는 경우)
+ * @param testSuit 전체 테스트 관리 구조체(출력)
+ * @param functionName 실패한 함수 이름(입력, 읽기 전용)
+ * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
+ * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
+ * @param actual 실제 결과값(입력)
+ * @param expected 기대값(입력)
+ * @return 현재 진행 중인 테스트 종료하면 TestExit, 계속 진행하면 TestContinue, 실패하면 TestFail 반환
+ */
+TestResult ProcessNum2TestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, int actual, int expected)
+{
+	// Check parameter
+	if (testSuit == NULL)
 	{
-		PRINT_NONFATAL(msg, functionName, fileName, lineNumber);
+		return TestFail;
+	}
+
+	testSuit->totalNumOfFailTestFuncs += failCount;
+
+	if (functionName != NULL && fileName != NULL && lineNumber > 0)
+	{
+		PRINT_FAIL(functionName, fileName, lineNumber, "actual:%d, expected:%d", actual, expected);
+	}
+
+	if (functionName[0] == 'A')
+	{
+		return TestExit;
+	}
+
+	return TestContinue;
+}
+
+/**
+ * @fn TestResult ProcessStrTestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, const char* actual, const char* expected)
+ * @brief 테스트 실패 시 테스트 실패 횟수를 하나 증가하고 문자열 관련 테스트 실패 메시지를 출력하는 함수
+ * @param testSuit 전체 테스트 관리 구조체(출력)
+ * @param functionName 실패한 함수 이름(입력, 읽기 전용)
+ * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
+ * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
+ * @param actual 실제 결과값(입력, 읽기 전용)
+ * @param expected 기대값(입력, 읽기 전용)
+ * @return 현재 진행 중인 테스트 종료하면 TestExit, 계속 진행하면 TestContinue, 실패하면 TestFail 반환
+ */
+TestResult ProcessStrTestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, const char* actual, const char* expected)
+{
+	// Check parameter
+	if (testSuit == NULL)
+	{
+		return TestFail;
+	}
+
+	testSuit->totalNumOfFailTestFuncs += failCount;
+
+	if (functionName != NULL && fileName != NULL && actual != NULL && expected != NULL && lineNumber > 0)
+	{
+		PRINT_FAIL(functionName, fileName, lineNumber, "actual:%s, expected:%s", actual, expected);
+	}
+
+	if (functionName[0] == 'A')
+	{
+		return TestExit;
+	}
+
+	return TestContinue;
+}
+
+/**
+ * @fn TestResult ProcessNullTestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, void* actual)
+ * @brief 테스트 실패 시 테스트 실패 횟수를 하나 증가하고 NULL 관련 테스트 실패 메시지를 출력하는 함수
+ * @param testSuit 전체 테스트 관리 구조체(출력)
+ * @param functionName 실패한 함수 이름(입력, 읽기 전용)
+ * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
+ * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
+ * @param actual 실제 결과값(입력)
+ * @return 현재 진행 중인 테스트 종료하면 TestExit, 계속 진행하면 TestContinue, 실패하면 TestFail 반환
+ */
+TestResult ProcessNullTestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, void* actual)
+{
+	// Check parameter
+	if (testSuit == NULL)
+	{
+		return TestFail;
+	}
+
+	testSuit->totalNumOfFailTestFuncs += failCount;
+
+	if (functionName != NULL && fileName != NULL && actual != NULL && lineNumber > 0)
+	{
+		PRINT_FAIL(functionName, fileName, lineNumber, "actual:%p, expected:NULL", actual);
+	}
+
+	if (functionName[0] == 'A')
+	{
+		return TestExit;
+	}
+
+	return TestContinue;
+}
+
+/**
+ * @fn TestResult ProcessPtrTestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, void* actual, void *expected)
+ * @brief 테스트 실패 시 테스트 실패 횟수를 하나 증가하고 포인터 관련 테스트 실패 메시지를 출력하는 함수
+ * @param testSuit 전체 테스트 관리 구조체(출력)
+ * @param functionName 실패한 함수 이름(입력, 읽기 전용)
+ * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
+ * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
+ * @param actual 실제 결과값(입력)
+ * @param expected 기대하는 결과값(입력)
+ * @return 현재 진행 중인 테스트 종료하면 TestExit, 계속 진행하면 TestContinue, 실패하면 TestFail 반환
+ */
+TestResult ProcessPtrTestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, void* actual, void *expected)
+{
+	// Check parameter
+	if (testSuit == NULL)
+	{
+		return TestFail;
+	}
+
+	testSuit->totalNumOfFailTestFuncs += failCount;
+
+	if (functionName != NULL && fileName != NULL && actual != NULL && lineNumber > 0)
+	{
+		PRINT_FAIL(functionName, fileName, lineNumber, "actual:%p, expected:%p", actual, expected);
+	}
+
+	if (functionName[0] == 'A')
+	{
+		return TestExit;
 	}
 
 	return TestContinue;
@@ -352,87 +487,5 @@ static void DeleteTest(TestPtr test)
 	free(test->testCase);
 	free(test->testName);
 	free(test);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/// Util Functions
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @fn void PrintMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TestResult testResultType)
- * @brief 함수 결과에 따라 출력 방법을 다르게 설정하여 지정한 메시지를 출력하는 함수
- * ProcessFailTestSuit 함수에서 호출되기 때문에 전달받은 문자열에 대한 NULL 체크를 수행하지 않는다.
- * @param functionName 실패한 함수 이름(입력, 읽기 전용)
- * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
- * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
- * @param msg 출력할 메시지(입력, 읽기 전용)
- * @param testResultType 테스트 함수 실행 결과(입력)
- * @return 반환값 없음
- */
-void PrintMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TestResult testResultType)
-{
-	switch (testResultType)
-	{
-		case TestSuccess:
-			//printf("[SUCCESS]\n");
-			break;
-		case TestFatal:
-			printf("[%s FAIL] %s (file:%s, line:%d)\nTest aborted.\n", functionName, msg, file_name, line_number);
-			break;
-		case TestNonFatal:
-			printf("[%s FAIL] %s (file:%s, line:%d)\n", functionName, msg, file_name, line_number);
-			break;
-		default:
-			printf("[%s UNKNOWN] %s (file:%s, line:%d)\n", functionName, msg, file_name, line_number);
-			break;
-	}
-}
-
-/**
- * @fn int CheckIsUpperString(const char *string)
- * @brief 지정한 문자열 전체가 대문자로 구성되어 있는지 검사하는 함수
- * @param actual 검사할 문자열(입력, 읽기 전용)
- * @return 성공 시 소문자 개수, 실패 시 -1 반환
- */
-int CheckIsUpperString(const char *string)
-{
-	if(string == NULL)
-	{
-		return -1;
-	}
-
-	int failCount = 0;
-	int charIndex = 0;
-	int length = strlen(string);
-	for( ; charIndex < length; charIndex++)
-	{
-		if(isupper(string[charIndex]) == 0) failCount++;
-	}
-
-	return failCount;
-}
-
-/**
- * @fn int CheckIsLowerString(const char *string)
- * @brief 지정한 문자열 전체가 소문자로 구성되어 있는지 검사하는 함수
- * @param actual 검사할 문자열(입력, 읽기 전용)
- * @return 성공 시 대문자 개수, 실패 시 -1 반환
- */
-int CheckIsLowerString(const char *string)
-{
-	if(string == NULL)
-	{
-		return -1;
-	}
-
-	int failCount = 0;
-	int charIndex = 0;
-	int length = strlen(string);
-	for( ; charIndex < length; charIndex++)
-	{
-		if(islower(string[charIndex]) == 0) failCount++;
-	}
-
-	return failCount;
 }
 

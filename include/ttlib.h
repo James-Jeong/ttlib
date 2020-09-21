@@ -107,17 +107,11 @@ if (_testSuit == NULL) { \
 /// Print Macro Functions
 //////////////////////////////////////////////////////////////////////////////////
 
-// 테스트 결과를 성공/실패 여부에 따라 출력하는 함수
-#define PRINT_MESSAGE(msg, testResultType, functionName, fileName, lineNumber) PrintMessageHelper(functionName, fileName, lineNumber, msg, testResultType)
-
 // 테스트 성공 시 출력할 내용을 지정하는 함수
-#define PRINT_SUCCESS(msg) PRINT_MESSAGE(msg, TestSuccess, NULL, NULL, 0)
+#define PRINT_SUCCESS(functionName, format, ...) printf("["functionName"] "format"\n", __VA_ARGS__)
 
-// 테스트 실패 시(fatal) 출력할 내용을 지정하는 함수
-#define PRINT_FATAL(msg, functionName, fileName, lineNumber) PRINT_MESSAGE(msg, TestFatal, functionName, fileName, lineNumber)
-
-// 테스트 실패 시(nonfatal) 출력할 내용을 지정하는 함수
-#define PRINT_NONFATAL(msg, functionName, fileName, lineNumber) PRINT_MESSAGE(msg, TestNonFatal, functionName, fileName, lineNumber)
+// 테스트 실패 시 출력할 내용을 지정하는 함수
+#define PRINT_FAIL(functionName, fileName, lineNumber, format, ...) printf("(FAIL) ["#functionName"] "format" (file:%s, line:%d)\n", __VA_ARGS__, fileName, lineNumber)
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (EXPECT) NULL Macro Functions
@@ -125,10 +119,21 @@ if (_testSuit == NULL) { \
 //////////////////////////////////////////////////////////////////////////////////
 
 // 실제 값이 NULL 인지 검사하는 함수
-#define EXPECT_NULL(actual) ((actual) == NULL) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값이 NULL 이어야 한다.", "EXPECT_NULL", __FILE__, __LINE__, ++failCount))
+#define EXPECT_NULL(actual) ((actual) == NULL) ? PRINT_SUCCESS("EXPECT_NULL", "actual:%p, expected:NULL", actual) : ProcessNullTestFail(_testSuit, "EXPECT_NULL", __FILE__, __LINE__, ++failCount, actual)
 
 // 실제 값이 NULL 이 아닌지 검사하는 함수
-#define EXPECT_NOT_NULL(actual) ((actual) != NULL) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값이 NULL 이 아니어야 한다.", "EXPECT_NOT_NULL", __FILE__, __LINE__, ++failCount))
+#define EXPECT_NOT_NULL(actual) ((actual) != NULL) ? PRINT_SUCCESS("EXPECT_NOT_NULL", "actual:%p, expected:NULL", actual) : ProcessNullTestFail(_testSuit, "EXPECT_NOT_NULL", __FILE__, __LINE__, ++failCount, actual)
+
+//////////////////////////////////////////////////////////////////////////////////
+/// (EXPECT) Pointer Macro Functions
+/// 실패해도 현재 진행 중인 테스트가 종료되지 않는다.
+//////////////////////////////////////////////////////////////////////////////////
+
+// 실제 주소값과 기대하는 주소값이 같은지 검사하는 함수
+#define EXPECT_PTR_EQUAL(actual, expected) ((actual) == (expected)) ? PRINT_SUCCESS("EXPECT_PTR_EQUAL", "actual:%p, expected:%p", actual, expected) : ProcessPtrTestFail(_testSuit, "EXPECT_PTR_EQUAL", __FILE__, __LINE__, ++failCount, actual, expected)
+
+// 실제 주소값과 기대하는 주소값이 다른지 검사하는 함수
+#define EXPECT_PTR_NOT_EQUAL(actual, expected) ((actual) != (expected)) ? PRINT_SUCCESS("EXPECT_PTR_NOT_EQUAL", "actual:%p, expected:%p", actual, expected) : ProcessPtrTestFail(_testSuit, "EXPECT_PTR_NOT_EQUAL", __FILE__, __LINE__, ++failCount, actual, expected)
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (EXPECT) Number Macro Functions
@@ -136,28 +141,28 @@ if (_testSuit == NULL) { \
 //////////////////////////////////////////////////////////////////////////////////
 
 // 실제 값과 기대하는 값이 같은지 검사하는 함수
-#define EXPECT_NUM_EQUAL(actual, expected) ((actual) == (expected)) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값과 "#expected" 값이 달라야 한다.", "EXPECT_NUM_EQUAL", __FILE__, __LINE__, ++failCount))
+#define EXPECT_NUM_EQUAL(actual, expected) ((actual) == (expected)) ? PRINT_SUCCESS("EXPECT_NUM_EQUAL", "actual:%d, expected:%d", actual, expected) : ProcessNum2TestFail(_testSuit, "EXPECT_NUM_EQUAL", __FILE__, __LINE__, ++failCount, actual, expected)
 
 // 실제 값과 기대하는 값이 다른지 검사하는 함수
-#define EXPECT_NUM_NOT_EQUAL(actual, expected) ((actual) != (expected)) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값과 "#expected" 값이 같아야 한다.", "EXPECT_NUM_NOT_EQUAL", __FILE__, __LINE__, ++failCount))
+#define EXPECT_NUM_NOT_EQUAL(actual, expected) ((actual) != (expected)) ? PRINT_SUCCESS("EXPECT_NUM_NOT_EQUAL", "actual:%d, expected:%d", actual, expected) : ProcessNum2TestFail(_testSuit, "EXPECT_NUM_NOT_EQUAL", __FILE__, __LINE__, ++failCount, actual, expected)
 
 // 실제 값이 기대하는 값보다 작거나 같은지 검사하는 함수
-#define EXPECT_NUM_LESS_EQUAL(actual, expected) ((actual) <= (expected)) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 작아야 한다.", "EXPECT_NUM_LESS_EQUAL", __FILE__, __LINE__, ++failCount))
+#define EXPECT_NUM_LESS_EQUAL(actual, expected) ((actual) <= (expected)) ? PRINT_SUCCESS("EXPECT_NUM_LESS_EQUAL", "actual:%d, expected:%d", actual, expected) : ProcessNum2TestFail(_testSuit, "EXPECT_NUM_LESS_EQUAL", __FILE__, __LINE__, ++failCount, actual, expected)
 
 // 실제 값이 기대하는 값보다 작은지 검사하는 함수
-#define EXPECT_NUM_LESS_THAN(actual, expected) ((actual) < (expected)) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 작거나 같아야 한다.", "EXPECT_NUM_LESS_THAN", __FILE__, __LINE__, ++failCount))
+#define EXPECT_NUM_LESS_THAN(actual, expected) ((actual) < (expected)) ? PRINT_SUCCESS("EXPECT_NUM_LESS_THAN", "actual:%d, expected:%d", actual, expected) : ProcessNum2TestFail(_testSuit, "EXPECT_NUM_LESS_THAN", __FILE__, __LINE__, ++failCount, actual, expected)
 
 // 실제 값이 기대하는 값보다 크거나 같은지 검사하는 함수
-#define EXPECT_NUM_GREATER_EQUAL(actual, expected) ((actual) >= (expected)) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 커야 한다.", "EXPECT_NUM_GREATER_EQUAL", __FILE__, __LINE__, ++failCount))
+#define EXPECT_NUM_GREATER_EQUAL(actual, expected) ((actual) >= (expected)) ? PRINT_SUCCESS("EXPECT_NUM_GREATER_EQUAL", "actual:%d, expected:%d", actual, expected) : ProcessNum2TestFail(_testSuit, "EXPECT_NUM_GREATER_EQUAL", __FILE__, __LINE__, ++failCount, actual, expected)
 
 // 실제 값이 기대하는 값보다 큰지 검사하는 함수
-#define EXPECT_NUM_GREATER_THAN(actual, expected) ((actual) > (expected)) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 크거나 같아야 한다.", "EXPECT_NUM_GREATER_THAN", __FILE__, __LINE__, ++failCount))
+#define EXPECT_NUM_GREATER_THAN(actual, expected) ((actual) > (expected)) ? PRINT_SUCCESS("EXPECT_NUM_GREATER_THAN", "actual:%d, expected:%d", actual, expected) : ProcessNum2TestFail(_testSuit, "EXPECT_NUM_GREATER_THAN", __FILE__, __LINE__, ++failCount, actual, expected)
 
 // 지정한 숫자가 짝수인지 검사하는 함수
-#define EXPECT_NUM_EVEN(number) ((number) % 2 == 0) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #number" 값은 홀수여야 한다.", "EXPECT_NUM_EVEN", __FILE__, __LINE__, ++failCount))
+#define EXPECT_NUM_EVEN(actual) ((actual) % 2 == 0) ? PRINT_SUCCESS("EXPECT_NUM_EVEN", "actual:%d, expected:EVEN", actual) : ProcessNum1TestFail(_testSuit, "EXPECT_NUM_EVEN", __FILE__, __LINE__, ++failCount, actual)
 
 // 지정한 숫자가 홀수인지 검사하는 함수
-#define EXPECT_NUM_ODD(number) ((number) % 2 == 1) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #number" 값은 짝수여야 한다.", "EXPECT_NUM_ODD", __FILE__, __LINE__, ++failCount))
+#define EXPECT_NUM_ODD(actual) ((actual) % 2 == 1) ? PRINT_SUCCESS("EXPECT_NUM_ODD", "actual:%d, expected:ODD", actual) : ProcessNum1TestFail(_testSuit, "EXPECT_NUM_ODD", __FILE__, __LINE__, ++failCount, actual)
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (EXPECT) String Macro Functions
@@ -165,16 +170,10 @@ if (_testSuit == NULL) { \
 //////////////////////////////////////////////////////////////////////////////////
 
 // 실제 문자열과 기대하는 문자열이 같은지 검사하는 함수
-#define EXPECT_STR_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) == 0) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 문자열과 "#expected" 문자열이 같아야 한다.", "EXPECT_STR_EQUAL", __FILE__, __LINE__, ++failCount))
+#define EXPECT_STR_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) == 0) ? PRINT_SUCCESS("EXPECT_STR_EQUAL", "actual:%s, expected:%s", actual, expected) : ProcessStrTestFail(_testSuit, "EXPECT_STR_EQUAL", __FILE__, __LINE__, ++failCount, actual, expected)
 
 // 실제 문자열과 기대하는 문자열이 다른지 검사하는 함수
-#define EXPECT_STR_NOT_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) != 0) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 문자열과 "#expected" 문자열이 달라야 한다.", "EXPECT_STR_NOT_EQUAL", __FILE__, __LINE__, ++failCount))
-
-// 실제 문자열이 대문자인지 검사하는 함수
-#define EXPECT_STR_UPPER_CASE(actual) (CheckIsUpperString(actual) == 0) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 문자가 대문자로 구성되어야 한다.", "EXPECT_STR_UPPER_CASE", __FILE__, __LINE__, ++failCount))
-
-// 실제 문자열이 소문자인지 검사하는 함수
-#define EXPECT_STR_LOWER_CASE(actual) (CheckIsLowerString(actual) == 0) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 문자열 소문자로 구성되어야 한다.", "EXPECT_STR_LOWER_CASE", __FILE__, __LINE__, ++failCount))
+#define EXPECT_STR_NOT_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) != 0) ? PRINT_SUCCESS("EXPECT_STR_NOT_EQUAL", "actual:%s, expected:%s", actual, expected) : ProcessStrTestFail(_testSuit, "EXPECT_STR_NOT_EQUAL", __FILE__, __LINE__, ++failCount, actual, expected)
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (ASSERT) NULL Macro Functions
@@ -182,10 +181,10 @@ if (_testSuit == NULL) { \
 //////////////////////////////////////////////////////////////////////////////////
 
 // 실제 값이 NULL 인지 검사하는 함수
-#define ASSERT_NULL(actual) ((actual) == NULL) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값이 NULL 이어야 한다.", "ASSERT_NULL", __FILE__, __LINE__, ++failCount) == TestExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+#define ASSERT_NULL(actual) ((actual) == NULL) ? PRINT_SUCCESS("ASSERT_NULL", "actual:%p, expected:NULL", actual) : ProcessNullTestFail(_testSuit, "ASSERT_NULL", __FILE__, __LINE__, ++failCount, actual)
 
 // 실제 값이 NULL 이 아닌지 검사하는 함수
-#define ASSERT_NOT_NULL(actual) ((actual) != NULL) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값이 NULL 이 아니어야 한다.", "ASSERT_NOT_NULL", __FILE__, __LINE__, ++failCount) == TestExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+#define ASSERT_NOT_NULL(actual) ((actual) != NULL) ? PRINT_SUCCESS("ASSERT_NOT_NULL", "actual:%p, expected:NULL", actual) : ProcessNullTestFail(_testSuit, "ASSERT_NOT_NULL", __FILE__, __LINE__, ++failCount, actual)
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (ASSERT) Number Macro Functions
@@ -193,28 +192,28 @@ if (_testSuit == NULL) { \
 //////////////////////////////////////////////////////////////////////////////////
 
 // 실제 값과 기대하는 값이 같은지 검사하는 함수 
-#define ASSERT_NUM_EQUAL(actual, expected) ((actual) == (expected)) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값과 "#expected" 값이 같아야 한다.", "ASSERT_NUM_EQUAL", __FILE__, __LINE__, ++failCount) == TestExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+#define ASSERT_NUM_EQUAL(actual, expected) ((actual) == (expected)) ? PRINT_SUCCESS("ASSERT_NUM_EQUAL", "actual:%d, expected:%d", actual, expected) : ProcessNum2TestFail(_testSuit, "ASSERT_NUM_EQUAL", __FILE__, __LINE__, ++failCount, actual, expected)
 
 // 실제 값과 기대하는 값이 다른지 검사하는 함수
-#define ASSERT_NUM_NOT_EQUAL(actual, expected) ((actual) != (expected)) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값과 "#expected" 값이 달라야 한다.", "ASSERT_NUM_NOT_EQUAL", __FILE__, __LINE__, ++failCount) == TestExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+#define ASSERT_NUM_NOT_EQUAL(actual, expected) ((actual) != (expected)) ? PRINT_SUCCESS("ASSERT_NUM_NOT_EQUAL", "actual:%d, expected:%d", actual, expected) : ProcessNum2TestFail(_testSuit, "ASSERT_NUM_NOT_EQUAL", __FILE__, __LINE__, ++failCount, actual, expected)
 
 // 실제 값이 기대하는 값보다 작거나 같은지 검사하는 함수
-#define ASSERT_NUM_LESS_EQUAL(actual, expected) ((actual) <= (expected)) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 작아야 한다.", "ASSERT_NUM_LESS_EQUAL", __FILE__, __LINE__, ++failCount) == TestExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+#define ASSERT_NUM_LESS_EQUAL(actual, expected) ((actual) <= (expected)) ? PRINT_SUCCESS("ASSERT_NUM_LESS_EQUAL", "actual:%d, expected:%d", actual, expected) : ProcessNum2TestFail(_testSuit, "ASSERT_NUM_LESS_EQUAL", __FILE__, __LINE__, ++failCount, actual, expected)
 
 // 실제 값이 기대하는 값보다 작은지 검사하는 함수
-#define ASSERT_NUM_LESS_THAN(actual, expected) ((actual) < (expected)) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 작거나 같아야 한다.", "ASSERT_NUM_LESS_THAN", __FILE__, __LINE__, ++failCount) == TestExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+#define ASSERT_NUM_LESS_THAN(actual, expected) ((actual) < (expected)) ? PRINT_SUCCESS("ASSERT_NUM_LESS_THAN", "actual:%d, expected:%d", actual, expected) : ProcessNum2TestFail(_testSuit, "ASSERT_NUM_LESS_THAN", __FILE__, __LINE__, ++failCount, actual, expected)
 
 // 실제 값이 기대하는 값보다 크거나 같은지 검사하는 함수
-#define ASSERT_NUM_GREATER_EQUAL(actual, expected) ((actual) >= (expected)) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 커야 힌다.", "ASSERT_NUM_GREATER_EQUAL", __FILE__, __LINE__, ++failCount) == TestExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+#define ASSERT_NUM_GREATER_EQUAL(actual, expected) ((actual) >= (expected)) ? PRINT_SUCCESS("ASSERT_NUM_GREATER_EQUAL", "actual:%d, expected:%d", actual, expected) : ProcessNum2TestFail(_testSuit, "ASSERT_NUM_LESS_THAN", __FILE__, __LINE__, ++failCount, actual, expected)
 
 // 실제 값이 기대하는 값보다 큰지 검사하는 함수
-#define ASSERT_NUM_GREATER_THAN(actual, expected) ((actual) > (expected)) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 값이 "#expected" 값보다 크거나 같음.", "ASSERT_NUM_GREATER_THAN", __FILE__, __LINE__, ++failCount) == TestExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+#define ASSERT_NUM_GREATER_THAN(actual, expected) ((actual) > (expected)) ? PRINT_SUCCESS("ASSERT_NUM_GREATER_THAN", "actual:%d, expected:%d", actual, expected) : ProcessNum2TestFail(_testSuit, "ASSERT_NUM_GREATER_EQUAL", __FILE__, __LINE__, ++failCount, actual, expected)
 
 // 지정한 숫자가 짝수인지 검사하는 함수
-#define ASSERT_NUM_EVEN(number) ((number) % 2 == 0) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #number" 값은 홀수여야 한다.", "ASSERT_NUM_EVEN", __FILE__, __LINE__, ++failCount) == TestExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+#define ASSERT_NUM_EVEN(actual) ((actual) % 2 == 0) ? PRINT_SUCCESS("ASSERT_NUM_EVEN", "actual:%d, expected:EVEN", actual) : ProcessNum1TestFail(_testSuit, "ASSERT_NUM_EVEN", __FILE__, __LINE__, ++failCount, actual)
 
 // 지정한 숫자가 홀수인지 검사하는 함수
-#define ASSERT_NUM_ODD(number) ((number) % 2 == 1) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #number" 값은 짝수여야 한다.", "ASSERT_NUM_ODD", __FILE__, __LINE__, ++failCount) == TestExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+#define ASSERT_NUM_ODD(actual) ((actual) % 2 == 0) ? PRINT_SUCCESS("ASSERT_NUM_ODD", "actual:%d, expected:ODD", actual) : ProcessNum1TestFail(_testSuit, "ASSERT_NUM_ODD", __FILE__, __LINE__, ++failCount, actual)
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (ASSERT) String Macro Functions
@@ -222,16 +221,10 @@ if (_testSuit == NULL) { \
 //////////////////////////////////////////////////////////////////////////////////
 
 // 실제 문자열과 기대하는 문자열이 같은지 검사하는 함수
-#define ASSERT_STR_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) == 0) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 문자열과 "#expected" 문자열이 같아야 한다.", "ASSERT_STR_EQUAL", __FILE__, __LINE__, ++failCount) == TestExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+#define ASSERT_STR_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) == 0) ? PRINT_SUCCESS("ASSERT_STR_EQUAL", "actual:%s, expected:%s", actual, expected) : ProcessStrTestFail(_testSuit, "ASSERT_STR_EQUAL", __FILE__, __LINE__, ++failCount, actual, expected)
 
 // 실제 문자열과 기대하는 문자열이 다른지 검사하는 함수
-#define ASSERT_STR_NOT_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) != 0) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 문자열과 "#expected" 문자열이 달라야 한다.", "ASSERT_STR_NOT_EQUAL", __FILE__, __LINE__, ++failCount) == TestExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
-
-// 실제 문자열이 대문자인지 검사하는 함수
-#define ASSERT_STR_UPPER_CASE(actual) (CheckIsUpperString(actual) == 0) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 문자열이 대문자로 구성되어야 한다.", "ASSERT_STR_UPPER_CASE", __FILE__, __LINE__, ++failCount) == TestExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
-
-// 실제 문자열이 소문자인지 검사하는 함수
-#define ASSERT_STR_LOWER_CASE(actual) (CheckIsLowerString(actual) == 0) ? PRINT_SUCCESS(NULL) : (ProcessFailTestSuit(_testSuit, #actual" 문자열이 소문자로 구성되어야 한다.", "ASSERT_STR_LOWER_CASE", __FILE__, __LINE__, ++failCount) == TestExit ? SetExitTestSuit(_testSuit) : SetContinueTestSuit(_testSuit))
+#define ASSERT_STR_NOT_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) != 0) ? PRINT_SUCCESS("ASSERT_STR_NOT_EQUAL", "actual:%s, expected:%s", actual, expected) : ProcessStrTestFail(_testSuit, "ASSERT_STR_NOT_EQUAL", __FILE__, __LINE__, ++failCount, actual, expected)
 
 //////////////////////////////////////////////////////////////////////////////////
 /// Definitions
@@ -284,17 +277,14 @@ void DeleteTestSuit(TestSuitPtrContainer testSuitContainer);
 TestPtr AddTest(TestSuitPtr testSuit, Test test);
 void RunAllTests(TestSuitPtr testSuit);
 
-TestResult ProcessFailTestSuit(TestSuitPtr testSuit, const char *msg, const char *functionName, const char *fileName, int lineNumber, int failCount);
+TestResult ProcessNum1TestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, int actual);
+TestResult ProcessNum2TestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, int actual, int expected);
+TestResult ProcessStrTestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, const char* actual, const char* expected);
+TestResult ProcessNullTestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, void* actual);
+TestResult ProcessPtrTestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, void* actual, void *expected);
 
 void SetExitTestSuit(TestSuitPtr testSuit);
 void SetContinueTestSuit(TestSuitPtr testSuit);
 
-//////////////////////////////////////////////////////////////////////////////////
-/// Util Function
-//////////////////////////////////////////////////////////////////////////////////
-
-void PrintMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TestResult testResultType);
-int CheckIsUpperString(const char *actual);
-int CheckIsLowerString(const char *actual);
-
 #endif
+

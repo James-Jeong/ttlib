@@ -5,9 +5,14 @@
 /// Definition
 ///////////////////////////////////////////////////////////////////////////////
 
+// vsnprintf 동작 성공
+#ifndef VSN_FAIL
+#define VSN_FAIL -1
+#endif
+
 // 문자열 관리 구조체
 typedef struct _string_t {
-    size_t length;
+    int length;
     char *data;
 } String, *StringPtr, **StringPtrContainer;
 
@@ -19,7 +24,7 @@ StringPtr NewString(const char *s);
 void DeleteString(StringPtrContainer pString);
 StringPtr CloneString(const StringPtr str);
 
-size_t GetLength(const StringPtr str);
+int GetLength(const StringPtr str);
 char* GetPtr(const StringPtr str);
 
 char* SetString(StringPtr str, const char *s);
@@ -31,7 +36,7 @@ char* RemoveRightSpace(StringPtr str);
 char* RemoveBothSpace(StringPtr str);
 
 char* CopyString(StringPtr dstStr, const StringPtr srcStr);
-char* CopyNString(StringPtr dstStr, const StringPtr srcStr, size_t length);
+char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length);
 
 char* FormatString(StringPtr str, const char* format, ...);
 
