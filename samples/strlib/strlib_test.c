@@ -99,12 +99,19 @@ TEST(ConvertToUpperCase, UpperString, {
     StringPtr str = NewString(s);
 
 	EXPECT_NOT_NULL(ConvertToUpperCase(str));
+
+	s = "abcd";
+    EXPECT_STR_EQUAL(SetString(str, s), s);
 	EXPECT_STR_EQUAL(ConvertToUpperCase(str), expected);
+
+	s = "abcd";
+    EXPECT_STR_EQUAL(SetString(str, s), s);
 	EXPECT_STR_UPPER_CASE(ConvertToUpperCase(str));
 
     // 빈 문자열을 정상처리해야 한다.
+	s = "";
 	expected = "";
-    EXPECT_STR_EQUAL(SetString(str, expected), expected);
+    EXPECT_STR_EQUAL(SetString(str, s), s);
 	EXPECT_STR_EQUAL(ConvertToUpperCase(str), expected);
 	EXPECT_STR_UPPER_CASE(ConvertToUpperCase(str));
 
@@ -115,6 +122,32 @@ TEST(ConvertToUpperCase, UpperString, {
 
 	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
 	EXPECT_NULL(ConvertToUpperCase(NULL));
+
+    DeleteString(&str);
+})
+
+TEST(ConvertToLowerCase, LowerString, {
+	char *s = "ABCD";
+	char *expected = "abcd"; 
+    StringPtr str = NewString(s);
+
+	EXPECT_NOT_NULL(ConvertToLowerCase(str));
+	EXPECT_STR_EQUAL(ConvertToLowerCase(str), expected);
+	EXPECT_STR_LOWER_CASE(ConvertToLowerCase(str));
+
+    // 빈 문자열을 정상처리해야 한다.
+	expected = "";
+    EXPECT_STR_EQUAL(SetString(str, expected), expected);
+	EXPECT_STR_EQUAL(ConvertToLowerCase(str), expected);
+	EXPECT_STR_LOWER_CASE(ConvertToLowerCase(str));
+
+	// str->data가 NULL 이면 NULL을 반환해야 한다.
+	free(str->data);
+	str->data = NULL;
+	EXPECT_NULL(ConvertToLowerCase(str));
+
+	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	EXPECT_NULL(ConvertToLowerCase(NULL));
 
     DeleteString(&str);
 })
@@ -130,7 +163,8 @@ int main()
         Test_GetPtr_PointerToStringData,
         Test_CloneString_InstanceClone,
         Test_SetString_SetNewValue,
-		Test_ConvertToUpperCase_UpperString
+		Test_ConvertToUpperCase_UpperString,
+		Test_ConvertToLowerCase_LowerString
     );
 
     RUN_ALL_TESTS();
