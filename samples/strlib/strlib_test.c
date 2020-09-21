@@ -270,6 +270,76 @@ TEST(TrimString, RemoveBothSpace, {
     DeleteString(&str);
 })
 
+TEST(CopyString, IntactCopy, {
+	char *srcData = "abc";
+	char *dstData = "def";
+	char *expected = "abc"; 
+    StringPtr srcStr = NewString(srcData);
+	StringPtr dstStr = NewString(dstData);
+
+	EXPECT_NOT_NULL(IntactCopy(dstStr, srcStr));
+
+	dstData = "def";
+	EXPECT_STR_EQUAL(SetString(dstStr, dstData), dstData);
+	//printf("Before) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+	EXPECT_STR_EQUAL(IntactCopy(dstStr, srcStr), expected);
+	//printf("After) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+
+	// destination 문자열의 길이가 source 문자열의 길이보다 큰 경우 정상 동작해야 한다.
+	dstData = "defghi";
+	EXPECT_STR_EQUAL(SetString(dstStr, dstData), dstData);
+	//printf("Before) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+	EXPECT_STR_EQUAL(IntactCopy(dstStr, srcStr), expected);
+	//printf("After) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+
+	// destination 문자열의 길이가 source 문자열의 길이보다 작은 경우에도 정상 동작해야 한다.
+	dstData = "d";
+	EXPECT_STR_EQUAL(SetString(dstStr, dstData), dstData);
+	//printf("Before) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+	EXPECT_STR_EQUAL(IntactCopy(dstStr, srcStr), expected);
+	//printf("After) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+
+	// 빈 문자열을 정상적으로 복사해야 한다.
+	srcData = "";
+	expected = "";
+    EXPECT_STR_EQUAL(SetString(srcStr, srcData), srcData);
+	//printf("Before) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+	EXPECT_STR_EQUAL(IntactCopy(dstStr, srcStr), expected);
+	//printf("After) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+
+	// str->data가 NULL 이면 NULL을 반환해야 한다.
+	free(srcStr->data);
+	srcStr->data = NULL;
+	EXPECT_NULL(IntactCopy(dstStr, srcStr));
+
+	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	EXPECT_NULL(IntactCopy(NULL, srcStr));
+	EXPECT_NULL(IntactCopy(dstStr, NULL));
+	EXPECT_NULL(IntactCopy(NULL, NULL));
+
+    DeleteString(&srcStr);
+    DeleteString(&dstStr);
+})
+
+TEST(CopyString, RestrictedCopy, {
+	char *srcData = "abcdef";
+	char *dstData = "xyz";
+	char *expected = "abc"; 
+    StringPtr srcStr = NewString(srcData);
+	StringPtr dstStr = NewString(dstData);
+
+	EXPECT_NOT_NULL(RestrictedCopy(dstStr, srcStr, 3));
+	
+	dstData = "xyz";
+	EXPECT_STR_EQUAL(SetString(dstStr, dstData), dstData);
+	printf("Before) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+	EXPECT_STR_EQUAL(RestrictedCopy(dstStr, srcStr, 3), expected);
+	printf("After) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+
+	DeleteString(&srcStr);
+    DeleteString(&dstStr);
+})
+
 int main()
 {
     CREATE_TESTSUIT();
@@ -285,7 +355,9 @@ int main()
 		Test_ConvertToLowerCase_LowerString,
 		Test_TrimString_RemoveLeftSpace,
 		Test_TrimString_RemoveRightSpace,
-		Test_TrimString_RemoveBothSpace
+		Test_TrimString_RemoveBothSpace,
+		Test_CopyString_IntactCopy,
+		Test_CopyString_RestrictedCopy
     );
 
     RUN_ALL_TESTS();

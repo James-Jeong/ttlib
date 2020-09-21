@@ -341,3 +341,85 @@ char* RemoveBothSpace(StringPtr str)
 	return RemoveLeftSpace(str);
 }
 
+/**
+ * @fn char* IntactCopy(StringPtr dstStr, const StringPtr srcStr)
+ * @brief source 문자열 관리 구조체에서 destination 문자열 관리 구조체로 동일한 문자열을 복사하는 함수(길이도 포함)
+ * @param dstStr 복사될 문자열 관리 구조체(출력)
+ * @param srcStr 복사할 문자열 관리 구조체(입력, 읽기 전용)
+ * @return 성공 시 복사된 문자열의 주소, 실패 시 NULL 반환
+ */
+char* IntactCopy(StringPtr dstStr, const StringPtr srcStr)
+{
+	if(dstStr == NULL || srcStr == NULL)
+	{
+		return NULL;
+	}
+
+	if(dstStr->data == NULL || srcStr->data == NULL)
+	{
+		return NULL;
+	}
+
+	size_t dstStrLength = GetLength(dstStr);
+	size_t srcStrLength = GetLength(srcStr);
+
+	if(dstStrLength < srcStrLength)// dstStr->data 를 srcStr->data 의 길이와 같은 문자열로 새로 생성한다.
+	{
+		char *newData = (char*)malloc(srcStrLength);
+		if(newData == NULL)
+		{
+			return NULL;
+		}
+
+		free(dstStr->data);
+		dstStr->data = newData;
+	}
+
+	if(dstStrLength > srcStrLength) memset(dstStr->data, 0, dstStrLength);
+	else memset(dstStr->data, 0, srcStrLength);
+	memcpy(dstStr->data, srcStr->data, srcStrLength);
+	dstStr->length = srcStrLength;
+
+	return dstStr->data;
+}
+
+char* RestrictedCopy(StringPtr dstStr, const StringPtr srcStr, size_t length)
+{
+	if(dstStr == NULL || srcStr == NULL)
+	{
+		return NULL;
+	}
+
+	if(dstStr->data == NULL || srcStr->data == NULL)
+	{
+		return NULL;
+	}
+
+	size_t dstStrLength = GetLength(dstStr);
+	size_t srcStrLength = GetLength(srcStr);
+
+	if(srcStrLength < length) // 복사할 길이가 srcStrLength 보다 크면 모순이므로 복사 실패 
+	{
+		return NULL;
+	}
+	else if(dstStrLength < length) // dstStrLength 가 복사할 길이보다 작으면 모순이므로, dstStr->data 를 복사할 길이와 같은 문자열로 새로 생성한다.
+	{
+		char *newData = (char*)malloc(length);
+		if(newData == NULL)
+		{
+			return NULL;
+		}
+
+		free(dstStr->data);
+		dstStr->data = newData;
+	}
+
+	if(dstStrLength > length) memset(dstStr->data, 0, dstStrLength);
+	else memset(dstStr->data, 0, length);
+	memcpy(dstStr->data, srcStr->data, length);
+	dstStr->length = length;
+
+	return dstStr->data;
+
+}
+
