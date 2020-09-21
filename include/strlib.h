@@ -26,4 +26,8 @@ char* SetString(StringPtr str, const char *s);
 char* ConvertToUpperCase(StringPtr str);
 char* ConvertToLowerCase(StringPtr str);
 
+char* RemoveLeftSpace(StringPtr str);
+char* RemoveRightSpace(StringPtr str);
+char* RemoveBothSpace(StringPtr str);
+
 #endif

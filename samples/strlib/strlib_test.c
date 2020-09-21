@@ -132,12 +132,19 @@ TEST(ConvertToLowerCase, LowerString, {
     StringPtr str = NewString(s);
 
 	EXPECT_NOT_NULL(ConvertToLowerCase(str));
+
+	s = "ABCD";
+    EXPECT_STR_EQUAL(SetString(str, s), s);
 	EXPECT_STR_EQUAL(ConvertToLowerCase(str), expected);
+
+	s = "ABCD";
+    EXPECT_STR_EQUAL(SetString(str, s), s);
 	EXPECT_STR_LOWER_CASE(ConvertToLowerCase(str));
 
     // 빈 문자열을 정상처리해야 한다.
+	s = "";
 	expected = "";
-    EXPECT_STR_EQUAL(SetString(str, expected), expected);
+    EXPECT_STR_EQUAL(SetString(str, s), s);
 	EXPECT_STR_EQUAL(ConvertToLowerCase(str), expected);
 	EXPECT_STR_LOWER_CASE(ConvertToLowerCase(str));
 
@@ -148,6 +155,117 @@ TEST(ConvertToLowerCase, LowerString, {
 
 	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
 	EXPECT_NULL(ConvertToLowerCase(NULL));
+
+    DeleteString(&str);
+})
+
+TEST(TrimString, RemoveLeftSpace, {
+	char *s = " \tabcde";
+	char *expected = "abcde"; 
+    StringPtr str = NewString(s);
+
+	EXPECT_NOT_NULL(RemoveLeftSpace(str));
+
+	s = " \t\t \tabcde";
+    EXPECT_STR_EQUAL(SetString(str, s), s);
+	//printf("Before) expected:%s, str->data:%s\n", expected, str->data);
+	EXPECT_STR_EQUAL(RemoveLeftSpace(str), expected);
+	//printf("After) expected:%s, str->data:%s\n", expected, str->data);
+
+	s = " \ta b c d e   ";
+	expected = "a b c d e   ";
+    EXPECT_STR_EQUAL(SetString(str, s), s);
+	//printf("Before) expected:%s, str->data:%s|\n", expected, str->data);
+	EXPECT_STR_EQUAL(RemoveLeftSpace(str), expected);
+	//printf("After) expected:%s, str->data:%s|\n", expected, str->data);
+
+	// 빈 문자열을 정상처리해야 한다.
+	s = "";
+	expected = "";
+    EXPECT_STR_EQUAL(SetString(str, s), s);
+	EXPECT_STR_EQUAL(RemoveLeftSpace(str), expected);
+
+	// str->data가 NULL 이면 NULL을 반환해야 한다.
+	free(str->data);
+	str->data = NULL;
+	EXPECT_NULL(RemoveLeftSpace(str));
+
+	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	EXPECT_NULL(RemoveLeftSpace(NULL));
+
+    DeleteString(&str);
+})
+
+TEST(TrimString, RemoveRightSpace, {
+	char *s = "abcde \t";
+	char *expected = "abcde"; 
+    StringPtr str = NewString(s);
+
+	EXPECT_NOT_NULL(RemoveRightSpace(str));
+
+	s = "abcde \t\t \t";
+    EXPECT_STR_EQUAL(SetString(str, s), s);
+	//printf("Before) expected:%s, str->data:%s|\n", expected, str->data);
+	EXPECT_STR_EQUAL(RemoveRightSpace(str), expected);
+	//printf("After) expected:%s, str->data:%s|\n", expected, str->data);
+
+	s = " a b c d e \t\t \t";
+	expected = " a b c d e";
+    EXPECT_STR_EQUAL(SetString(str, s), s);
+	//printf("Before) expected:%s, str->data:%s|\n", expected, str->data);
+	EXPECT_STR_EQUAL(RemoveRightSpace(str), expected);
+	//printf("After) expected:%s, str->data:%s|\n", expected, str->data);
+
+	// 빈 문자열을 정상처리해야 한다.
+	s = "";
+	expected = "";
+    EXPECT_STR_EQUAL(SetString(str, s), s);
+	EXPECT_STR_EQUAL(RemoveRightSpace(str), expected);
+
+	// str->data가 NULL 이면 NULL을 반환해야 한다.
+	free(str->data);
+	str->data = NULL;
+	EXPECT_NULL(RemoveRightSpace(str));
+
+	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	EXPECT_NULL(RemoveRightSpace(NULL));
+
+    DeleteString(&str);
+})
+
+TEST(TrimString, RemoveBothSpace, {
+	char *s = "\t abcde \t";
+	char *expected = "abcde"; 
+    StringPtr str = NewString(s);
+
+	EXPECT_NOT_NULL(RemoveBothSpace(str));
+
+	s = "\t \t\t abcde \t\t \t";
+    EXPECT_STR_EQUAL(SetString(str, s), s);
+	//printf("Before) expected:%s, str->data:%s|\n", expected, str->data);
+	EXPECT_STR_EQUAL(RemoveBothSpace(str), expected);
+	//printf("After) expected:%s, str->data:%s|\n", expected, str->data);
+
+	s = "\t \t\t a b c d e \t\t \t";
+	expected = "a b c d e";
+	EXPECT_STR_EQUAL(SetString(str, s), s);
+	//printf("Before) expected:%s, str->data:%s|\n", expected, str->data);
+	EXPECT_STR_EQUAL(RemoveBothSpace(str), expected);
+	//printf("After) expected:%s, str->data:%s|\n", expected, str->data);
+
+	// 빈 문자열을 정상처리해야 한다.
+	s = "";
+	expected = "";
+    EXPECT_STR_EQUAL(SetString(str, s), s);
+	EXPECT_STR_EQUAL(RemoveBothSpace(str), expected);
+
+	// str->data가 NULL 이면 NULL을 반환해야 한다.
+	free(str->data);
+	str->data = NULL;
+	EXPECT_NULL(RemoveBothSpace(str));
+
+	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	EXPECT_NULL(RemoveBothSpace(NULL));
 
     DeleteString(&str);
 })
@@ -164,7 +282,10 @@ int main()
         Test_CloneString_InstanceClone,
         Test_SetString_SetNewValue,
 		Test_ConvertToUpperCase_UpperString,
-		Test_ConvertToLowerCase_LowerString
+		Test_ConvertToLowerCase_LowerString,
+		Test_TrimString_RemoveLeftSpace,
+		Test_TrimString_RemoveRightSpace,
+		Test_TrimString_RemoveBothSpace
     );
 
     RUN_ALL_TESTS();

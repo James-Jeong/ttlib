@@ -218,3 +218,126 @@ char* ConvertToLowerCase(StringPtr str)
 	return str->data;
 }
 
+/**
+ * @fn char* RemoveLeftSpace(StringPtr str)
+ * @brief 구조체에서 관리하는 문자열의 왼쪽 공백을 모두 제거하는 함수
+ * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
+ * @return 성공 시 왼쪽 공백이 제거된 문자열의 주소, 실패 시 NULL 반환
+ */
+char* RemoveLeftSpace(StringPtr str)
+{
+	if(str == NULL)
+	{
+		return NULL;
+	}
+
+	if(str->data == NULL)
+	{
+		return NULL;
+	}
+
+	size_t strLength = str->length;
+	size_t strIndex = 0;
+	size_t leftSpaceCount = 0;
+
+	for( ; strIndex < strLength; strIndex++)
+	{
+		if(isspace(str->data[strIndex]) != 0)
+		{
+			leftSpaceCount++;
+		}
+		else break;
+	}
+
+	if(leftSpaceCount > 0)
+	{
+		size_t newDataLength = strLength - leftSpaceCount + 1;
+		char *newData = (char*)malloc(newDataLength);
+		if(newData == NULL)
+		{
+			return NULL;
+		}
+
+		memcpy(newData, str->data + leftSpaceCount, newDataLength);
+		*(newData + newDataLength) = '\0';
+
+		free(str->data);
+		str->data = newData;
+	}
+
+	return str->data;
+}
+
+/**
+ * @fn char* RemoveRightSpace(StringPtr str)
+ * @brief 구조체에서 관리하는 문자열의 오른쪽 공백을 모두 제거하는 함수
+ * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
+ * @return 성공 시 오른쪽 공백이 제거된 문자열의 주소, 실패 시 NULL 반환
+ */
+char* RemoveRightSpace(StringPtr str)
+{
+	if(str == NULL)
+	{
+		return NULL;
+	}
+
+	if(str->data == NULL)
+	{
+		return NULL;
+	}
+
+	size_t strLength = str->length;
+	int strIndex = (int)strLength - 1;
+	size_t rightSpaceCount = 0;
+
+	for( ; strIndex >= 0; strIndex--)
+	{
+		if(isspace(str->data[strIndex]) != 0)
+		{
+			rightSpaceCount++;
+		}
+		else break;
+	}
+
+	if(rightSpaceCount > 0)
+	{
+		size_t newDataLength = strLength - rightSpaceCount + 1;
+		char *newData = (char*)malloc(newDataLength);
+		if(newData == NULL)
+		{
+			return NULL;
+		}
+
+		str->data[strLength - rightSpaceCount] = '\0';
+		memcpy(newData, str->data, newDataLength);
+
+		free(str->data);
+		str->data = newData;
+	}
+
+	return str->data;
+}
+
+/**
+ * @fn char* RemoveBothSpace(StringPtr str)
+ * @brief 구조체에서 관리하는 문자열의 양쪽 공백을 모두 제거하는 함수
+ * RemoveRightSpace 함수에서 전달받은 구조체 포인터와 관리하는 문자열의 NULL 체크를 수행하므로 별도로 체크하지 않는다.
+ * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
+ * @return 성공 시 양쪽 공백이 제거된 문자열의 주소, 실패 시 NULL 반환
+ */
+char* RemoveBothSpace(StringPtr str)
+{
+	char *trimmedString = RemoveRightSpace(str);
+	if(trimmedString == NULL)
+	{
+		return NULL;
+	}
+
+	if(SetString(str, trimmedString) == NULL)
+	{
+		return NULL;
+	}
+	
+	return RemoveLeftSpace(str);
+}
+
