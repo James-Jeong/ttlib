@@ -30,7 +30,9 @@ char* RemoveLeftSpace(StringPtr str);
 char* RemoveRightSpace(StringPtr str);
 char* RemoveBothSpace(StringPtr str);
 
-char* IntactCopy(StringPtr dstStr, const StringPtr srcStr);
-char* RestrictedCopy(StringPtr dstStr, const StringPtr srcStr, size_t length);
+char* CopyString(StringPtr dstStr, const StringPtr srcStr);
+char* CopyNString(StringPtr dstStr, const StringPtr srcStr, size_t length);
+
+char* FormatString(StringPtr str, const char* format, ...);
 
 #endif

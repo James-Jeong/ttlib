@@ -98,27 +98,24 @@ TEST(ConvertToUpperCase, UpperString, {
 	char *expected = "ABCD"; 
     StringPtr str = NewString(s);
 
+	// 반환 값 확인
 	EXPECT_NOT_NULL(ConvertToUpperCase(str));
 
+	// 기본적인 변환 테스트
 	s = "abcd";
-    EXPECT_STR_EQUAL(SetString(str, s), s);
+    SetString(str, s);
 	EXPECT_STR_EQUAL(ConvertToUpperCase(str), expected);
-
-	s = "abcd";
-    EXPECT_STR_EQUAL(SetString(str, s), s);
-	EXPECT_STR_UPPER_CASE(ConvertToUpperCase(str));
 
     // 빈 문자열을 정상처리해야 한다.
 	s = "";
 	expected = "";
-    EXPECT_STR_EQUAL(SetString(str, s), s);
+    SetString(str, s);
 	EXPECT_STR_EQUAL(ConvertToUpperCase(str), expected);
-	EXPECT_STR_UPPER_CASE(ConvertToUpperCase(str));
 
-	// str->data가 NULL 이면 NULL을 반환해야 한다.
-	free(str->data);
-	str->data = NULL;
-	EXPECT_NULL(ConvertToUpperCase(str));
+	s = "123-*ab-c+d(ef)";
+	expected = "123-*AB-C+D(EF)";
+	SetString(str, s);
+	EXPECT_STR_EQUAL(ConvertToUpperCase(str), expected);
 
 	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
 	EXPECT_NULL(ConvertToUpperCase(NULL));
@@ -134,24 +131,19 @@ TEST(ConvertToLowerCase, LowerString, {
 	EXPECT_NOT_NULL(ConvertToLowerCase(str));
 
 	s = "ABCD";
-    EXPECT_STR_EQUAL(SetString(str, s), s);
+	SetString(str, s);
 	EXPECT_STR_EQUAL(ConvertToLowerCase(str), expected);
-
-	s = "ABCD";
-    EXPECT_STR_EQUAL(SetString(str, s), s);
-	EXPECT_STR_LOWER_CASE(ConvertToLowerCase(str));
 
     // 빈 문자열을 정상처리해야 한다.
 	s = "";
 	expected = "";
-    EXPECT_STR_EQUAL(SetString(str, s), s);
+    SetString(str, s);
 	EXPECT_STR_EQUAL(ConvertToLowerCase(str), expected);
-	EXPECT_STR_LOWER_CASE(ConvertToLowerCase(str));
 
-	// str->data가 NULL 이면 NULL을 반환해야 한다.
-	free(str->data);
-	str->data = NULL;
-	EXPECT_NULL(ConvertToLowerCase(str));
+	s = "123-*AB-C+D(EF)";
+	expected = "123-*ab-c+d(ef)";
+	SetString(str, s);
+	EXPECT_STR_EQUAL(ConvertToLowerCase(str), expected);
 
 	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
 	EXPECT_NULL(ConvertToLowerCase(NULL));
@@ -166,15 +158,17 @@ TEST(TrimString, RemoveLeftSpace, {
 
 	EXPECT_NOT_NULL(RemoveLeftSpace(str));
 
+	// 왼쪽 공백만 있는 경우
 	s = " \t\t \tabcde";
-    EXPECT_STR_EQUAL(SetString(str, s), s);
+    SetString(str, s);
 	//printf("Before) expected:%s, str->data:%s\n", expected, str->data);
 	EXPECT_STR_EQUAL(RemoveLeftSpace(str), expected);
 	//printf("After) expected:%s, str->data:%s\n", expected, str->data);
 
+	// 왼쪽, 오른쪽 공백과 문자열 중간에 공백이 있는 경우
 	s = " \ta b c d e   ";
 	expected = "a b c d e   ";
-    EXPECT_STR_EQUAL(SetString(str, s), s);
+    SetString(str, s);
 	//printf("Before) expected:%s, str->data:%s|\n", expected, str->data);
 	EXPECT_STR_EQUAL(RemoveLeftSpace(str), expected);
 	//printf("After) expected:%s, str->data:%s|\n", expected, str->data);
@@ -182,13 +176,8 @@ TEST(TrimString, RemoveLeftSpace, {
 	// 빈 문자열을 정상처리해야 한다.
 	s = "";
 	expected = "";
-    EXPECT_STR_EQUAL(SetString(str, s), s);
+    SetString(str, s);
 	EXPECT_STR_EQUAL(RemoveLeftSpace(str), expected);
-
-	// str->data가 NULL 이면 NULL을 반환해야 한다.
-	free(str->data);
-	str->data = NULL;
-	EXPECT_NULL(RemoveLeftSpace(str));
 
 	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
 	EXPECT_NULL(RemoveLeftSpace(NULL));
@@ -203,15 +192,16 @@ TEST(TrimString, RemoveRightSpace, {
 
 	EXPECT_NOT_NULL(RemoveRightSpace(str));
 
+	// 오른쪽 공백만 있는 경우
 	s = "abcde \t\t \t";
-    EXPECT_STR_EQUAL(SetString(str, s), s);
+    SetString(str, s);
 	//printf("Before) expected:%s, str->data:%s|\n", expected, str->data);
 	EXPECT_STR_EQUAL(RemoveRightSpace(str), expected);
 	//printf("After) expected:%s, str->data:%s|\n", expected, str->data);
 
 	s = " a b c d e \t\t \t";
 	expected = " a b c d e";
-    EXPECT_STR_EQUAL(SetString(str, s), s);
+    SetString(str, s);
 	//printf("Before) expected:%s, str->data:%s|\n", expected, str->data);
 	EXPECT_STR_EQUAL(RemoveRightSpace(str), expected);
 	//printf("After) expected:%s, str->data:%s|\n", expected, str->data);
@@ -219,13 +209,8 @@ TEST(TrimString, RemoveRightSpace, {
 	// 빈 문자열을 정상처리해야 한다.
 	s = "";
 	expected = "";
-    EXPECT_STR_EQUAL(SetString(str, s), s);
+    SetString(str, s);
 	EXPECT_STR_EQUAL(RemoveRightSpace(str), expected);
-
-	// str->data가 NULL 이면 NULL을 반환해야 한다.
-	free(str->data);
-	str->data = NULL;
-	EXPECT_NULL(RemoveRightSpace(str));
 
 	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
 	EXPECT_NULL(RemoveRightSpace(NULL));
@@ -241,14 +226,14 @@ TEST(TrimString, RemoveBothSpace, {
 	EXPECT_NOT_NULL(RemoveBothSpace(str));
 
 	s = "\t \t\t abcde \t\t \t";
-    EXPECT_STR_EQUAL(SetString(str, s), s);
+     SetString(str, s);
 	//printf("Before) expected:%s, str->data:%s|\n", expected, str->data);
 	EXPECT_STR_EQUAL(RemoveBothSpace(str), expected);
 	//printf("After) expected:%s, str->data:%s|\n", expected, str->data);
 
 	s = "\t \t\t a b c d e \t\t \t";
 	expected = "a b c d e";
-	EXPECT_STR_EQUAL(SetString(str, s), s);
+	SetString(str, s);
 	//printf("Before) expected:%s, str->data:%s|\n", expected, str->data);
 	EXPECT_STR_EQUAL(RemoveBothSpace(str), expected);
 	//printf("After) expected:%s, str->data:%s|\n", expected, str->data);
@@ -256,13 +241,8 @@ TEST(TrimString, RemoveBothSpace, {
 	// 빈 문자열을 정상처리해야 한다.
 	s = "";
 	expected = "";
-    EXPECT_STR_EQUAL(SetString(str, s), s);
+    SetString(str, s);
 	EXPECT_STR_EQUAL(RemoveBothSpace(str), expected);
-
-	// str->data가 NULL 이면 NULL을 반환해야 한다.
-	free(str->data);
-	str->data = NULL;
-	EXPECT_NULL(RemoveBothSpace(str));
 
 	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
 	EXPECT_NULL(RemoveBothSpace(NULL));
@@ -270,74 +250,112 @@ TEST(TrimString, RemoveBothSpace, {
     DeleteString(&str);
 })
 
-TEST(CopyString, IntactCopy, {
+TEST(CopyString, CopyString, {
 	char *srcData = "abc";
 	char *dstData = "def";
 	char *expected = "abc"; 
     StringPtr srcStr = NewString(srcData);
 	StringPtr dstStr = NewString(dstData);
 
-	EXPECT_NOT_NULL(IntactCopy(dstStr, srcStr));
+	EXPECT_NOT_NULL(CopyString(dstStr, srcStr));
 
 	dstData = "def";
-	EXPECT_STR_EQUAL(SetString(dstStr, dstData), dstData);
+	SetString(dstStr, dstData);
 	//printf("Before) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
-	EXPECT_STR_EQUAL(IntactCopy(dstStr, srcStr), expected);
+	EXPECT_STR_EQUAL(CopyString(dstStr, srcStr), expected);
 	//printf("After) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
 
 	// destination 문자열의 길이가 source 문자열의 길이보다 큰 경우 정상 동작해야 한다.
 	dstData = "defghi";
-	EXPECT_STR_EQUAL(SetString(dstStr, dstData), dstData);
+	SetString(dstStr, dstData);
 	//printf("Before) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
-	EXPECT_STR_EQUAL(IntactCopy(dstStr, srcStr), expected);
+	EXPECT_STR_EQUAL(CopyString(dstStr, srcStr), expected);
 	//printf("After) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
 
 	// destination 문자열의 길이가 source 문자열의 길이보다 작은 경우에도 정상 동작해야 한다.
 	dstData = "d";
-	EXPECT_STR_EQUAL(SetString(dstStr, dstData), dstData);
+	SetString(dstStr, dstData);
 	//printf("Before) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
-	EXPECT_STR_EQUAL(IntactCopy(dstStr, srcStr), expected);
+	EXPECT_STR_EQUAL(CopyString(dstStr, srcStr), expected);
 	//printf("After) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
 
 	// 빈 문자열을 정상적으로 복사해야 한다.
 	srcData = "";
 	expected = "";
-    EXPECT_STR_EQUAL(SetString(srcStr, srcData), srcData);
+    SetString(srcStr, srcData);
 	//printf("Before) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
-	EXPECT_STR_EQUAL(IntactCopy(dstStr, srcStr), expected);
+	EXPECT_STR_EQUAL(CopyString(dstStr, srcStr), expected);
 	//printf("After) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
 
-	// str->data가 NULL 이면 NULL을 반환해야 한다.
-	free(srcStr->data);
-	srcStr->data = NULL;
-	EXPECT_NULL(IntactCopy(dstStr, srcStr));
-
 	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
-	EXPECT_NULL(IntactCopy(NULL, srcStr));
-	EXPECT_NULL(IntactCopy(dstStr, NULL));
-	EXPECT_NULL(IntactCopy(NULL, NULL));
+	EXPECT_NULL(CopyString(NULL, srcStr));
+	EXPECT_NULL(CopyString(dstStr, NULL));
+	EXPECT_NULL(CopyString(NULL, NULL));
 
     DeleteString(&srcStr);
     DeleteString(&dstStr);
 })
 
-TEST(CopyString, RestrictedCopy, {
+TEST(CopyString, CopyNString, {
 	char *srcData = "abcdef";
 	char *dstData = "xyz";
 	char *expected = "abc"; 
     StringPtr srcStr = NewString(srcData);
 	StringPtr dstStr = NewString(dstData);
 
-	EXPECT_NOT_NULL(RestrictedCopy(dstStr, srcStr, 3));
+	EXPECT_NOT_NULL(CopyNString(dstStr, srcStr, 3));
 	
 	dstData = "xyz";
-	EXPECT_STR_EQUAL(SetString(dstStr, dstData), dstData);
-	printf("Before) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
-	EXPECT_STR_EQUAL(RestrictedCopy(dstStr, srcStr, 3), expected);
-	printf("After) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+	SetString(dstStr, dstData);
+	//printf("Before) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+	EXPECT_STR_EQUAL(CopyNString(dstStr, srcStr, 3), expected);
+	//printf("After) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+
+	// destination 문자열의 길이가 복사할 문자열의 길이보다 큰 경우 정상 동작해야 한다.
+	dstData = "defghi";
+	SetString(dstStr, dstData);
+	//printf("Before) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+	EXPECT_STR_EQUAL(CopyNString(dstStr, srcStr, 3), expected);
+	//printf("After) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+
+	// destination 문자열의 길이가 복사할 문자열의 길이보다 작은 경우에도 정상 동작해야 한다.
+	dstData = "d";
+	SetString(dstStr, dstData);
+	//printf("Before) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+	EXPECT_STR_EQUAL(CopyNString(dstStr, srcStr, 3), expected);
+	//printf("After) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+
+	// 빈 문자열을 정상적으로 복사해야 한다.
+	srcData = "";
+	expected = "";
+    SetString(srcStr, srcData);
+	//printf("Before) expected:%s, srcStr->data:%s(%d), dstStr->data:%s(%d)|\n", expected, srcStr->data, srcStr->length, dstStr->data, dstStr->length);
+	EXPECT_STR_EQUAL(CopyNString(dstStr, srcStr, 1), expected);
+	//printf("After) expected:%s, srcStr->data:%s, dstStr->data:%s|\n", expected, srcStr->data, dstStr->data);
+
+	// 복사할 문자열의 길이가 0 일 경우 NULL 을 반환해야 한다.
+	EXPECT_NULL(CopyNString(dstStr, srcStr, 0));
+
+	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	EXPECT_NULL(CopyNString(NULL, srcStr, 1));
+	EXPECT_NULL(CopyNString(dstStr, NULL, 1));
+	EXPECT_NULL(CopyNString(NULL, NULL, 1));
 
 	DeleteString(&srcStr);
     DeleteString(&dstStr);
+})
+
+TEST(FormatString, FormatString, {
+	char *s = "abc";
+	char *format = "[%s]";
+	StringPtr str = NewString(s);
+
+	char expected[5];
+	sprintf(expected, format, s);
+
+	EXPECT_STR_EQUAL(FormatString(str, format, s), expected);
+
+	DeleteString(&str);
 })
 
 int main()
@@ -356,8 +374,9 @@ int main()
 		Test_TrimString_RemoveLeftSpace,
 		Test_TrimString_RemoveRightSpace,
 		Test_TrimString_RemoveBothSpace,
-		Test_CopyString_IntactCopy,
-		Test_CopyString_RestrictedCopy
+		Test_CopyString_CopyString,
+		Test_CopyString_CopyNString,
+		Test_FormatString_FormatString
     );
 
     RUN_ALL_TESTS();

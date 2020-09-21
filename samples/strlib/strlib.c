@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdarg.h>
 
 #include "strlib.h"
 
@@ -327,6 +328,7 @@ char* RemoveRightSpace(StringPtr str)
  */
 char* RemoveBothSpace(StringPtr str)
 {
+	//TODO Clone -> set -> return str->data
 	char *trimmedString = RemoveRightSpace(str);
 	if(trimmedString == NULL)
 	{
@@ -342,13 +344,13 @@ char* RemoveBothSpace(StringPtr str)
 }
 
 /**
- * @fn char* IntactCopy(StringPtr dstStr, const StringPtr srcStr)
+ * @fn char* CopyString(StringPtr dstStr, const StringPtr srcStr)
  * @brief source 문자열 관리 구조체에서 destination 문자열 관리 구조체로 동일한 문자열을 복사하는 함수(길이도 포함)
  * @param dstStr 복사될 문자열 관리 구조체(출력)
  * @param srcStr 복사할 문자열 관리 구조체(입력, 읽기 전용)
  * @return 성공 시 복사된 문자열의 주소, 실패 시 NULL 반환
  */
-char* IntactCopy(StringPtr dstStr, const StringPtr srcStr)
+char* CopyString(StringPtr dstStr, const StringPtr srcStr)
 {
 	if(dstStr == NULL || srcStr == NULL)
 	{
@@ -360,8 +362,8 @@ char* IntactCopy(StringPtr dstStr, const StringPtr srcStr)
 		return NULL;
 	}
 
-	size_t dstStrLength = GetLength(dstStr);
-	size_t srcStrLength = GetLength(srcStr);
+	size_t dstStrLength = dstStr->length;
+	size_t srcStrLength = srcStr->length;
 
 	if(dstStrLength < srcStrLength)// dstStr->data 를 srcStr->data 의 길이와 같은 문자열로 새로 생성한다.
 	{
@@ -383,8 +385,13 @@ char* IntactCopy(StringPtr dstStr, const StringPtr srcStr)
 	return dstStr->data;
 }
 
-char* RestrictedCopy(StringPtr dstStr, const StringPtr srcStr, size_t length)
+char* CopyNString(StringPtr dstStr, const StringPtr srcStr, size_t length)
 {
+	if(length == 0)
+	{
+		return NULL;
+	}
+
 	if(dstStr == NULL || srcStr == NULL)
 	{
 		return NULL;
@@ -395,14 +402,28 @@ char* RestrictedCopy(StringPtr dstStr, const StringPtr srcStr, size_t length)
 		return NULL;
 	}
 
-	size_t dstStrLength = GetLength(dstStr);
-	size_t srcStrLength = GetLength(srcStr);
+	size_t dstStrLength = dstStr->length;
+	size_t srcStrLength = srcStr->length;
 
-	if(srcStrLength < length) // 복사할 길이가 srcStrLength 보다 크면 모순이므로 복사 실패 
+	if(srcStrLength == 0)
 	{
-		return NULL;
+		char *newData = realloc(dstStr->data, 1);
+		if(newData == NULL)
+		{
+			return NULL;
+		}
+		dstStr->data = newData;
+		dstStr->data[0] = '\0';
+		dstStr->length = 0;
+		return dstStr->data;
 	}
-	else if(dstStrLength < length) // dstStrLength 가 복사할 길이보다 작으면 모순이므로, dstStr->data 를 복사할 길이와 같은 문자열로 새로 생성한다.
+
+	if(srcStrLength < length) // 복사할 길이가 srcStrLength 보다 크면, srcStrLength 만큼 복사
+	{
+		length = srcStrLength;
+	}
+
+	if(dstStrLength < length) // dstStrLength 가 복사할 길이보다 작으면, dstStr->data 를 복사할 길이와 같은 문자열로 새로 생성한다.
 	{
 		char *newData = (char*)malloc(length);
 		if(newData == NULL)
@@ -423,3 +444,36 @@ char* RestrictedCopy(StringPtr dstStr, const StringPtr srcStr, size_t length)
 
 }
 
+char* FormatString(StringPtr str, const char* format, ...)
+{
+	va_list ap;
+	va_start(ap, format);
+
+	int newLength = vsnprintf(NULL, 0, format, ap) + 1;
+	if(newLength < 1)
+	{
+		return NULL;
+	}
+
+	char *newData = (char*)calloc((size_t)newLength, sizeof(char));
+	if(newData == NULL)
+	{
+		return NULL;
+	}
+
+	int result = vsnprintf(newData, sizeof(newData), format, ap);
+	if(result < 0 // glibc < 2.1
+		 || (size_t)result >= sizeof(newData)) // glibc >= 2.1
+	{
+		free(newData);
+		return NULL;
+	}
+
+	va_end(ap);
+
+	free(str->data);
+	str->data = newData;
+	str->length = (size_t)newLength;
+
+	return str->data;
+}
