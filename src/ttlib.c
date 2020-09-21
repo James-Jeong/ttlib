@@ -4,10 +4,10 @@
 /// Predefitions of Static Functions
 //////////////////////////////////////////////////////////////////////////////////
 
-static TestInitializationResult initializeTests(TestSuitPtr testSuit);
-static TestPtrContainer newTests(size_t numberOfTests);
-static void deleteTest(TestPtr test);
-static void printTests(const TestPtrContainer testPtrContainer, int numberOfTests);
+static TestInitializationResult InitializeTests(TestSuitPtr testSuit);
+static TestPtrContainer NewTestPtrContainer(size_t numberOfTests);
+static void DeleteTest(TestPtr test);
+static void DeleteTestPtrContainer(TestPtrContainer testPtrContainer, int numberOfTests);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Local Functions
@@ -29,10 +29,10 @@ TestSuitPtr NewTestSuit()
 
 	// Initialize other members
 	testSuit->initializers = NULL;
+	testSuit->testPtrContainer = NULL;
 	testSuit->numberOfTests = 0;
 	testSuit->numberOfFailTests = 0;
 	testSuit->totalNumOfFailTestFuncs = 0;
-	testSuit->testPtrContainer = NULL;
 	testSuit->onGoing = TestContinue;
 
 	return testSuit;
@@ -83,7 +83,7 @@ TestPtr AddTest(TestSuitPtr testSuit, Test test)
 
 	if (testSuit->testPtrContainer == NULL) // None of testPtrContainer registered yet.
 	{
-		newContainer = (TestPtrContainer)malloc(sizeof(TestPtr) * (size_t)(numberOfTests + 1));
+		newContainer = NewTestPtrContainer((size_t)(numberOfTests + 1));
 	}
 	else // One or more testPtrContainer exist already.
 	{
@@ -92,7 +92,7 @@ TestPtr AddTest(TestSuitPtr testSuit, Test test)
 	}
 	if (newContainer == NULL)
 	{
-		deleteTest(newTest);
+		DeleteTest(newTest);
 		return NULL;
 	}
 
@@ -125,21 +125,7 @@ void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)
 	// release memory allocated to the array of Test instances
 	if (testSuit->testPtrContainer != NULL)
 	{
-		TestPtr test = NULL;
-
-		int testIndex = 0;
-		for (; testIndex < testSuit->numberOfTests; testIndex++)
-		{
-			test = testSuit->testPtrContainer[testIndex];
-			if(test != NULL)
-			{
-				free(test->testCase);
-				free(test->testName);
-				free(test);
-			}
-		}
-
-		free(testSuit->testPtrContainer);
+		DeleteTestPtrContainer(testSuit->testPtrContainer, testSuit->numberOfTests);
 	}
 
 	// release memory allocated to the TestSuit instance
@@ -164,7 +150,7 @@ void RunAllTests(TestSuitPtr testSuit)
 	}
 
 	// Add user testPtrContainer into TestSuit instance
-	if (initializeTests(testSuit) == TestInitializationResultFail)
+	if (InitializeTests(testSuit) == TestInitializationResultFail)
 	{
 		return;
 	}
@@ -281,13 +267,13 @@ void SetContinueTestSuit(TestSuitPtr testSuit)
 //////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @fn static TestInitializationResult initializeTests(TestSuitPtr testSuit)
+ * @fn static TestInitializationResult InitializeTests(TestSuitPtr testSuit)
  * @brief 사용자가 작성한 테스트 함수들을 전체 테스트 관리 구조체(TestSuit)에 등록하는 함수
  * RunAllTests 함수에서 호출되기 때문에 전달받은 구조체 포인터에 대한 NULL 체크를 수행하지 않는다.
  * @param testSuit 전체 테스트 관리 구조체(입력 및 출력)
  * @return 성공 시 TestInitializationResultSuccess, 실패 시 TestInitializationResultSuccessFail 반환
  */
-static TestInitializationResult initializeTests(TestSuitPtr testSuit)
+static TestInitializationResult InitializeTests(TestSuitPtr testSuit)
 {
 	TestSuitInitializer *initializers = testSuit->initializers;
 	if (initializers == NULL)
@@ -305,13 +291,13 @@ static TestInitializationResult initializeTests(TestSuitPtr testSuit)
 }
 
 /**
- * @fn static TestPtrContainer newTests(size_t numberOfTests)
+ * @fn static TestPtrContainer NewTestPtrContainer(size_t numberOfTests)
  * @brief TestPtrContainer 를 새로 생성하는 함수
- * initializeTests 함수에서 호출되기 때문에 전달받은 크기 체크를 수행하지 않는다.
+ * InitializeTests 함수에서 호출되기 때문에 전달받은 크기 체크를 수행하지 않는다.
  * @param numberOfTests 저장할 Test 구조체 포인터의 개수(입력)
  * @return 성공 시 새로 생성된 TestPtrContainer 객체, 실패 시 NULL 반환
  */
-static TestPtrContainer newTests(size_t numberOfTests)
+static TestPtrContainer NewTestPtrContainer(size_t numberOfTests)
 {
 	TestPtrContainer testPtrContainer = (TestPtrContainer)malloc(sizeof(TestPtr) * numberOfTests);
 	if (testPtrContainer == NULL)
@@ -329,13 +315,39 @@ static TestPtrContainer newTests(size_t numberOfTests)
 }
 
 /**
- * @fn static void deleteTest(TestPtr test)
+ * @fn static void DeleteTestPtrContainer(TestPtrContainer testPtrContainer, int numberOfTests)
+ * @brief TestPtrContainer 를 삭제하는 함수
+ * DeleteTestSuit 함수에서 호출되기 때문에 전달받은 구조체의 이중 포인터에 대한 NULL 체크를 수행하지 않는다.
+ * @param testPtrContainer 삭제할 구조체의 포인터들을 가지는 이중 포인터
+ * @return 반환값 없음
+ */
+static void DeleteTestPtrContainer(TestPtrContainer testPtrContainer, int numberOfTests)
+{
+	TestPtr test = NULL;
+
+	int testIndex = 0;
+	for (; testIndex < numberOfTests; testIndex++)
+	{
+		test = testPtrContainer[testIndex];
+		if(test != NULL)
+		{
+			free(test->testCase);
+			free(test->testName);
+			free(test);
+		}
+	}
+
+	free(testPtrContainer);
+}
+
+/**
+ * @fn static void DeleteTest(TestPtr test)
  * @brief Test 구조체를 삭제하는 함수
  * AddTest 함수에서 호출되기 때문에 전달받은 구조체 포인터에 대한 NULL 체크를 수행하지 않는다.
  * @param test 삭제할 Test 구조체(입력)
  * @return 반환값 없음
  */
-static void deleteTest(TestPtr test)
+static void DeleteTest(TestPtr test)
 {
 	free(test->testCase);
 	free(test->testName);
@@ -347,7 +359,7 @@ static void deleteTest(TestPtr test)
 //////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @fn void printMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TestResult testResultType)
+ * @fn void PrintMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TestResult testResultType)
  * @brief 함수 결과에 따라 출력 방법을 다르게 설정하여 지정한 메시지를 출력하는 함수
  * ProcessFailTestSuit 함수에서 호출되기 때문에 전달받은 문자열에 대한 NULL 체크를 수행하지 않는다.
  * @param functionName 실패한 함수 이름(입력, 읽기 전용)
@@ -357,7 +369,7 @@ static void deleteTest(TestPtr test)
  * @param testResultType 테스트 함수 실행 결과(입력)
  * @return 반환값 없음
  */
-void printMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TestResult testResultType)
+void PrintMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TestResult testResultType)
 {
 	switch (testResultType)
 	{

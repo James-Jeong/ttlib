@@ -108,7 +108,7 @@ if (_testSuit == NULL) { \
 //////////////////////////////////////////////////////////////////////////////////
 
 // 테스트 결과를 성공/실패 여부에 따라 출력하는 함수
-#define PRINT_MESSAGE(msg, testResultType, functionName, fileName, lineNumber) printMessageHelper(functionName, fileName, lineNumber, msg, testResultType)
+#define PRINT_MESSAGE(msg, testResultType, functionName, fileName, lineNumber) PrintMessageHelper(functionName, fileName, lineNumber, msg, testResultType)
 
 // 테스트 성공 시 출력할 내용을 지정하는 함수
 #define PRINT_SUCCESS(msg) PRINT_MESSAGE(msg, TestSuccess, NULL, NULL, 0)
@@ -293,7 +293,7 @@ void SetContinueTestSuit(TestSuitPtr testSuit);
 /// Util Function
 //////////////////////////////////////////////////////////////////////////////////
 
-void printMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TestResult testResultType);
+void PrintMessageHelper(const char *functionName, const char *file_name, int line_number, const char *msg, TestResult testResultType);
 int CheckIsUpperString(const char *actual);
 int CheckIsLowerString(const char *actual);
 
