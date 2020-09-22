@@ -522,7 +522,7 @@ char* FormatString(StringPtr str, const char* format, ...)
  */
 char* ConcatString(StringPtr str, const char* s)
 {
-	if(str == NULL)
+	if(str == NULL || str->data == NULL)
 	{
 		return NULL;
 	}
@@ -559,7 +559,7 @@ char* ConcatString(StringPtr str, const char* s)
  */
 char* TruncateString(StringPtr str, int from)
 {
-	if(str == NULL || from < 0 || from >= str->length)
+	if(str == NULL || str->data == NULL || str->length <= 0 || from < 0 || from >= str->length)
 	{
 		return NULL;
 	}
@@ -580,7 +580,7 @@ char* TruncateString(StringPtr str, int from)
  */
 StringPtr SubString(const StringPtr str, int from, int length)
 {
-	if(str == NULL || length < 0 || from < 0 || from >= str->length)
+	if(str == NULL || str->data == NULL || str->length <= 0 || length < 0 || from < 0 || from >= str->length)
 	{
 		return NULL;
 	}
@@ -600,17 +600,19 @@ StringPtr SubString(const StringPtr str, int from, int length)
 }
 
 /**
- * @fn int CompareString(StringPtr str1, StringPtr str2)
+ * @fn CompareResult CompareString(const StringPtr str1, const StringPtr str2)
  * @brief 두 문자열을 비교하는 함수
  * @param str1 비교될 문자열 관리 구조체(입력, 읽기 전용)
  * @param str2 비교할 문자열 관리 구조체(입력, 읽기 전용)
- * @return 두 문자열이 같으면 0, 비교될 문자열이 크면 1, 아니면 -1, 실패 시 COMP_ERROR(-2) 반환
+ * @return 두 문자열의 정렬 순서가 일치하면 OrderEqual(0), 뒤에 있으면  OrderRear(1), 앞에 있으면 OrderFront(-1), 실패 시 CompareError(-2) 반환
  */
-int CompareString(StringPtr str1, StringPtr str2)
+CompareResult CompareString(const StringPtr str1, const StringPtr str2)
 {
+	CompareResult result = CompareError;
+
 	if(str1 == NULL || str2 == NULL || str1->data == NULL || str2->data == NULL || str1->length == 0 || str2->length == 0)
 	{
-		return COMP_ERROR;
+		return result;
 	}
 
 	int lCount = 0;
@@ -631,21 +633,78 @@ int CompareString(StringPtr str1, StringPtr str2)
 		str2Data++;
 	}
 
-	// 두 문자열이 같음
 	if(lCount == 0 && gCount == 0)
 	{
 		// 두 문자열의 길이가 서로 다른 경우
 		// 비교될 문자열의 길이가 더 큰 경우 1 반환
-		if(str1->length > str2->length) return 1;
+		if(str1->length > str2->length) result = OrderRear;
 		// 비교할 문자열의 길이가 더 큰 경우 -1 반환
-		else if(str1->length < str2->length) return -1;
+		else if(str1->length < str2->length) result = OrderFront;
 		// 두 문자열의 길이가 같은 경우 0 반환
-		else return 0;
+		else result = OrderEqual;
 	}
-	// 두 문자열이 다름
-	else if(lCount > 0) return -1;
-	else if(gCount > 0) return 1;
+	else if(lCount > 0) result = OrderFront;
+	else if(gCount > 0) result = OrderRear;
 
-	return COMP_ERROR;
+	return result;
+}
+
+/**
+ * @fn SearchResult SearchString(const StringPtr str, const char *pattern)
+ * @brief 지정한 문자열에서 특정 문자열을 검색하는 함수
+ * @param str 검색될 문자열을 저장한 구조체(입력, 읽기 전용)
+ * @param pattern 검색할 문자열(입력, 읽기 전용)
+ * @return 성공 시 SearchTrue(1), 실패 시 SearchFalse(-1) 반환
+ */
+SearchResult SearchString(const StringPtr str, const char *pattern)
+{
+	SearchResult result = SearchFalse;
+
+	if(pattern == NULL || str == NULL || str->data == NULL || str->length <= 0)
+	{
+		return result;
+	}
+
+	int patternLength = (int)strlen(pattern);
+	if(patternLength == 0 || patternLength > str->length)
+	{
+		return result;
+	}
+
+	int strLength = str->length;
+	int strIndex = 0;
+	int patternIndex = 0;
+
+	for( ; strIndex < strLength; strIndex++)
+	{
+		// 첫 문자를 먼저 검색
+		if(str->data[strIndex] == pattern[patternIndex])
+		{
+			// 첫 문자가 일치하므로 1 부터 시작
+			int equalCount = 1;
+			// 검색할 문자열과 패턴 문자열이 일치하는 첫 문자의 위치부터 검색 시작
+			int tempIndex = (++strIndex);
+			patternIndex++;
+
+			// 첫 문자가 일치하면 그 다음 문자들이 일치하는지 검사
+			for( ; patternIndex < patternLength; patternIndex++)
+			{
+				if(str->data[tempIndex] != pattern[patternIndex]) break;
+				else equalCount++;
+				tempIndex++;
+			}
+
+			// 비교한 모든 문자들이 같으면 검색 성공
+			if(equalCount == patternLength)
+			{
+				result = SearchTrue;
+				break;
+			}
+		}
+		// 못찾았으면 다시 검색
+		patternIndex = 0;
+	}
+
+	return result;
 }
 

@@ -2,7 +2,27 @@
 #define __STRLIB_H__
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Definition
+/// Enums
+///////////////////////////////////////////////////////////////////////////////
+
+typedef enum SearchResult
+{
+	// 검색 실패
+	SearchFalse = -1,
+	// 검색 성공
+	SearchTrue = 1
+} SearchResult;
+
+typedef enum CompareResult
+{
+	CompareError = -2,
+	OrderFront = -1,
+	OrderEqual = 0,
+	OrderRear = 1
+} CompareResult;
+
+///////////////////////////////////////////////////////////////////////////////
+/// Macro
 ///////////////////////////////////////////////////////////////////////////////
 
 // vsnprintf 동작 성공
@@ -10,10 +30,9 @@
 #define VSN_FAIL -1
 #endif
 
-// CompareString 함수의 비정상 반환값
-#ifndef COMP_ERROR
-#define COMP_ERROR -2
-#endif
+///////////////////////////////////////////////////////////////////////////////
+/// Definition
+///////////////////////////////////////////////////////////////////////////////
 
 // 문자열 관리 구조체
 typedef struct _string_t {
@@ -49,6 +68,7 @@ char* ConcatString(StringPtr str, const char* s);
 char* TruncateString(StringPtr str, int from);
 StringPtr SubString(StringPtr str, int from, int length);
 
-int CompareString(StringPtr str1, StringPtr str2);
+CompareResult CompareString(const StringPtr str1, const StringPtr str2);
+SearchResult SearchString(const StringPtr str, const char *pattern);
 
 #endif
