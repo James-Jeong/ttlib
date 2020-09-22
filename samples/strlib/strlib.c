@@ -513,6 +513,13 @@ char* FormatString(StringPtr str, const char* format, ...)
 	return str->data;
 }
 
+/**
+ * @fn char* ConcatString(StringPtr str, const char* s)
+ * @brief 원본 문자열 뒤에 지정한 문자열을 붙이는 함수
+ * @param str 덧붙여질 문자열을 저장할 문자열 관리 구조체(출력)
+ * @param s 덧붙일 문자열(입력, 읽기 전용)
+ * @return 성공 시 덧붙여진 문자열의 주소, 실패 시 NULL 반환
+ */
 char* ConcatString(StringPtr str, const char* s)
 {
 	if(str == NULL)
@@ -543,9 +550,16 @@ char* ConcatString(StringPtr str, const char* s)
 	return str->data;
 }
 
+/**
+ * @fn char* TruncateString(StringPtr str, int from)
+ * @brief 문자열에서 지정한 위치부터 끝까지 잘라내는 함수
+ * @param str 잘라낼 문자열을 저장할 문자열 관리 구조체(출력)
+ * @param from 잘라낼 문자열의 시작 위치(입력)
+ * @return 성공 시 잘라낸 문자열의 주소, 실패 시 NULL 반환
+ */
 char* TruncateString(StringPtr str, int from)
 {
-	if(from < 0 || from >= str->length)
+	if(str == NULL || from < 0 || from >= str->length)
 	{
 		return NULL;
 	}
@@ -556,7 +570,15 @@ char* TruncateString(StringPtr str, int from)
 	return str->data;
 }
 
-StringPtr SubString(StringPtr str, int from, int length)
+/**
+ * @fn StringPtr SubString(const StringPtr str, int from, int length)
+ * @brief 문자열에서 지정한 위치부터 지정한 길이까지 추출해서 새로운 문자열을 생성하는 함수
+ * @param str 추출할 문자열을 저장한 문자열 관리 구조체(입력, 읽기 전용)
+ * @param from 추출할 문자열의 시작 위치(입력)
+ * @param length 추출할 길이(입력)
+ * @return 성공 시 추출한 문자열 구조체(cloned)의 주소, 실패 시 NULL 반환
+ */
+StringPtr SubString(const StringPtr str, int from, int length)
 {
 	if(str == NULL || length < 0 || from < 0 || from >= str->length)
 	{

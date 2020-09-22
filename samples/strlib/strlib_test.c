@@ -15,7 +15,7 @@ TEST(NewString, InstanceCreation, {
     EXPECT_STR_EQUAL(str->data, expected);    
     DeleteString(&str);
 
-    // NULL 값이 들어온 경우, 0을 반환해야 한다.
+    // NULL 값이 들어온 경우, 0을 반환
     str = NewString(NULL);
     EXPECT_NULL(str);
 })
@@ -39,14 +39,14 @@ TEST(GetLength, LengthOfString, {
     EXPECT_NUM_EQUAL(GetLength(str), expected);
     DeleteString(&str);
 
-    // 빈 문자열에 대해서, 0을 반환해야 한다.
+    // 빈 문자열에 대해서, 0을 반환
     s = "";
     str = NewString(s);
     expected = 0;
     EXPECT_NUM_EQUAL(GetLength(str), expected);
     DeleteString(&str);
 
-    // NULL 값이 들어온 경우, 0을 반환해야 한다.
+    // NULL 값이 들어온 경우, 0을 반환
     expected = 0;
     EXPECT_NUM_EQUAL(GetLength(NULL), expected);
 })
@@ -58,7 +58,7 @@ TEST(GetPtr, PointerToStringData, {
     EXPECT_PTR_EQUAL(GetPtr(str), str->data);
     DeleteString(&str);
 
-    // NULL 값이 들어온 경우, NULL을 반환해야 한다.
+    // NULL 값이 들어온 경우, NULL을 반환
     EXPECT_NULL(GetPtr(NULL));
 
 })
@@ -77,7 +77,7 @@ TEST(CloneString, InstanceClone, {
     EXPECT_NUM_EQUAL(GetLength(str1), GetLength(str2));
     DeleteString(&str1);
 
-	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	// NULL 값이 들어온 경우, NULL을 반환
     str2 = CloneString(NULL);
     EXPECT_NULL(str2);
 })
@@ -91,7 +91,7 @@ TEST(SetString, SetNewValue, {
 	// 기본적인 문자열 설정 테스트
     EXPECT_STR_EQUAL(SetString(str, expected), expected);
 
-	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	// NULL 값이 들어온 경우, NULL을 반환
     EXPECT_NULL(SetString(str, NULL));
     EXPECT_NULL(SetString(NULL, expected));
 
@@ -127,7 +127,7 @@ TEST(ConvertToUpperCase, UpperString, {
 	SetString(str, s);
 	EXPECT_STR_EQUAL(ConvertToUpperCase(str), expected);
 
-	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	// NULL 값이 들어온 경우, NULL을 반환
 	EXPECT_NULL(ConvertToUpperCase(NULL));
 
     DeleteString(&str);
@@ -157,7 +157,7 @@ TEST(ConvertToLowerCase, LowerString, {
 	SetString(str, s);
 	EXPECT_STR_EQUAL(ConvertToLowerCase(str), expected);
 
-	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	// NULL 값이 들어온 경우, NULL을 반환
 	EXPECT_NULL(ConvertToLowerCase(NULL));
 
     DeleteString(&str);
@@ -188,7 +188,7 @@ TEST(TrimString, RemoveLeftSpace, {
     SetString(str, s);
 	EXPECT_STR_EQUAL(RemoveLeftSpace(str), expected);
 
-	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	// NULL 값이 들어온 경우, NULL을 반환
 	EXPECT_NULL(RemoveLeftSpace(NULL));
 
     DeleteString(&str);
@@ -218,7 +218,7 @@ TEST(TrimString, RemoveRightSpace, {
     SetString(str, s);
 	EXPECT_STR_EQUAL(RemoveRightSpace(str), expected);
 
-	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	// NULL 값이 들어온 경우, NULL을 반환
 	EXPECT_NULL(RemoveRightSpace(NULL));
 
     DeleteString(&str);
@@ -249,7 +249,7 @@ TEST(TrimString, RemoveBothSpace, {
     SetString(str, s);
 	EXPECT_STR_EQUAL(RemoveBothSpace(str), expected);
 
-	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	// NULL 값이 들어온 경우, NULL을 반환
 	EXPECT_NULL(RemoveBothSpace(NULL));
 
     DeleteString(&str);
@@ -286,7 +286,7 @@ TEST(CopyString, CopyString, {
     SetString(srcStr, srcData);
 	EXPECT_STR_EQUAL(CopyString(dstStr, srcStr), expected);
 
-	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	// NULL 값이 들어온 경우, NULL을 반환
 	EXPECT_NULL(CopyString(NULL, srcStr));
 	EXPECT_NULL(CopyString(dstStr, NULL));
 	EXPECT_NULL(CopyString(NULL, NULL));
@@ -326,10 +326,10 @@ TEST(CopyString, CopyNString, {
     SetString(srcStr, srcData);
 	EXPECT_STR_EQUAL(CopyNString(dstStr, srcStr, 1), expected);
 
-	// 복사할 문자열의 길이가 0 일 경우 NULL 을 반환해야 한다.
+	// 복사할 문자열의 길이가 0 일 경우 NULL 을 반환
 	EXPECT_NULL(CopyNString(dstStr, srcStr, 0));
 
-	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	// NULL 값이 들어온 경우, NULL을 반환
 	EXPECT_NULL(CopyNString(NULL, srcStr, 1));
 	EXPECT_NULL(CopyNString(dstStr, NULL, 1));
 	EXPECT_NULL(CopyNString(NULL, NULL, 1));
@@ -351,7 +351,7 @@ TEST(FormatString, FormatString, {
 	// 기본적인 함수 동작 테스트
 	EXPECT_STR_EQUAL(FormatString(str, format, s), expected);
 
-	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	// NULL 값이 들어온 경우, NULL을 반환
 	EXPECT_NULL(FormatString(NULL, format, s));
 	EXPECT_NULL(FormatString(str, NULL, s));
 	EXPECT_NULL(FormatString(str, format, NULL));
@@ -368,28 +368,25 @@ TEST(ConcatString, ConcatString, {
 	char *s2 = "def";
 	char *expected = "abcdef";
 	StringPtr str = NewString(s1);
-		
-	char *actual = ConcatString(str, s2);
-	EXPECT_NOT_NULL(actual);
+	
+	// 반환값 확인
+	EXPECT_NOT_NULL(ConcatString(str, s2));
 
+	// 함수 기본 동작 테스트
 	EXPECT_STR_EQUAL(GetPtr(str), expected);
 
-	actual = ConcatString(str, "");
-	EXPECT_STR_EQUAL(actual, actual);
+	// 원본 문자열에 빈문자열을 붙이는 경우, 원본 문자열 반환
+	EXPECT_STR_EQUAL(ConcatString(str, ""), expected);
 
+	// 빈문자열에 붙이는 경우, 붙이려는 문자열 반환
 	SetString(str, "");
-	actual = ConcatString(str, s2);
-	EXPECT_STR_EQUAL(actual, s2);
+	EXPECT_STR_EQUAL(ConcatString(str, s2), s2);
 
-	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
-	actual = ConcatString(str, NULL);
-	EXPECT_NOT_NULL(actual);
-
-	actual = ConcatString(NULL, s2);
-	EXPECT_NULL(actual);
-
-	actual = ConcatString(NULL, NULL);
-	EXPECT_NULL(actual);
+	// 붙이려는 문자열이 NULL 인 경우, 원본 문자열을 반환
+	EXPECT_NOT_NULL(ConcatString(str, NULL));
+	// 원본 문자열 관리 구조체가 NULL 인 경우, NULL을 반환
+	EXPECT_NULL(ConcatString(NULL, s2));
+	EXPECT_NULL(ConcatString(NULL, NULL));
 
 	DeleteString(&str);
 })
@@ -397,26 +394,29 @@ TEST(ConcatString, ConcatString, {
 TEST(TruncateString, TruncateString, {
 	char *s = "abcdef";
 	char *expected = "abc";
-	StringPtr str = NewString(s);
 	int from = 3; // zero based
+	StringPtr str = NewString(s);
 
-	char *actual = TruncateString(str, from);
-	EXPECT_NOT_NULL(actual);
+	// 반환값 확인
+	EXPECT_NOT_NULL(TruncateString(str, from));
 
-	actual = GetPtr(str);
-	EXPECT_STR_EQUAL(actual, expected);
+	// 함수 기본 동작 테스트
+	EXPECT_STR_EQUAL(GetPtr(str), expected);
 
+	// from 이 움수인 경우, NULL 을 반환
 	from = -1;
-	actual = TruncateString(str, from);
-	EXPECT_NULL(actual);
+	EXPECT_NULL(TruncateString(str, from));
 
+	// from 이 문자열의 길이 보다 큰 경우, NULL 을 반환
 	from = (int)strlen(s);
-	actual = TruncateString(str, from);
-	EXPECT_NULL(actual);
+	EXPECT_NULL(TruncateString(str, from));
 
+	// from 이 0 인 경우, 빈 문자열을 반환
 	from = 0;
-	actual = TruncateString(str, from);
-	EXPECT_STR_EQUAL(actual, "");
+	EXPECT_STR_EQUAL(TruncateString(str, from), "");
+
+	// NULL 값이 들어온 경우, NULL을 반환
+	EXPECT_NULL(TruncateString(NULL, from));
 
 	DeleteString(&str);
 })
@@ -427,49 +427,51 @@ TEST(SubString, SubString, {
 	int from = 1;
 	int length = 2;
 
+	// 반환값 확인
 	StringPtr actual = SubString(str, from, length);
 	EXPECT_NOT_NULL(actual); // bc
 
+	// 함수 기본 동작 테스트
 	char *expected = "bc";
 	EXPECT_STR_EQUAL(actual->data, expected);
 	DeleteString(&actual);
 
 	// from 테스트
-	// from 이 음수
+	// from 이 음수인 경우
 	actual = SubString(str, -1, length);
 	EXPECT_NULL(actual);
-	// from 이 문자열 길이보다 클 때
+	// from 이 문자열 길이보다 큰 경우
 	actual = SubString(str, (int)strlen(str->data), length);
 	EXPECT_NULL(actual);
 
 	// length 테스트
-	// length 가 음수
+	// length 가 음수인 경우
 	actual = SubString(str, from, -1);
 	EXPECT_NULL(actual);
-	// from + length 가 문자열의 길이보다 크면, from 부터 문자열의 마지막까지 추출해서 반환
+	// from + length 가 문자열의 길이보다 큰 경우, from 부터 문자열의 마지막까지 추출해서 반환
 	from = 3;
 	actual = SubString(str, from, 10); // str->data : abcdef
 	EXPECT_STR_EQUAL(actual->data, "def");
 	DeleteString(&actual);
-	// @@ length 가 0 이면, 빈 문자열을 반환
+	// @@ length 가 0 인 경우, 빈 문자열을 반환
 	actual = SubString(str, from, 0);
 	EXPECT_STR_EQUAL(actual->data, "");
 	DeleteString(&actual);
 
 	// 빈문자열 테스트
-	// from 이 원본 문자열 길이보다 크다.
+	// from 이 원본 문자열 길이보다 큰 경우
 	SetString(str, "");
 	actual = SubString(str, 1, 2);
 	EXPECT_NULL(actual);
 
+	// 빈문자열에서 from 이 0, length 가 0 인 경우
 	SetString(str, "");
 	actual = SubString(str, 0, 0);
 	EXPECT_NULL(actual);
 
-	// NULL 테스트
+	// NULL 값이 들어온 경우, NULL을 반환
 	actual = SubString(NULL, from, length);
 	EXPECT_NULL(actual);
-	EXPECT_NOT_NULL(actual);
 
 	DeleteString(&str);
 })
