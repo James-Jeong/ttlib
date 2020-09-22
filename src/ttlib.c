@@ -183,13 +183,26 @@ void RunAllTests(TestSuitPtr testSuit)
 		}
 
 		printf("\n--------------------------------\n");
-		printf("[ 총 성공 테스트 수: %d 개 / 실패 테스트 수: %d 개 ]\n", (testIndex + 1) - testSuit->numberOfFailTests, testSuit->numberOfFailTests);
+		if(testSuit->numberOfFailTests > 0) testIndex++;
+		printf("[ 총 성공 테스트 수: %d 개 / 실패 테스트 수: %d 개 ]\n", testIndex - testSuit->numberOfFailTests, testSuit->numberOfFailTests);
 		printf("--------------------------------\n");
 	}
 	else
 	{
 		puts("\n[ 테스트가 존재하지 않음. ]\n");
 	}
+}
+
+/**
+ * @fn void ProcessSuccessTest(const char *functionName, const char *format, ...)
+ * @brief 테스트 성공 로직을 처리하는 함수
+ * @param functionName 호출된 함수 이름(입력, 읽기 전용)
+ * @param format 가변 인자 출력 형식(입력, 읽기 전용)
+ * @param ... 가변 인자(입력)
+ * @return 반환값 없음
+ */
+void ProcessSuccessTest(const char *functionName, const char *format, ...)
+{
 }
 
 /**

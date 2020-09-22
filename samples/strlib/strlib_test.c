@@ -28,7 +28,6 @@ TEST(DeleteString, InstanceDeletion, {
 
 	// NULL 설정 확인
     EXPECT_NULL(str);
-    ASSERT_NOT_NULL(str);
 })
 
 TEST(GetLength, LengthOfString, {
@@ -351,6 +350,16 @@ TEST(FormatString, FormatString, {
 
 	// 기본적인 함수 동작 테스트
 	EXPECT_STR_EQUAL(FormatString(str, format, s), expected);
+
+	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	EXPECT_NULL(FormatString(NULL, format, s));
+	EXPECT_NULL(FormatString(str, NULL, s));
+	EXPECT_NULL(FormatString(str, format, NULL));
+	EXPECT_NULL(FormatString(str, NULL, NULL));
+	EXPECT_NULL(FormatString(NULL, NULL, s));
+	EXPECT_NULL(FormatString(NULL, format, NULL));
+	EXPECT_NULL(FormatString(NULL, NULL, NULL));
+	EXPECT_NOT_NULL(FormatString(NULL, NULL, NULL));
 
 	DeleteString(&str);
 })

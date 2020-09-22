@@ -472,9 +472,15 @@ char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
  */
 char* FormatString(StringPtr str, const char* format, ...)
 {
+	if(str == NULL || format == NULL)
+	{
+		return NULL;
+	}
+
 	va_list ap;
 
 	va_start(ap, format);
+
 	int newLength = vsnprintf(NULL, 0, format, ap);
 	if(newLength < 0)
 	{

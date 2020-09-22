@@ -108,13 +108,12 @@ if (_testSuit == NULL) { \
 //////////////////////////////////////////////////////////////////////////////////
 
 // 테스트 성공 시 출력할 내용을 지정하는 함수
-#define PRINT_SUCCESS(functionName, format, ...) printf("["functionName"] "format"\n", __VA_ARGS__)
-
+#define PRINT_SUCCESS(functionName, format, ...) ProcessSuccessTest(functionName, format, __VA_ARGS__)
 // 테스트 실패 시 출력할 내용을 지정하는 함수
 #define PRINT_FAIL(functionName, fileName, lineNumber, failCount, format, ...) \
 	printf("(FAIL) ["functionName"] "format" (file:%s, line:%d)\n", __VA_ARGS__, fileName, lineNumber); \
-	if (functionName[0] == 'A') { \
-        IncFailCountTestSuit(testSuit); \
+	if(failCount > 0) IncFailCountTestSuit(testSuit); \
+	if(functionName[0] == 'A') { \
 		SetExitTestSuit(_testSuit); }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -292,6 +291,8 @@ void RunAllTests(TestSuitPtr testSuit);
 void IncFailCountTestSuit(TestSuitPtr testSuit);
 void SetExitTestSuit(TestSuitPtr testSuit);
 void SetContinueTestSuit(TestSuitPtr testSuit);
+
+void ProcessSuccessTest(const char *functionName, const char *format, ...);
 
 #endif
 
