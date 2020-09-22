@@ -32,7 +32,6 @@ TestSuitPtr NewTestSuit()
 	testSuit->testPtrContainer = NULL;
 	testSuit->numberOfTests = 0;
 	testSuit->numberOfFailTests = 0;
-	testSuit->totalNumOfFailTestFuncs = 0;
 	testSuit->onGoing = TestContinue;
 
 	return testSuit;
@@ -176,7 +175,7 @@ void RunAllTests(TestSuitPtr testSuit)
 
 			printf("\n{ (테스트 번호: %d) 테스트 케이스: %s, 테스트 이름: %s }\n", (testIndex + 1), test->testCase, test->testName);
 
-			test->testFunc();
+			test->testFunc(testSuit);
 			if (testSuit->onGoing == TestExit)
 			{
 				break;
@@ -184,8 +183,7 @@ void RunAllTests(TestSuitPtr testSuit)
 		}
 
 		printf("\n--------------------------------\n");
-		printf("[ 총 성공 테스트 수: %d 개 / 실패 테스트 수: %d 개 ]\n", numberOfTests - testSuit->totalNumOfFailTestFuncs, 
-				testSuit->totalNumOfFailTestFuncs);
+		printf("[ 총 성공 테스트 수: %d 개 / 실패 테스트 수: %d 개 ]\n", (testIndex + 1) - testSuit->numberOfFailTests, testSuit->numberOfFailTests);
 		printf("--------------------------------\n");
 	}
 	else
@@ -195,174 +193,22 @@ void RunAllTests(TestSuitPtr testSuit)
 }
 
 /**
- * @fn TestResult ProcessNum1TestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, int actual)
- * @brief 테스트 실패 시 테스트 실패 횟수를 하나 증가하고 숫자 관련 테스트의 실패 메시지를 출력하는 함수(숫자 하나만 다루는 경우)
+ * @fn void IncFailCountTestSuit(TestSuitPtr testSuit)
+ * @brief 테스트 함수 실패 시 증가한 failCount 를 testSuit 구조체 저장하는 함수
  * @param testSuit 전체 테스트 관리 구조체(출력)
- * @param functionName 실패한 함수 이름(입력, 읽기 전용)
- * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
- * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
- * @param actual 실제 결과값(입력)
- * @param expected 기대값(입력)
- * @return 현재 진행 중인 테스트 종료하면 TestExit, 계속 진행하면 TestContinue, 실패하면 TestFail 반환
+ * @param failCount 테스트 함수 실패 횟수(입력)
+ * @return 반환값 없음
  */
-TestResult ProcessNum1TestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, int actual)
+void IncFailCountTestSuit(TestSuitPtr testSuit)
 {
 	// Check parameter
 	if (testSuit == NULL)
 	{
-		return TestFail;
+		return;
 	}
 
-	testSuit->totalNumOfFailTestFuncs += failCount;
-
-	if (functionName != NULL && fileName != NULL && lineNumber > 0)
-	{
-		PRINT_FAIL(functionName, fileName, lineNumber, "actual:%d", actual);
-	}
-
-	if (functionName[0] == 'A')
-	{
-		return TestExit;
-	}
-
-	return TestContinue;
+	testSuit->numberOfFailTests++;
 }
-
-/**
- * @fn TestResult ProcessNum2TestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, int actual, int expected)
- * @brief 테스트 실패 시 테스트 실패 횟수를 하나 증가하고 숫자 관련 테스트의 실패 메시지를 출력하는 함수(숫자 두개를 다루는 경우)
- * @param testSuit 전체 테스트 관리 구조체(출력)
- * @param functionName 실패한 함수 이름(입력, 읽기 전용)
- * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
- * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
- * @param actual 실제 결과값(입력)
- * @param expected 기대값(입력)
- * @return 현재 진행 중인 테스트 종료하면 TestExit, 계속 진행하면 TestContinue, 실패하면 TestFail 반환
- */
-TestResult ProcessNum2TestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, int actual, int expected)
-{
-	// Check parameter
-	if (testSuit == NULL)
-	{
-		return TestFail;
-	}
-
-	testSuit->totalNumOfFailTestFuncs += failCount;
-
-	if (functionName != NULL && fileName != NULL && lineNumber > 0)
-	{
-		PRINT_FAIL(functionName, fileName, lineNumber, "actual:%d, expected:%d", actual, expected);
-	}
-
-	if (functionName[0] == 'A')
-	{
-		return TestExit;
-	}
-
-	return TestContinue;
-}
-
-/**
- * @fn TestResult ProcessStrTestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, const char* actual, const char* expected)
- * @brief 테스트 실패 시 테스트 실패 횟수를 하나 증가하고 문자열 관련 테스트 실패 메시지를 출력하는 함수
- * @param testSuit 전체 테스트 관리 구조체(출력)
- * @param functionName 실패한 함수 이름(입력, 읽기 전용)
- * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
- * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
- * @param actual 실제 결과값(입력, 읽기 전용)
- * @param expected 기대값(입력, 읽기 전용)
- * @return 현재 진행 중인 테스트 종료하면 TestExit, 계속 진행하면 TestContinue, 실패하면 TestFail 반환
- */
-TestResult ProcessStrTestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, const char* actual, const char* expected)
-{
-	// Check parameter
-	if (testSuit == NULL)
-	{
-		return TestFail;
-	}
-
-	testSuit->totalNumOfFailTestFuncs += failCount;
-
-	if (functionName != NULL && fileName != NULL && actual != NULL && expected != NULL && lineNumber > 0)
-	{
-		PRINT_FAIL(functionName, fileName, lineNumber, "actual:%s, expected:%s", actual, expected);
-	}
-
-	if (functionName[0] == 'A')
-	{
-		return TestExit;
-	}
-
-	return TestContinue;
-}
-
-/**
- * @fn TestResult ProcessNullTestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, void* actual)
- * @brief 테스트 실패 시 테스트 실패 횟수를 하나 증가하고 NULL 관련 테스트 실패 메시지를 출력하는 함수
- * @param testSuit 전체 테스트 관리 구조체(출력)
- * @param functionName 실패한 함수 이름(입력, 읽기 전용)
- * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
- * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
- * @param actual 실제 결과값(입력)
- * @return 현재 진행 중인 테스트 종료하면 TestExit, 계속 진행하면 TestContinue, 실패하면 TestFail 반환
- */
-TestResult ProcessNullTestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, void* actual)
-{
-	// Check parameter
-	if (testSuit == NULL)
-	{
-		return TestFail;
-	}
-
-	testSuit->totalNumOfFailTestFuncs += failCount;
-
-	if (functionName != NULL && fileName != NULL && actual != NULL && lineNumber > 0)
-	{
-		PRINT_FAIL(functionName, fileName, lineNumber, "actual:%p, expected:NULL", actual);
-	}
-
-	if (functionName[0] == 'A')
-	{
-		return TestExit;
-	}
-
-	return TestContinue;
-}
-
-/**
- * @fn TestResult ProcessPtrTestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, void* actual, void *expected)
- * @brief 테스트 실패 시 테스트 실패 횟수를 하나 증가하고 포인터 관련 테스트 실패 메시지를 출력하는 함수
- * @param testSuit 전체 테스트 관리 구조체(출력)
- * @param functionName 실패한 함수 이름(입력, 읽기 전용)
- * @param fileName 실패한 테스트가 작성된 파일 이름(입력, 읽기 전용)
- * @param lineNumber 실패한 테스트가 작성된 파일에서 호출된 코드의 라인 번호(입력)
- * @param actual 실제 결과값(입력)
- * @param expected 기대하는 결과값(입력)
- * @return 현재 진행 중인 테스트 종료하면 TestExit, 계속 진행하면 TestContinue, 실패하면 TestFail 반환
- */
-TestResult ProcessPtrTestFail(TestSuitPtr testSuit, const char *functionName, const char *fileName, int lineNumber, int failCount, void* actual, void *expected)
-{
-	// Check parameter
-	if (testSuit == NULL)
-	{
-		return TestFail;
-	}
-
-	testSuit->totalNumOfFailTestFuncs += failCount;
-
-	if (functionName != NULL && fileName != NULL && actual != NULL && lineNumber > 0)
-	{
-		PRINT_FAIL(functionName, fileName, lineNumber, "actual:%p, expected:%p", actual, expected);
-	}
-
-	if (functionName[0] == 'A')
-	{
-		return TestExit;
-	}
-
-	return TestContinue;
-}
-
 /**
  * @fn void SetExitTestSuit(TestSuitPtr testSuit)
  * @brief ASSERT 함수 호출인 경우 테스트 함수 동작 실패 시 테스트를 종료하도록 설정하는 함수

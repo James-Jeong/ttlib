@@ -28,6 +28,7 @@ TEST(DeleteString, InstanceDeletion, {
 
 	// NULL 설정 확인
     EXPECT_NULL(str);
+    ASSERT_NOT_NULL(str);
 })
 
 TEST(GetLength, LengthOfString, {
