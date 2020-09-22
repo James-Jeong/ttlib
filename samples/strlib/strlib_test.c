@@ -439,7 +439,7 @@ TEST(SubString, SubString, {
 	actual = SubString(str, -1, length);
 	EXPECT_NULL(actual);
 	// from 이 문자열 길이보다 클 때
-	actual = SubString(str, strlen(str->data), length);
+	actual = SubString(str, (int)strlen(str->data), length);
 	EXPECT_NULL(actual);
 
 	// length 테스트
@@ -469,6 +469,7 @@ TEST(SubString, SubString, {
 	// NULL 테스트
 	actual = SubString(NULL, from, length);
 	EXPECT_NULL(actual);
+	EXPECT_NOT_NULL(actual);
 
 	DeleteString(&str);
 })

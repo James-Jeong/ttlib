@@ -154,7 +154,7 @@ void RunAllTests(TestSuitPtr testSuit)
 		return;
 	}
 
-	int testIndex = 0;
+	int numberOfCurTests = 0;
 	int numberOfTests = testSuit->numberOfTests;
 
 	printf("--------------------------------\n");
@@ -165,17 +165,18 @@ void RunAllTests(TestSuitPtr testSuit)
 	{
 		// Call all test functions in the array
 		TestPtr test = NULL;
-		for (testIndex = 0; testIndex < numberOfTests; testIndex++)
+		while(numberOfCurTests < numberOfTests)
 		{
-			test = testSuit->testPtrContainer[testIndex];
+			test = testSuit->testPtrContainer[numberOfCurTests];
 			if (test->testFunc == NULL) // testSuit->testPtrContainer is a NULL-terninated array
 			{
 				break;
 			}
 
-			printf("\n{ (테스트 번호: %d) 테스트 케이스: %s, 테스트 이름: %s }\n", (testIndex + 1), test->testCase, test->testName);
+			printf("\n{ (테스트 번호: %d) 테스트 케이스: %s, 테스트 이름: %s }\n", (numberOfCurTests + 1), test->testCase, test->testName);
 
 			test->testFunc(testSuit);
+			numberOfCurTests++;
 			if (testSuit->onGoing == TestExit)
 			{
 				break;
@@ -183,8 +184,7 @@ void RunAllTests(TestSuitPtr testSuit)
 		}
 
 		printf("\n--------------------------------\n");
-		if(testSuit->numberOfFailTests > 0) testIndex++;
-		printf("[ 총 성공 테스트 수: %d 개 / 실패 테스트 수: %d 개 ]\n", testIndex - testSuit->numberOfFailTests, testSuit->numberOfFailTests);
+		printf("[ 총 성공 테스트 수: %d 개 / 실패 테스트 수: %d 개 ]\n", numberOfCurTests - testSuit->numberOfFailTests, testSuit->numberOfFailTests);
 		printf("--------------------------------\n");
 	}
 	else

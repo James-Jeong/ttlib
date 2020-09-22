@@ -71,6 +71,8 @@ typedef enum _testInitializationResult_t
 	int failCount = 0; \
 	F; \
 	if(failCount > 0){ \
+		failCount = 0; \
+		testSuit->numberOfFailTests++; \
 		return TestFail; \
 	} \
 	return TestSuccess; \
@@ -107,12 +109,10 @@ if (_testSuit == NULL) { \
 /// Print Macro Functions
 //////////////////////////////////////////////////////////////////////////////////
 
-// 테스트 성공 시 출력할 내용을 지정하는 함수
-#define PRINT_SUCCESS(functionName, format, ...) ProcessSuccessTest(functionName, format, __VA_ARGS__)
 // 테스트 실패 시 출력할 내용을 지정하는 함수
-#define PRINT_FAIL(functionName, fileName, lineNumber, failCount, format, ...) \
+#define PRINT_FAIL(functionName, fileName, lineNumber, format, ...) \
 	printf("(FAIL) ["functionName"] "format" (file:%s, line:%d)\n", __VA_ARGS__, fileName, lineNumber); \
-	if(failCount > 0) IncFailCountTestSuit(testSuit); \
+	failCount++; \
 	if(functionName[0] == 'A') { \
 		SetExitTestSuit(_testSuit); }
 
@@ -125,16 +125,27 @@ if (_testSuit == NULL) { \
 #define PTR_FORMAT "actual:%p, expected:%p"
 #define STR_FORMAT "actual:%s, expected:%s"
 
+void *_actualPtr;
+void *_expectedPtr;
+int _actualInt;
+int _expectedInt;
+char *_actualStr;
+char *_expectedStr;
+
 //////////////////////////////////////////////////////////////////////////////////
 /// (EXPECT) NULL Macro Functions
 /// 실패해도 현재 진행 중인 테스트가 종료되지 않는다.
 //////////////////////////////////////////////////////////////////////////////////
 
 // 실제 값이 NULL 인지 검사하는 함수
-#define EXPECT_NULL(actual) ((actual) == NULL) ? PRINT_SUCCESS("EXPECT_NULL", NULL_FORMAT, actual) : PRINT_FAIL("EXPECT_NULL", __FILE__, __LINE__, ++failCount, NULL_FORMAT, actual)
+#define EXPECT_NULL(actual) \
+	_actualPtr = actual; \
+	if(_actualPtr != NULL) { PRINT_FAIL("EXPECT_NULL", __FILE__, __LINE__, NULL_FORMAT, _actualPtr); }
 
 // 실제 값이 NULL 이 아닌지 검사하는 함수
-#define EXPECT_NOT_NULL(actual) ((actual) != NULL) ? PRINT_SUCCESS("EXPECT_NOT_NULL", NULL_FORMAT, actual) : PRINT_FAIL("EXPECT_NOT_NULL", __FILE__, __LINE__, ++failCount, NULL_FORMAT, actual)
+#define EXPECT_NOT_NULL(actual) \
+	_actualPtr = actual; \
+	if(_actualPtr == NULL) { PRINT_FAIL("EXPECT_NOT_NULL", __FILE__, __LINE__, NULL_FORMAT, _actualPtr); }
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (EXPECT) Pointer Macro Functions
@@ -142,10 +153,16 @@ if (_testSuit == NULL) { \
 //////////////////////////////////////////////////////////////////////////////////
 
 // 실제 주소값과 기대하는 주소값이 같은지 검사하는 함수
-#define EXPECT_PTR_EQUAL(actual, expected) ((actual) == (expected)) ? PRINT_SUCCESS("EXPECT_PTR_EQUAL", PTR_FORMAT, actual, expected) : PRINT_FAIL("EXPECT_PTR_EQUAL", __FILE__, __LINE__, ++failCount, PTR_FORMAT, actual, expected)
+#define EXPECT_PTR_EQUAL(actual, expected) \
+	_actualPtr = actual; \
+	_expectedPtr = expected; \
+	if(_actualPtr != _expectedPtr) { PRINT_FAIL("EXPECT_PTR_EQUAL", __FILE__, __LINE__, PTR_FORMAT, _actualPtr, _expectedPtr); }
 
 // 실제 주소값과 기대하는 주소값이 다른지 검사하는 함수
-#define EXPECT_PTR_NOT_EQUAL(actual, expected) ((actual) != (expected)) ? PRINT_SUCCESS("EXPECT_PTR_NOT_EQUAL", PTR_FORMAT, actual, expected) : PRINT_FAIL("EXPECT_PTR_NOT_EQUAL", __FILE__, __LINE__, ++failCount, PTR_FORMAT, actual, expected)
+#define EXPECT_PTR_NOT_EQUAL(actual, expected) \
+	_actualPtr = actual; \
+	_expectedPtr = expected; \
+	if(_actualPtr == _expectedPtr) { PRINT_FAIL("EXPECT_PTR_NOT_EQUAL", __FILE__, __LINE__, PTR_FORMAT, _actualPtr, _expectedPtr); }
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (EXPECT) Number Macro Functions
@@ -153,28 +170,50 @@ if (_testSuit == NULL) { \
 //////////////////////////////////////////////////////////////////////////////////
 
 // 실제 값과 기대하는 값이 같은지 검사하는 함수
-#define EXPECT_NUM_EQUAL(actual, expected) ((actual) == (expected)) ? PRINT_SUCCESS("EXPECT_NUM_EQUAL", NUM2_FORMAT, actual, expected) : PRINT_FAIL("EXPECT_NUM_EQUAL", __FILE__, __LINE__, ++failCount, NUM2_FORMAT, actual, expected)
+#define EXPECT_NUM_EQUAL(actual, expected) \
+	_actualInt = actual; \
+	_expectedInt = expected; \
+	if(_actualInt != _expectedInt) { PRINT_FAIL("EXPECT_NUM_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, _actualInt, _expectedInt); }
 
 // 실제 값과 기대하는 값이 다른지 검사하는 함수
-#define EXPECT_NUM_NOT_EQUAL(actual, expected) ((actual) != (expected)) ? PRINT_SUCCESS("EXPECT_NUM_NOT_EQUAL", NUM2_FORMAT, actual, expected) : PRINT_FAIL("EXPECT_NUM_NOT_EQUAL", __FILE__, __LINE__, ++failCount, NUM2_FORMAT, actual, expected)
+#define EXPECT_NUM_NOT_EQUAL(actual, expected) \
+	_actualInt = actual; \
+	_expectedInt = expected; \
+	if(_actualInt == _expectedInt) { PRINT_FAIL("EXPECT_NUM_NOT_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, _actualInt, _expectedInt); }
 
 // 실제 값이 기대하는 값보다 작거나 같은지 검사하는 함수
-#define EXPECT_NUM_LESS_EQUAL(actual, expected) ((actual) <= (expected)) ? PRINT_SUCCESS("EXPECT_NUM_LESS_EQUAL", NUM2_FORMAT, actual, expected) : PRINT_FAIL("EXPECT_NUM_LESS_EQUAL", __FILE__, __LINE__, ++failCount, NUM2_FORMAT, actual, expected)
+#define EXPECT_NUM_LESS_EQUAL(actual, expected) \
+	_actualInt = actual; \
+	_expectedInt = expected; \
+	if(_actualInt > _expectedInt) { PRINT_FAIL("EXPECT_NUM_LESS_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, _actualInt, _expectedInt); }
 
 // 실제 값이 기대하는 값보다 작은지 검사하는 함수
-#define EXPECT_NUM_LESS_THAN(actual, expected) ((actual) < (expected)) ? PRINT_SUCCESS("EXPECT_NUM_LESS_THAN", NUM2_FORMAT, actual, expected) : PRINT_FAIL("EXPECT_NUM_LESS_THAN", __FILE__, __LINE__, ++failCount, NUM2_FORMAT, actual, expected)
+#define EXPECT_NUM_LESS_THAN(actual, expected) \
+	_actualInt = actual; \
+	_expectedInt = expected; \
+	if(_actualInt >= _expectedInt) { PRINT_FAIL("EXPECT_NUM_LESS_THAN", __FILE__, __LINE__, NUM2_FORMAT, _actualInt, _expectedInt); }
 
 // 실제 값이 기대하는 값보다 크거나 같은지 검사하는 함수
-#define EXPECT_NUM_GREATER_EQUAL(actual, expected) ((actual) >= (expected)) ? PRINT_SUCCESS("EXPECT_NUM_GREATER_EQUAL", NUM2_FORMAT, actual, expected) : PRINT_FAIL("EXPECT_NUM_GREATER_EQUAL", __FILE__, __LINE__, ++failCount, NUM2_FORMAT, actual, expected)
+#define EXPECT_NUM_GREATER_EQUAL(actual, expected) \
+	_actualInt = actual; \
+	_expectedInt = expected; \
+	if(_actualInt < _expectedInt) { PRINT_FAIL("EXPECT_NUM_GREATER_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, _actualInt, _expectedInt); }
 
 // 실제 값이 기대하는 값보다 큰지 검사하는 함수
-#define EXPECT_NUM_GREATER_THAN(actual, expected) ((actual) > (expected)) ? PRINT_SUCCESS("EXPECT_NUM_GREATER_THAN", NUM2_FORMAT, actual, expected) : PRINT_FAIL("EXPECT_NUM_GREATER_THAN", __FILE__, __LINE__, ++failCount, NUM2_FORMAT, actual, expected)
+#define EXPECT_NUM_GREATER_THAN(actual, expected) \
+	_actualInt = actual; \
+	_expectedInt = expected; \
+	if(_actualInt <= _expectedInt) { PRINT_FAIL("EXPECT_NUM_GREATER_THAN", __FILE__, __LINE__, NUM2_FORMAT, _actualInt, _expectedInt); }
 
 // 지정한 숫자가 짝수인지 검사하는 함수
-#define EXPECT_NUM_EVEN(actual) ((actual) % 2 == 0) ? PRINT_SUCCESS("EXPECT_NUM_EVEN", NUM1_FORMAT, actual) : PRINT_FAIL("EXPECT_NUM_EVEN", __FILE__, __LINE__, ++failCount, NUM1_FORMAT, actual)
+#define EXPECT_NUM_EVEN(actual) \
+	_actualInt = actual; \
+	if(_actualInt % 2 != 0) { PRINT_FAIL("EXPECT_NUM_EVEN", __FILE__, __LINE__, NUM1_FORMAT, _actualInt); }
 
 // 지정한 숫자가 홀수인지 검사하는 함수
-#define EXPECT_NUM_ODD(actual) ((actual) % 2 == 1) ? PRINT_SUCCESS("EXPECT_NUM_ODD", NUM1_FORMAT, actual) : PRINT_FAIL("EXPECT_NUM_ODD", __FILE__, __LINE__, ++failCount, NUM1_FORMAT, actual)
+#define EXPECT_NUM_ODD(actual) \
+	_actualInt = actual; \
+	if(_actualInt % 2 != 1) { PRINT_FAIL("EXPECT_NUM_ODD", __FILE__, __LINE__, NUM1_FORMAT, _actualInt); }
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (EXPECT) String Macro Functions
@@ -182,10 +221,16 @@ if (_testSuit == NULL) { \
 //////////////////////////////////////////////////////////////////////////////////
 
 // 실제 문자열과 기대하는 문자열이 같은지 검사하는 함수
-#define EXPECT_STR_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) == 0) ? PRINT_SUCCESS("EXPECT_STR_EQUAL", STR_FORMAT, actual, expected) : PRINT_FAIL("EXPECT_STR_EQUAL", __FILE__, __LINE__, ++failCount, STR_FORMAT, actual, expected)
+#define EXPECT_STR_EQUAL(actual, expected) \
+	_actualStr = actual; \
+	_expectedStr = expected; \
+	if(strncmp(_actualStr, _expectedStr, strlen(_expectedStr)) != 0) { PRINT_FAIL("EXPECT_STR_EQUAL", __FILE__, __LINE__, STR_FORMAT, _actualStr, _expectedStr); }
 
 // 실제 문자열과 기대하는 문자열이 다른지 검사하는 함수
-#define EXPECT_STR_NOT_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) != 0) ? PRINT_SUCCESS("EXPECT_STR_NOT_EQUAL", STR_FORMAT, actual, expected) : PRINT_FAIL("EXPECT_STR_NOT_EQUAL", __FILE__, __LINE__, ++failCount, STR_FORMAT, actual, expected)
+#define EXPECT_STR_NOT_EQUAL(actual, expected) \
+	_actualStr = actual; \
+	_expectedStr = expected; \
+	if(strncmp(_actualStr, _expectedStr, strlen(_expectedStr)) == 0) { PRINT_FAIL("EXPECT_STR_NOT_EQUAL", __FILE__, __LINE__, STR_FORMAT, _actualStr, _expectedStr); }
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (ASSERT) NULL Macro Functions
@@ -193,10 +238,14 @@ if (_testSuit == NULL) { \
 //////////////////////////////////////////////////////////////////////////////////
 
 // 실제 값이 NULL 인지 검사하는 함수
-#define ASSERT_NULL(actual) ((actual) == NULL) ? PRINT_SUCCESS("ASSERT_NULL", NULL_FORMAT, actual) : PRINT_FAIL("ASSERT_NULL", __FILE__, __LINE__, ++failCount, NULL_FORMAT, actual)
+#define ASSERT_NULL(actual) \
+	_actualPtr = actual; \
+	if(_actualPtr != NULL) { PRINT_FAIL("ASSERT_NULL", __FILE__, __LINE__, NULL_FORMAT, _actualPtr); }
 
 // 실제 값이 NULL 이 아닌지 검사하는 함수
-#define ASSERT_NOT_NULL(actual) ((actual) != NULL) ? PRINT_SUCCESS("ASSERT_NOT_NULL", NULL_FORMAT, actual) : PRINT_FAIL("ASSERT_NOT_NULL", __FILE__, __LINE__, ++failCount, NULL_FORMAT, actual)
+#define ASSERT_NOT_NULL(actual) \
+	_actualPtr = actual; \
+	if(_actualPtr == NULL) { PRINT_FAIL("ASSERT_NOT_NULL", __FILE__, __LINE__, NULL_FORMAT, _actualPtr); }
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (ASSERT) Number Macro Functions
@@ -204,28 +253,50 @@ if (_testSuit == NULL) { \
 //////////////////////////////////////////////////////////////////////////////////
 
 // 실제 값과 기대하는 값이 같은지 검사하는 함수 
-#define ASSERT_NUM_EQUAL(actual, expected) ((actual) == (expected)) ? PRINT_SUCCESS("ASSERT_NUM_EQUAL", NUM2_FORMAT, actual, expected) : PRINT_FAIL("ASSERT_NUM_EQUAL", __FILE__, __LINE__, ++failCount, NUM2_FORMAT, actual, expected)
+#define ASSERT_NUM_EQUAL(actual, expected) \
+	_actualInt = actual; \
+	_expectedInt = expected; \
+	if(_actualInt != _expectedInt) { PRINT_FAIL("ASSERT_NUM_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, _actualInt, _expectedInt); }
 
 // 실제 값과 기대하는 값이 다른지 검사하는 함수
-#define ASSERT_NUM_NOT_EQUAL(actual, expected) ((actual) != (expected)) ? PRINT_SUCCESS("ASSERT_NUM_NOT_EQUAL", NUM2_FORMAT, actual, expected) : PRINT_FAIL("ASSERT_NUM_NOT_EQUAL", __FILE__, __LINE__, ++failCount, NUM2_FORMAT, actual, expected)
+#define ASSERT_NUM_NOT_EQUAL(actual, expected) \
+	_actualInt = actual; \
+	_expectedInt = expected; \
+	if(_actualInt == _expectedInt) { PRINT_FAIL("ASSERT_NUM_NOT_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, _actualInt, _expectedInt); }
 
 // 실제 값이 기대하는 값보다 작거나 같은지 검사하는 함수
-#define ASSERT_NUM_LESS_EQUAL(actual, expected) ((actual) <= (expected)) ? PRINT_SUCCESS("ASSERT_NUM_LESS_EQUAL", NUM2_FORMAT, actual, expected) : PRINT_FAIL("ASSERT_NUM_LESS_EQUAL", __FILE__, __LINE__, ++failCount, NUM2_FORMAT, actual, expected)
+#define ASSERT_NUM_LESS_EQUAL(actual, expected) \
+	_actualInt = actual; \
+	_expectedInt = expected; \
+	if(_actualInt > _expectedInt) { PRINT_FAIL("ASSERT_NUM_LESS_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, _actualInt, _expectedInt); }
 
 // 실제 값이 기대하는 값보다 작은지 검사하는 함수
-#define ASSERT_NUM_LESS_THAN(actual, expected) ((actual) < (expected)) ? PRINT_SUCCESS("ASSERT_NUM_LESS_THAN", NUM2_FORMAT, actual, expected) : PRINT_FAIL("ASSERT_NUM_LESS_THAN", __FILE__, __LINE__, ++failCount, NUM2_FORMAT, actual, expected)
+#define ASSERT_NUM_LESS_THAN(actual, expected) \
+	_actualInt = actual; \
+	_expectedInt = expected; \
+	if(_actualInt >= _expectedInt) { PRINT_FAIL("ASSERT_NUM_LESS_THAN", __FILE__, __LINE__, NUM2_FORMAT, _actualInt, _expectedInt); }
 
 // 실제 값이 기대하는 값보다 크거나 같은지 검사하는 함수
-#define ASSERT_NUM_GREATER_EQUAL(actual, expected) ((actual) >= (expected)) ? PRINT_SUCCESS("ASSERT_NUM_GREATER_EQUAL", NUM2_FORMAT, actual, expected) : PRINT_FAIL("ASSERT_NUM_LESS_THAN", __FILE__, __LINE__, ++failCount, NUM2_FORMAT, actual, expected)
+#define ASSERT_NUM_GREATER_EQUAL(actual, expected) \
+	_actualInt = actual; \
+	_expectedInt = expected; \
+	if(_actualInt < _expectedInt) { PRINT_FAIL("ASSERT_NUM_LESS_THAN", __FILE__, __LINE__, NUM2_FORMAT, _actualInt, _expectedInt); }
 
 // 실제 값이 기대하는 값보다 큰지 검사하는 함수
-#define ASSERT_NUM_GREATER_THAN(actual, expected) ((actual) > (expected)) ? PRINT_SUCCESS("ASSERT_NUM_GREATER_THAN", NUM2_FORMAT, actual, expected) : PRINT_FAIL("ASSERT_NUM_GREATER_EQUAL", __FILE__, __LINE__, ++failCount, NUM2_FORMAT, actual, expected)
+#define ASSERT_NUM_GREATER_THAN(actual, expected) \
+	_actualInt = actual; \
+	_expectedInt = expected; \
+	if(_actualInt <= _expectedInt) { PRINT_FAIL("ASSERT_NUM_GREATER_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, actualInt, expectedInt); }
 
 // 지정한 숫자가 짝수인지 검사하는 함수
-#define ASSERT_NUM_EVEN(actual) ((actual) % 2 == 0) ? PRINT_SUCCESS("ASSERT_NUM_EVEN", NUM1_FORMAT, actual) : PRINT_FAIL("ASSERT_NUM_EVEN", __FILE__, __LINE__, ++failCount, NUM1_FORMAT, actual)
+#define ASSERT_NUM_EVEN(actual) \
+	_actualInt = actual; \
+	if(_actualInt % 2 != 0) { PRINT_FAIL("ASSERT_NUM_EVEN", __FILE__, __LINE__, NUM1_FORMAT, _actualInt); }
 
 // 지정한 숫자가 홀수인지 검사하는 함수
-#define ASSERT_NUM_ODD(actual) ((actual) % 2 == 0) ? PRINT_SUCCESS("ASSERT_NUM_ODD", NUM1_FORMAT, actual) : PRINT_FAIL("ASSERT_NUM_ODD", __FILE__, __LINE__, ++failCount, NUM1_FORMAT, actual)
+#define ASSERT_NUM_ODD(actual)\
+	_actualInt = actual; \
+	if(_actualInt % 2 != 1) ? { PRINT_FAIL("ASSERT_NUM_ODD", __FILE__, __LINE__, NUM1_FORMAT, _actualInt); }
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (ASSERT) String Macro Functions
@@ -233,10 +304,16 @@ if (_testSuit == NULL) { \
 //////////////////////////////////////////////////////////////////////////////////
 
 // 실제 문자열과 기대하는 문자열이 같은지 검사하는 함수
-#define ASSERT_STR_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) == 0) ? PRINT_SUCCESS("ASSERT_STR_EQUAL", STR_FORMAT, actual, expected) : PRINT_FAIL("ASSERT_STR_EQUAL", __FILE__, __LINE__, ++failCount, STR_FORMAT, actual, expected)
+#define ASSERT_STR_EQUAL(actual, expected)\
+	_actualStr = actual; \
+	_expectedStr = expected; \
+	if(strncmp(_actualStr, _expectedStr, strlen(_expectedStr)) != 0) { PRINT_FAIL("ASSERT_STR_EQUAL", __FILE__, __LINE__, STR_FORMAT, _actualStr, _expectedStr); }
 
 // 실제 문자열과 기대하는 문자열이 다른지 검사하는 함수
-#define ASSERT_STR_NOT_EQUAL(actual, expected) (strncmp((actual), (expected), (strlen(expected) + 1)) != 0) ? PRINT_SUCCESS("ASSERT_STR_NOT_EQUAL", STR_FORMAT, actual, expected) : PRINT_FAIL("ASSERT_STR_NOT_EQUAL", __FILE__, __LINE__, ++failCount, STR_FORMAT, actual, expected)
+#define ASSERT_STR_NOT_EQUAL(actual, expected) \
+	_actualStr = actual; \
+	_expectedStr = expected; \
+	if(strncmp(_actualStr, _expectedStr, strlen(_expectedStr) == 0) { PRINT_FAIL("ASSERT_STR_NOT_EQUAL", __FILE__, __LINE__, STR_FORMAT, actual, expected); }
 
 //////////////////////////////////////////////////////////////////////////////////
 /// Definitions
