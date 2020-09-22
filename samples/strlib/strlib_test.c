@@ -359,7 +359,116 @@ TEST(FormatString, FormatString, {
 	EXPECT_NULL(FormatString(NULL, NULL, s));
 	EXPECT_NULL(FormatString(NULL, format, NULL));
 	EXPECT_NULL(FormatString(NULL, NULL, NULL));
-	EXPECT_NOT_NULL(FormatString(NULL, NULL, NULL));
+
+	DeleteString(&str);
+})
+
+TEST(ConcatString, ConcatString, {
+	char *s1 = "abc";
+	char *s2 = "def";
+	char *expected = "abcdef";
+	StringPtr str = NewString(s1);
+		
+	char *actual = ConcatString(str, s2);
+	EXPECT_NOT_NULL(actual);
+
+	EXPECT_STR_EQUAL(GetPtr(str), expected);
+
+	actual = ConcatString(str, "");
+	EXPECT_STR_EQUAL(actual, actual);
+
+	SetString(str, "");
+	actual = ConcatString(str, s2);
+	EXPECT_STR_EQUAL(actual, s2);
+
+	// NULL 값이 들어온 경우, NULL을 반환해야 한다.
+	actual = ConcatString(str, NULL);
+	EXPECT_NOT_NULL(actual);
+
+	actual = ConcatString(NULL, s2);
+	EXPECT_NULL(actual);
+
+	actual = ConcatString(NULL, NULL);
+	EXPECT_NULL(actual);
+
+	DeleteString(&str);
+})
+
+TEST(TruncateString, TruncateString, {
+	char *s = "abcdef";
+	char *expected = "abc";
+	StringPtr str = NewString(s);
+	int from = 3; // zero based
+
+	char *actual = TruncateString(str, from);
+	EXPECT_NOT_NULL(actual);
+
+	actual = GetPtr(str);
+	EXPECT_STR_EQUAL(actual, expected);
+
+	from = -1;
+	actual = TruncateString(str, from);
+	EXPECT_NULL(actual);
+
+	from = (int)strlen(s);
+	actual = TruncateString(str, from);
+	EXPECT_NULL(actual);
+
+	from = 0;
+	actual = TruncateString(str, from);
+	EXPECT_STR_EQUAL(actual, "");
+
+	DeleteString(&str);
+})
+
+TEST(SubString, SubString, {
+	char *s = "abcdef";
+	StringPtr str = NewString(s);
+	int from = 1;
+	int length = 2;
+
+	StringPtr actual = SubString(str, from, length);
+	EXPECT_NOT_NULL(actual); // bc
+
+	char *expected = "bc";
+	EXPECT_STR_EQUAL(actual->data, expected);
+	DeleteString(&actual);
+
+	// from 테스트
+	// from 이 음수
+	actual = SubString(str, -1, length);
+	EXPECT_NULL(actual);
+	// from 이 문자열 길이보다 클 때
+	actual = SubString(str, strlen(str->data), length);
+	EXPECT_NULL(actual);
+
+	// length 테스트
+	// length 가 음수
+	actual = SubString(str, from, -1);
+	EXPECT_NULL(actual);
+	// from + length 가 문자열의 길이보다 크면, from 부터 문자열의 마지막까지 추출해서 반환
+	from = 3;
+	actual = SubString(str, from, 10); // str->data : abcdef
+	EXPECT_STR_EQUAL(actual->data, "def");
+	DeleteString(&actual);
+	// @@ length 가 0 이면, 빈 문자열을 반환
+	actual = SubString(str, from, 0);
+	EXPECT_STR_EQUAL(actual->data, "");
+	DeleteString(&actual);
+
+	// 빈문자열 테스트
+	// from 이 원본 문자열 길이보다 크다.
+	SetString(str, "");
+	actual = SubString(str, 1, 2);
+	EXPECT_NULL(actual);
+
+	SetString(str, "");
+	actual = SubString(str, 0, 0);
+	EXPECT_NULL(actual);
+
+	// NULL 테스트
+	actual = SubString(NULL, from, length);
+	EXPECT_NULL(actual);
 
 	DeleteString(&str);
 })
@@ -382,7 +491,10 @@ int main()
 		Test_TrimString_RemoveBothSpace,
 		Test_CopyString_CopyString,
 		Test_CopyString_CopyNString,
-		Test_FormatString_FormatString
+		Test_FormatString_FormatString,
+		Test_ConcatString_ConcatString,
+		Test_TruncateString_TruncateString,
+		Test_SubString_SubString
     );
 
     RUN_ALL_TESTS();

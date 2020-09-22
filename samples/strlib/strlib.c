@@ -486,7 +486,7 @@ char* FormatString(StringPtr str, const char* format, ...)
 	{
 		return NULL;
 	}
-	newLength += 1;
+	newLength++;
 	va_end(ap);
 
 	char *newData = (char*)calloc((size_t)newLength, sizeof(char));
@@ -513,3 +513,66 @@ char* FormatString(StringPtr str, const char* format, ...)
 	return str->data;
 }
 
+char* ConcatString(StringPtr str, const char* s)
+{
+	if(str == NULL)
+	{
+		return NULL;
+	}
+
+	if(s == NULL)
+	{
+		return str->data;
+	}
+
+	int newLength = str->length + (int)strlen(s);
+	char *newData = (char*)malloc((size_t)newLength + 1);
+	if(newData == NULL)
+	{
+		return NULL;
+	}
+
+	memcpy(newData, str->data, (size_t)str->length);
+	memcpy(newData + str->length, s, (size_t)strlen(s));
+	newData[newLength] = '\0';
+
+	free(str->data);
+	str->data = newData;
+	str->length = newLength;
+
+	return str->data;
+}
+
+char* TruncateString(StringPtr str, int from)
+{
+	if(from < 0 || from >= str->length)
+	{
+		return NULL;
+	}
+
+	*(str->data + from) = '\0';
+	SetString(str, str->data);
+
+	return str->data;
+}
+
+StringPtr SubString(StringPtr str, int from, int length)
+{
+	if(str == NULL || length < 0 || from < 0 || from >= str->length)
+	{
+		return NULL;
+	}
+
+	int to = from + length;
+	if(to > str->length)
+	{
+		to = str->length;
+	}
+
+	StringPtr newStr = CloneString(str);
+	*(newStr->data + to) = '\0';
+	char *newData = newStr->data + from;
+	SetString(newStr, newData);
+
+	return newStr;
+}

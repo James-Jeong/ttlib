@@ -40,4 +40,8 @@ char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length);
 
 char* FormatString(StringPtr str, const char* format, ...);
 
+char* ConcatString(StringPtr str, const char* s);
+char* TruncateString(StringPtr str, int from);
+StringPtr SubString(StringPtr str, int from, int length);
+
 #endif
