@@ -61,6 +61,14 @@ typedef enum _testInitializationResult_t
 /// Control Macro Functions
 //////////////////////////////////////////////////////////////////////////////////
 
+// 매크로 함수에서 매개변수가 함수일 경우, 한 번만 실행되도록 하기 위해 그 결과값을 저장하는 변수(상황에 맞게 사용)
+void *_actualPtr;
+void *_expectedPtr;
+int _actualInt;
+int _expectedInt;
+char *_actualStr;
+char *_expectedStr;
+
 // 테스트 진행을 위한 TestSuit 객체를 전역변수로 선언하기 위한 함수
 #define DECLARE_TEST() static TestSuitPtr _testSuit = NULL;
 
@@ -124,13 +132,6 @@ if (_testSuit == NULL) { \
 #define NUM2_FORMAT "actual:%d, expected:%d"
 #define PTR_FORMAT "actual:%p, expected:%p"
 #define STR_FORMAT "actual:%s, expected:%s"
-
-void *_actualPtr;
-void *_expectedPtr;
-int _actualInt;
-int _expectedInt;
-char *_actualStr;
-char *_expectedStr;
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (EXPECT) NULL Macro Functions
@@ -367,9 +368,6 @@ void RunAllTests(TestSuitPtr testSuit);
 
 void IncFailCountTestSuit(TestSuitPtr testSuit);
 void SetExitTestSuit(TestSuitPtr testSuit);
-void SetContinueTestSuit(TestSuitPtr testSuit);
-
-void ProcessSuccessTest(const char *functionName, const char *format, ...);
 
 #endif
 

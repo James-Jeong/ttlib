@@ -177,10 +177,7 @@ void RunAllTests(TestSuitPtr testSuit)
 
 			test->testFunc(testSuit);
 			numberOfCurTests++;
-			if (testSuit->onGoing == TestExit)
-			{
-				break;
-			}
+			if (testSuit->onGoing == TestExit) break;
 		}
 
 		printf("\n--------------------------------\n");
@@ -191,18 +188,6 @@ void RunAllTests(TestSuitPtr testSuit)
 	{
 		puts("\n[ 테스트가 존재하지 않음. ]\n");
 	}
-}
-
-/**
- * @fn void ProcessSuccessTest(const char *functionName, const char *format, ...)
- * @brief 테스트 성공 로직을 처리하는 함수
- * @param functionName 호출된 함수 이름(입력, 읽기 전용)
- * @param format 가변 인자 출력 형식(입력, 읽기 전용)
- * @param ... 가변 인자(입력)
- * @return 반환값 없음
- */
-void ProcessSuccessTest(const char *functionName, const char *format, ...)
-{
 }
 
 /**
@@ -237,23 +222,6 @@ void SetExitTestSuit(TestSuitPtr testSuit)
 	}
 
 	testSuit->onGoing = TestExit;
-}
-
-/**
- * @fn void SetContinueTestSuit(TestSuitPtr testSuit)
- * @brief ASSERT 함수 호출인 경우 테스트 함수 동작 성공 시 테스트를 계속 진행하도록 설정하는 함수
- * @param testSuit 전체 테스트 관리 구조체(출력)
- * @return 반환값 없음
- */
-void SetContinueTestSuit(TestSuitPtr testSuit)
-{
-	// Check parameter
-	if (testSuit == NULL)
-	{
-		return;
-	}
-
-	testSuit->onGoing = TestContinue;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
