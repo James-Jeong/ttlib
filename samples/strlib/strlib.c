@@ -598,3 +598,54 @@ StringPtr SubString(const StringPtr str, int from, int length)
 
 	return newStr;
 }
+
+/**
+ * @fn int CompareString(StringPtr str1, StringPtr str2)
+ * @brief 두 문자열을 비교하는 함수
+ * @param str1 비교될 문자열 관리 구조체(입력, 읽기 전용)
+ * @param str2 비교할 문자열 관리 구조체(입력, 읽기 전용)
+ * @return 두 문자열이 같으면 0, 비교될 문자열이 크면 1, 아니면 -1, 실패 시 COMP_ERROR(-2) 반환
+ */
+int CompareString(StringPtr str1, StringPtr str2)
+{
+	if(str1 == NULL || str2 == NULL || str1->data == NULL || str2->data == NULL || str1->length == 0 || str2->length == 0)
+	{
+		return COMP_ERROR;
+	}
+
+	int lCount = 0;
+	int gCount = 0;
+	int strIndex = 0;
+	int compLength = (str1->length <= str2->length) ? str1->length : str2->length;
+	char *str1Data = str1->data;
+	char *str2Data = str2->data;
+
+	// 길이가 작은 문자열을 기준으로 비교
+	for( ; strIndex < compLength; strIndex++)
+	{
+		if(*str1Data < *str2Data) lCount++;
+		else if(*str1Data > *str2Data) gCount++;
+		if(lCount > 0 || gCount > 0) break;
+
+		str1Data++;
+		str2Data++;
+	}
+
+	// 두 문자열이 같음
+	if(lCount == 0 && gCount == 0)
+	{
+		// 두 문자열의 길이가 서로 다른 경우
+		// 비교될 문자열의 길이가 더 큰 경우 1 반환
+		if(str1->length > str2->length) return 1;
+		// 비교할 문자열의 길이가 더 큰 경우 -1 반환
+		else if(str1->length < str2->length) return -1;
+		// 두 문자열의 길이가 같은 경우 0 반환
+		else return 0;
+	}
+	// 두 문자열이 다름
+	else if(lCount > 0) return -1;
+	else if(gCount > 0) return 1;
+
+	return COMP_ERROR;
+}
+

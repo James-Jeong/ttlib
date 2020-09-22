@@ -476,6 +476,110 @@ TEST(SubString, SubString, {
 	DeleteString(&str);
 })
 
+TEST(CompareString, CompareString, {
+	char *s1 = "abc";
+	char *s2 = "abc";
+	char *s3 = "abf";
+	char *s4 = "abcf";
+	char *s5 = "a12";
+	char *s6 = "123";
+	char *s7 = "*1*";
+	char *s8 = "a*1*d";
+
+	// 반환값 확인 및 기본 함수 동작 테스트
+	// 길이가 서로 같은 두 개의 문자열이 같은 경우
+	StringPtr str1 = NewString(s1);
+	StringPtr str2 = NewString(s2);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 0);
+	DeleteString(&str1);
+	DeleteString(&str2);
+
+	// 길이가 서로 같은 두 개의 문자열이 다른 경우
+	// 비교할 문자열이 더 작은 경우
+	// - abc < abf
+	str1 = NewString(s1);
+	str2 = NewString(s3);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
+	DeleteString(&str1);
+	DeleteString(&str2);
+
+	// - 123 < a12
+	str1 = NewString(s6);
+	str2 = NewString(s5);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
+	DeleteString(&str1);
+	DeleteString(&str2);
+
+	// - *1* < abf
+	str1 = NewString(s7);
+	str2 = NewString(s3);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
+	DeleteString(&str1);
+	DeleteString(&str2);
+
+	// 비교할 문자열이 더 큰 경우
+	// - abf > abc
+	str1 = NewString(s3);
+	str2 = NewString(s1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
+	DeleteString(&str1);
+	DeleteString(&str2);
+
+	// - a12 > 123
+	str1 = NewString(s5);
+	str2 = NewString(s6);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
+	DeleteString(&str1);
+	DeleteString(&str2);
+
+	// - abf > *1*
+	str1 = NewString(s3);
+	str2 = NewString(s7);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
+	DeleteString(&str1);
+	DeleteString(&str2);
+
+	// 길이가 서로 다른 두 개의 문자열이 다른 경우
+	// 비교할 문자열이 더 작은 경우
+	// - abc < abcf
+	str1 = NewString(s1);
+	str2 = NewString(s4);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
+	DeleteString(&str1);
+	DeleteString(&str2);
+
+	// - a*1*d < abcf
+	str1 = NewString(s8);
+	str2 = NewString(s4);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
+	DeleteString(&str1);
+	DeleteString(&str2);
+
+	// 비교할 문자열이 더 큰 경우
+	// - abcf > abc
+	str1 = NewString(s4);
+	str2 = NewString(s1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
+	DeleteString(&str1);
+	DeleteString(&str2);
+
+	// abcf > a*1*d
+	str1 = NewString(s4);
+	str2 = NewString(s8);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
+	DeleteString(&str1);
+	DeleteString(&str2);
+
+	// NULL 값이 들어온 경우, NULL을 반환
+	str1 = NewString(s1);
+	str2 = NewString(s2);
+	EXPECT_NUM_EQUAL(CompareString(NULL, str2), COMP_ERROR);
+	EXPECT_NUM_EQUAL(CompareString(str1, NULL), COMP_ERROR);
+	EXPECT_NUM_EQUAL(CompareString(NULL, NULL), COMP_ERROR);
+	DeleteString(&str1);
+	DeleteString(&str2);
+})
+
 int main()
 {
     CREATE_TESTSUIT();
@@ -497,7 +601,8 @@ int main()
 		Test_FormatString_FormatString,
 		Test_ConcatString_ConcatString,
 		Test_TruncateString_TruncateString,
-		Test_SubString_SubString
+		Test_SubString_SubString,
+		Test_CompareString_CompareString
     );
 
     RUN_ALL_TESTS();

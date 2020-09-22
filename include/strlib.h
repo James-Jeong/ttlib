@@ -10,6 +10,11 @@
 #define VSN_FAIL -1
 #endif
 
+// CompareString 함수의 비정상 반환값
+#ifndef COMP_ERROR
+#define COMP_ERROR -2
+#endif
+
 // 문자열 관리 구조체
 typedef struct _string_t {
     int length;
@@ -43,5 +48,7 @@ char* FormatString(StringPtr str, const char* format, ...);
 char* ConcatString(StringPtr str, const char* s);
 char* TruncateString(StringPtr str, int from);
 StringPtr SubString(StringPtr str, int from, int length);
+
+int CompareString(StringPtr str1, StringPtr str2);
 
 #endif
