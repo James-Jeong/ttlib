@@ -2,24 +2,16 @@
 #define __STRLIB_H__
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Enums
+/// Enum
 ///////////////////////////////////////////////////////////////////////////////
 
-typedef enum SearchResult
+typedef enum Boolean
 {
-	// 검색 실패
-	SearchFalse = -1,
-	// 검색 성공
-	SearchTrue = 1
-} SearchResult;
-
-typedef enum CharConditionResult
-{
-	// 문자 검사 조건 거짓
-	CFalse = -1,
-	// 문자 검사 조건 참
-	CTrue = 1
-} CBool;
+	// 조건 거짓
+	False = -1,
+	// 조건 참
+	True = 1
+} Bool;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Macros
@@ -33,6 +25,11 @@ typedef enum CharConditionResult
 // CompareString 함수 동작 오류
 #ifndef COMPARE_ERROR
 #define COMPARE_ERROR -2
+#endif
+
+// SearchString 함수 동작 오류
+#ifndef SEARCH_ERROR
+#define SEARCH_ERROR -2
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -74,13 +71,13 @@ char* TruncateString(StringPtr str, int from);
 StringPtr SubString(const StringPtr str, int from, int length);
 
 int CompareString(const StringPtr str1, const StringPtr str2);
-SearchResult SearchString(const StringPtr str, const char *pattern);
+Bool SearchString(const StringPtr str, const char *pattern);
 
-CBool IsDigit(char c);
-CBool IsAlpha(char c);
-CBool IsLetter(char c);
-CBool IsSpace(char c);
-CBool IsCRLF(char c);
+Bool IsDigit(char c);
+Bool IsAlpha(char c);
+Bool IsLetter(char c);
+Bool IsSpace(char c);
+Bool IsCRLF(char c);
 char** SplitString(const char *s, char delimiter);
 
 #endif

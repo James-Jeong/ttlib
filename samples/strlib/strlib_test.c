@@ -586,35 +586,35 @@ TEST(SearchString, SearchString, {
 	StringPtr str = NewString(s1);
 
 	// 반환값 확인 및 기본 함수 동작 테스트
-	// 검색할 문자열과 검색될 문자열이 일치하는 경우, SearchTrue 를 반환
+	// 검색할 문자열과 검색될 문자열이 일치하는 경우, True 를 반환
 	// 검색할 문자열의 길이가 1
-	EXPECT_NUM_EQUAL(SearchString(str, s2), SearchTrue);
+	EXPECT_NUM_EQUAL(SearchString(str, s2), True);
 	// 검색할 문자열의 길이가 2
-	EXPECT_NUM_EQUAL(SearchString(str, s3), SearchTrue);
+	EXPECT_NUM_EQUAL(SearchString(str, s3), True);
 	// 검색할 문자열의 길이가 3
-	EXPECT_NUM_EQUAL(SearchString(str, s4), SearchTrue);
+	EXPECT_NUM_EQUAL(SearchString(str, s4), True);
 	// 검색할 문자열의 길이가 4
-	EXPECT_NUM_EQUAL(SearchString(str, s5), SearchTrue);              
+	EXPECT_NUM_EQUAL(SearchString(str, s5), True);              
 	// 검색할 문자열의 길이가 5
-	EXPECT_NUM_EQUAL(SearchString(str, s6), SearchTrue);
+	EXPECT_NUM_EQUAL(SearchString(str, s6), True);
 
-	// 검색할 문자열과 검색될 문자열이 일치하지 않는 경우, SearchFalse 를 반환
+	// 검색할 문자열과 검색될 문자열이 일치하지 않는 경우, False 를 반환
 	// 검색할 문자열의 길이가 6 (검색할 문자열의 길이가 5)
-	EXPECT_NUM_EQUAL(SearchString(str, s7), SearchFalse);
+	EXPECT_NUM_EQUAL(SearchString(str, s7), False);
 	// 검색할 문자열이 포함되지 않는 문자열인 경우
 	s7 = "z";
-	EXPECT_NUM_EQUAL(SearchString(str, s7), SearchFalse);
+	EXPECT_NUM_EQUAL(SearchString(str, s7), False);
 	// 검색할 문자열이 빈문자열인 경우
 	s7 = "";
-	EXPECT_NUM_EQUAL(SearchString(str, s7), SearchFalse);
+	EXPECT_NUM_EQUAL(SearchString(str, s7), False);
 	// 검색될 문자열이 빈문자열인 경우
 	SetString(str, "");
-	EXPECT_NUM_EQUAL(SearchString(str, s2), SearchFalse);
+	EXPECT_NUM_EQUAL(SearchString(str, s2), SEARCH_ERROR);
 
-	// NULL 값이 들어온 경우, SearchFalse 반환
-	EXPECT_NUM_EQUAL(SearchString(NULL, s2), SearchFalse);
-	EXPECT_NUM_EQUAL(SearchString(str, NULL), SearchFalse);
-	EXPECT_NUM_EQUAL(SearchString(NULL, NULL), SearchFalse);
+	// NULL 값이 들어온 경우, False 반환
+	EXPECT_NUM_EQUAL(SearchString(NULL, s2), SEARCH_ERROR);
+	EXPECT_NUM_EQUAL(SearchString(str, NULL), SEARCH_ERROR);
+	EXPECT_NUM_EQUAL(SearchString(NULL, NULL), SEARCH_ERROR);
 
 	DeleteString(&str);
 })
@@ -622,64 +622,64 @@ TEST(SearchString, SearchString, {
 TEST(CheckCharIsDigit, IsDigit, {
 	// 정상 케이스
 	// 숫자 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsDigit('0'), CTrue);
-	EXPECT_NUM_EQUAL(IsDigit('4'), CTrue);
-	EXPECT_NUM_EQUAL(IsDigit('9'), CTrue);
+	EXPECT_NUM_EQUAL(IsDigit('0'), True);
+	EXPECT_NUM_EQUAL(IsDigit('4'), True);
+	EXPECT_NUM_EQUAL(IsDigit('9'), True);
 
 	// 비정상 케이스
 	// 숫자 문자가 아닌 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsDigit('a'), CFalse);
-	EXPECT_NUM_EQUAL(IsDigit('*'), CFalse);
-	EXPECT_NUM_EQUAL(IsDigit('A'), CFalse);
+	EXPECT_NUM_EQUAL(IsDigit('a'), False);
+	EXPECT_NUM_EQUAL(IsDigit('*'), False);
+	EXPECT_NUM_EQUAL(IsDigit('A'), False);
 	// Whitespace 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsDigit(' '), CFalse);
-	EXPECT_NUM_EQUAL(IsDigit('\t'), CFalse);
+	EXPECT_NUM_EQUAL(IsDigit(' '), False);
+	EXPECT_NUM_EQUAL(IsDigit('\t'), False);
 })
 
 TEST(CheckCharIsAlpha, IsAlpha, {
 	// 정상 케이스
 	// 알파벳 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsAlpha('a'), CTrue);
-	EXPECT_NUM_EQUAL(IsAlpha('q'), CTrue);
-	EXPECT_NUM_EQUAL(IsAlpha('z'), CTrue);
-	EXPECT_NUM_EQUAL(IsAlpha('A'), CTrue);
-	EXPECT_NUM_EQUAL(IsAlpha('S'), CTrue);
-	EXPECT_NUM_EQUAL(IsAlpha('Z'), CTrue);
+	EXPECT_NUM_EQUAL(IsAlpha('a'), True);
+	EXPECT_NUM_EQUAL(IsAlpha('q'), True);
+	EXPECT_NUM_EQUAL(IsAlpha('z'), True);
+	EXPECT_NUM_EQUAL(IsAlpha('A'), True);
+	EXPECT_NUM_EQUAL(IsAlpha('S'), True);
+	EXPECT_NUM_EQUAL(IsAlpha('Z'), True);
 
 	// 비정상 케이스
 	// 알파벳 문자가 아닌 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsAlpha('1'), CFalse);
-	EXPECT_NUM_EQUAL(IsAlpha('*'), CFalse);
-	EXPECT_NUM_EQUAL(IsAlpha('0'), CFalse);
+	EXPECT_NUM_EQUAL(IsAlpha('1'), False);
+	EXPECT_NUM_EQUAL(IsAlpha('*'), False);
+	EXPECT_NUM_EQUAL(IsAlpha('0'), False);
 	// Whitespace 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsAlpha(' '), CFalse);
-	EXPECT_NUM_EQUAL(IsAlpha('\t'), CFalse);
+	EXPECT_NUM_EQUAL(IsAlpha(' '), False);
+	EXPECT_NUM_EQUAL(IsAlpha('\t'), False);
 })
 
 TEST(CheckCharIsLetter, IsLetter, {
-	EXPECT_NUM_EQUAL(IsLetter('a'), CTrue);
-	EXPECT_NUM_EQUAL(IsLetter('_'), CTrue);
-	EXPECT_NUM_EQUAL(IsLetter('Z'), CTrue);
-	EXPECT_NUM_EQUAL(IsLetter('q'), CTrue);
+	EXPECT_NUM_EQUAL(IsLetter('a'), True);
+	EXPECT_NUM_EQUAL(IsLetter('_'), True);
+	EXPECT_NUM_EQUAL(IsLetter('Z'), True);
+	EXPECT_NUM_EQUAL(IsLetter('q'), True);
 
-	EXPECT_NUM_EQUAL(IsLetter('1'), CFalse);
-	EXPECT_NUM_EQUAL(IsLetter('-'), CFalse);
+	EXPECT_NUM_EQUAL(IsLetter('1'), False);
+	EXPECT_NUM_EQUAL(IsLetter('-'), False);
 })
 
 TEST(CheckCharIsSpace, IsSpace, {
-	EXPECT_NUM_EQUAL(IsSpace(' '), CTrue);
-	EXPECT_NUM_EQUAL(IsSpace('\t'), CTrue);
+	EXPECT_NUM_EQUAL(IsSpace(' '), True);
+	EXPECT_NUM_EQUAL(IsSpace('\t'), True);
 
-	EXPECT_NUM_EQUAL(IsSpace('a'), CFalse);
-	EXPECT_NUM_EQUAL(IsSpace('\n'), CFalse);
+	EXPECT_NUM_EQUAL(IsSpace('a'), False);
+	EXPECT_NUM_EQUAL(IsSpace('\n'), False);
 })
 
 TEST(CheckCharIsCRLF, IsCRLF, {
-	EXPECT_NUM_EQUAL(IsCRLF('\r'), CTrue);
-	EXPECT_NUM_EQUAL(IsCRLF('\n'), CTrue);
+	EXPECT_NUM_EQUAL(IsCRLF('\r'), True);
+	EXPECT_NUM_EQUAL(IsCRLF('\n'), True);
 
-	EXPECT_NUM_EQUAL(IsCRLF(' '), CFalse);
-	EXPECT_NUM_EQUAL(IsCRLF('a'), CFalse);
+	EXPECT_NUM_EQUAL(IsCRLF(' '), False);
+	EXPECT_NUM_EQUAL(IsCRLF('a'), False);
 })
 
 TEST(SplitString, SplitString, {
@@ -701,7 +701,7 @@ TEST(SplitString, SplitString, {
 	char **tempActual = actual;
 	while(*tempActual != NULL)
 	{
-		//printf("%s|\n", *tempActual);
+		//printf("%s\n", *tempActual);
 		free(*tempActual);
 		tempActual++;
 	}
@@ -716,7 +716,27 @@ TEST(SplitString, SplitString, {
 	tempActual = actual;
 	while(*tempActual != NULL)
 	{
-		//printf("%s|\n", *tempActual);
+		//printf("%s\n", *tempActual);
+		free(*tempActual);
+		tempActual++;
+	}
+	free(actual);
+
+	s = "1a b 2c\n#ef\n\t@12#tg3\ndg\t2 e!";
+	actual = SplitString(s, '\n');
+	expected1 = "1a b 2c";
+	expected2 = "#ef";
+	expected3 = "\t@12#tg3";
+	char *expected4 = "dg\t2 e!";
+	EXPECT_STR_EQUAL(actual[0], expected1);
+	EXPECT_STR_EQUAL(actual[1], expected2);
+	EXPECT_STR_EQUAL(actual[2], expected3);
+	EXPECT_STR_EQUAL(actual[3], expected4);
+	EXPECT_NULL(actual[4]);
+	tempActual = actual;
+	while(*tempActual != NULL)
+	{
+		//printf("%s\n", *tempActual);
 		free(*tempActual);
 		tempActual++;
 	}

@@ -537,16 +537,16 @@ int CompareString(const StringPtr str1, const StringPtr str2)
 }
 
 /**
- * @fn SearchResult SearchString(const StringPtr str, const char *pattern)
+ * @fn Bool SearchString(const StringPtr str, const char *pattern)
  * @brief 지정한 문자열에서 특정 문자열을 검색하는 함수
  * @param str 검색될 문자열을 저장한 구조체(입력, 읽기 전용)
  * @param pattern 검색할 문자열(입력, 읽기 전용)
- * @return 성공 시 SearchTrue(1), 실패 시 SearchFalse(-1) 반환
+ * @return 문자열을 찾으면 True(1), 못찾으면 False(-1), 실패 시 SEARCH_ERROR(-2) 반환
  */
-SearchResult SearchString(const StringPtr str, const char *pattern)
+Bool SearchString(const StringPtr str, const char *pattern)
 {
-	SearchResult result = SearchFalse;
-	if(pattern == NULL || str == NULL || str->data == NULL || str->length <= 0) return result;
+	Bool result = False;
+	if(pattern == NULL || str == NULL || str->data == NULL || str->length <= 0) return SEARCH_ERROR;
 
 	int patternLength = (int)strlen(pattern);
 	if(patternLength == 0 || patternLength > str->length) return result;
@@ -577,7 +577,7 @@ SearchResult SearchString(const StringPtr str, const char *pattern)
 			// 비교한 모든 문자들이 같으면 검색 성공
 			if(equalCount == patternLength)
 			{
-				result = SearchTrue;
+				result = True;
 				break;
 			}
 		}
@@ -589,42 +589,67 @@ SearchResult SearchString(const StringPtr str, const char *pattern)
 }
 
 /**
- * @fn CBool IsDigit(char c)
+ * @fn Bool IsDigit(char c)
  * @brief 지정한 문자가 숫자 문자인지 검사하는 함수
  * @param c 검사할 문자(입력)
- * @return 성공 시 CTrue(1), 실패 시 CFalse(-1) 반환
+ * @return 성공 시 True(1), 실패 시 False(-1) 반환
  */
-CBool IsDigit(char c)
+Bool IsDigit(char c)
 {
-	return (c >= '0' && c <= '9') ? CTrue : CFalse;
+	return (c >= '0' && c <= '9') ? True : False;
 }
 
 /**
- * @fn CBool IsAlpha(char c)
+ * @fn Bool IsAlpha(char c)
  * @brief 지정한 문자가 알파벳 문자인지 검사하는 함수
  * @param c 검사할 문자(입력)
- * @return 성공 시 CTrue(1), 실패 시 CFalse(-1) 반환
+ * @return 성공 시 True(1), 실패 시 False(-1) 반환
  */
-CBool IsAlpha(char c)
+Bool IsAlpha(char c)
 {
-	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ? CTrue : CFalse;
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ? True : False;
 }
 
-CBool IsLetter(char c)
+/**
+ * @fn Bool IsLetter(char c)
+ * @brief 지정한 문자가 알파벳 또는 '_'(underscore) 문자인지 검사하는 함수
+ * @param c 검사할 문자(입력)
+ * @return 성공 시 True(1), 실패 시 False(-1) 반환
+ */
+Bool IsLetter(char c)
 {
-	return (IsAlpha(c) == CTrue || c == '_') ? CTrue : CFalse;
+	return (IsAlpha(c) == True || c == '_') ? True : False;
 }
 
-CBool IsSpace(char c)
+/**
+ * @fn Bool IsSpace(char c)
+ * @brief 지정한 문자가 공백 또는 탭문자인지 검사하는 함수
+ * @param c 검사할 문자(입력)
+ * @return 성공 시 True(1), 실패 시 False(-1) 반환
+ */
+Bool IsSpace(char c)
 {
-	return (c == ' ' || c == '\t') ? CTrue : CFalse;
+	return (c == ' ' || c == '\t') ? True : False;
 }
 
-CBool IsCRLF(char c)
+/**
+ * @fn Bool IsCRLF(char c)
+ * @brief 지정한 문자가 CR('\r') 또는 LF('\n') 문자인지 검사하는 함수
+ * @param c 검사할 문자(입력)
+ * @return 성공 시 True(1), 실패 시 False(-1) 반환
+ */
+Bool IsCRLF(char c)
 {
-	return (c == '\r' || c == '\n') ? CTrue : CFalse;
+	return (c == '\r' || c == '\n') ? True : False;
 }
 
+/**
+ * @fn char** SplitString(const char *s, char delimiter)
+ * @brief 문자열을 지정한 구분 문자로 나누는 함수
+ * @param s 나눌 문자열(입력, 읽기 전용)
+ * @param delimiter 구분 문자(입력)
+ * @return 성공 시 나눠진 문자열들의 주소를 저장한 동적 배열, 실패 시 NULL 반환
+ */
 char** SplitString(const char *s, char delimiter)
 {
 	if(s == NULL) return NULL;
