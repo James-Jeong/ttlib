@@ -489,75 +489,87 @@ TEST(CompareString, CompareString, {
 	char *s6 = "123";
 	char *s7 = "*1*";
 	char *s8 = "a*1*d";
+	char *s9 = "bc";
 	StringPtr str1 = NewString(s1);
 	StringPtr str2 = NewString(s2);
 
 	// 반환값 확인 및 기본 함수 동작 테스트
 	// 길이가 서로 같은 두 개의 문자열이 같은 경우
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), OrderEqual);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 0);
 
 	// 길이가 서로 같은 두 개의 문자열이 다른 경우
 	// 비교할 문자열이 더 작은 경우
 	// - abc < abf
 	SetString(str1, s1);
 	SetString(str2, s3);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), OrderFront);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
 	// - 123 < a12
 	SetString(str1, s6);
 	SetString(str2, s5);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), OrderFront);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
 	// - *1* < abf
 	SetString(str1, s7);
 	SetString(str2, s3);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), OrderFront);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
 
 	// 비교할 문자열이 더 큰 경우
 	// - abf > abc
 	SetString(str1, s3);
 	SetString(str2, s1);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), OrderRear);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
 	// - a12 > 123
 	SetString(str1, s5);
 	SetString(str2, s6);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), OrderRear);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
 	// - abf > *1*
 	SetString(str1, s3);
 	SetString(str2, s7);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), OrderRear);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
 
 	// 길이가 서로 다른 두 개의 문자열이 다른 경우
 	// 비교할 문자열이 더 작은 경우
 	// - abc < abcf
 	SetString(str1, s1);
 	SetString(str2, s4);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), OrderFront);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
 	// - a*1*d < abcf
 	SetString(str1, s8);
 	SetString(str2, s4);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), OrderFront);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
+	// abcf < bc
+	SetString(str1, s4);
+	SetString(str2, s9);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
 
 	// 비교할 문자열이 더 큰 경우
 	// - abcf > abc
 	SetString(str1, s4);
 	SetString(str2, s1);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), OrderRear);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
 	// abcf > a*1*d
 	SetString(str1, s4);
 	SetString(str2, s8);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), OrderRear);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
+	// bc > abcf
+	SetString(str1, s9);
+	SetString(str2, s4);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
 
-	//TODO 빈문자열을 비교할 경우, 1 반환
+	// 비교될 문자열이 빈문자열인 경우, -1 반환
 	SetString(str1, "");
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), CompareError);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
+	// 비교할 문자열이 빈문자열인 경우, 1 반환
 	SetString(str1, s1);
 	SetString(str2, "");
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), CompareError);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
+	SetString(str1, "");
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 0);
 	
-	// NULL 값이 들어온 경우, CompareError 반환
+	// NULL 값이 들어온 경우, COMPARE_ERROR 반환
 	SetString(str2, s2);
-	EXPECT_NUM_EQUAL(CompareString(NULL, str2), CompareError);
-	EXPECT_NUM_EQUAL(CompareString(str1, NULL), CompareError);
-	EXPECT_NUM_EQUAL(CompareString(NULL, NULL), CompareError);
+	EXPECT_NUM_EQUAL(CompareString(NULL, str2), COMPARE_ERROR);
+	EXPECT_NUM_EQUAL(CompareString(str1, NULL), COMPARE_ERROR);
+	EXPECT_NUM_EQUAL(CompareString(NULL, NULL), COMPARE_ERROR);
 
 	DeleteString(&str1);
 	DeleteString(&str2);

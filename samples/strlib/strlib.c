@@ -604,47 +604,55 @@ StringPtr SubString(const StringPtr str, int from, int length)
  * @brief 두 문자열을 비교하는 함수
  * @param str1 비교될 문자열 관리 구조체(입력, 읽기 전용)
  * @param str2 비교할 문자열 관리 구조체(입력, 읽기 전용)
- * @return 두 문자열의 정렬 순서가 일치하면 OrderEqual(0), 뒤에 있으면  OrderRear(1), 앞에 있으면 OrderFront(-1), 실패 시 CompareError(-2) 반환
+ * @return 두 문자열이 일치하면 0, 첫 번째 문자열이 더 크면 1, 작으면 -1, 실패 시 COMPARE_ERROR(-2) 반환
  */
-CompareResult CompareString(const StringPtr str1, const StringPtr str2)
+int CompareString(const StringPtr str1, const StringPtr str2)
 {
-	CompareResult result = CompareError;
+	int result = 0;
 
-	if(str1 == NULL || str2 == NULL || str1->data == NULL || str2->data == NULL || str1->length == 0 || str2->length == 0)
+	if(str1 == NULL || str2 == NULL || str1->data == NULL || str2->data == NULL)
 	{
-		return result;
+		return COMPARE_ERROR;
 	}
 
-	int lCount = 0;
-	int gCount = 0;
+	// 빈문자열인 경우, 길이 비교
+	if(str1->length <= 0 && str2->length > 0) return -1;
+	else if(str1->length > 0 && str2->length <= 0) return 1;
+	else if(str1->length == 0 && str2->length == 0) return 0;
+
+	// 첫 번째 문자가 다를 경우, 해당 문자만 대소 비교
+	// 같으면 아래 비교 로직 수행
+	if(str1->data[0] < str2->data[0]) return -1;
+	else if(str1->data[0] > str2->data[0]) return 1;
+
+	// 첫 번째 문자가 같은 경우, 두 번째 문자부터 문자열 비교
+	// 길이가 작은 문자열을 기준으로 비교
+	int smallCount = 0;
+	int bigCount = 0;
 	int strIndex = 0;
 	int compLength = (str1->length <= str2->length) ? str1->length : str2->length;
-	char *str1Data = str1->data;
-	char *str2Data = str2->data;
+	char *str1Data = str1->data + 1;
+	char *str2Data = str2->data + 1;
 
-	// 길이가 작은 문자열을 기준으로 비교
 	for( ; strIndex < compLength; strIndex++)
 	{
-		if(*str1Data < *str2Data) lCount++;
-		else if(*str1Data > *str2Data) gCount++;
-		if(lCount > 0 || gCount > 0) break;
+		if(*str1Data < *str2Data) smallCount++;
+		else if(*str1Data > *str2Data) bigCount++;
+		if(smallCount > 0 || bigCount > 0) break;
 
 		str1Data++;
 		str2Data++;
 	}
 
-	if(lCount == 0 && gCount == 0)
+	// 길이가 작은 문자열의 길이까지 비교했을 때 모두 일치하면 길이 비교
+	if(smallCount == 0 && bigCount == 0)
 	{
-		// 두 문자열의 길이가 서로 다른 경우
-		// 비교될 문자열의 길이가 더 큰 경우 1 반환
-		if(str1->length > str2->length) result = OrderRear;
-		// 비교할 문자열의 길이가 더 큰 경우 -1 반환
-		else if(str1->length < str2->length) result = OrderFront;
-		// 두 문자열의 길이가 같은 경우 0 반환
-		else result = OrderEqual;
+		if(str1->length < str2->length) result = -1;
+		else if(str1->length > str2->length) result = 1;
 	}
-	else if(lCount > 0) result = OrderFront;
-	else if(gCount > 0) result = OrderRear;
+	// 일치하지 않으면 판단된 대소에 따라 결과값 반환
+	else if(smallCount > 0) result = -1;
+	else if(bigCount > 0) result = 1;
 
 	return result;
 }
