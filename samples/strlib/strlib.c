@@ -648,11 +648,12 @@ Bool IsCRLF(char c)
  * @brief 문자열을 지정한 구분 문자로 나누는 함수
  * @param s 나눌 문자열(입력, 읽기 전용)
  * @param delimiter 구분 문자(입력)
+ * @param option 빈문자열이 포함된 배열을 포함할 것인지 선택 여부(입력, SplitOption 열거형 참고)
  * @return 성공 시 나눠진 문자열들의 주소를 저장한 동적 배열, 실패 시 NULL 반환
  */
-char** SplitString(const char *s, char delimiter)
+char** SplitString(const char *s, char delimiter, SplitOption option)
 {
-	if(s == NULL) return NULL;
+	if(s == NULL || strlen(s) == 0) return NULL;
 
 	char **strList;
 	int strIndex = 0;
@@ -675,15 +676,14 @@ char** SplitString(const char *s, char delimiter)
 		if(s[strIndex] == delimiter) delimiterPos[delimiterIndex++] = strIndex;
 	}
 
-	// (delimiter 개수 + 2) 만큼 포인터 배열의 크기를 생성
-	// +2 : (마지막 delimiter 뒤의 문자열) + (포인터 배열의 끝을 알려주는 널문자)
+	// (delimiter 개수 + 1) 만큼 포인터 배열의 크기를 생성 < +1 : (마지막 delimiter 뒤의 문자열)
 	int strListIndex = 0;
-	int strListLength = delimiterCount + 2;
-	strList = (char**)malloc(sizeof(char*) * (size_t)(strListLength));
+	int strListLength = delimiterCount + 1;
+	strList = (char**)malloc(sizeof(char*) * (size_t)(strListLength + 1)); // +1 : (포인터 배열의 끝을 알려주는 널문자)
 	if(strList == NULL) return NULL;
-	for( ; strListIndex < strListLength; strListIndex++) strList[strListIndex] = NULL;
+	strList[strListLength] = NULL;
 
-	for(strListIndex = 0; strListIndex < strListLength - 1; strListIndex++)
+	for(strListIndex = 0; strListIndex < strListLength; strListIndex++)
 	{
 		int curLength = delimiterPos[strListIndex];
 		if(strListIndex > 0){
@@ -694,14 +694,86 @@ char** SplitString(const char *s, char delimiter)
 			if(*s == delimiter) s++;
 		}
 
-		char *newStr = (char*)malloc((size_t)(curLength + 1));
-		if(newStr == NULL) return NULL;
-		memcpy(newStr, s, (size_t)curLength);
-		newStr[curLength] = '\0';
-		strList[strListIndex] = newStr;
+		if(option == ExcludeEmptyArray && curLength == 0) strList[strListIndex] = NULL;
+		else
+		{
+			char *newStr = (char*)malloc((size_t)(curLength + 1));
+			if(newStr == NULL) return NULL;
+			memcpy(newStr, s, (size_t)curLength);
+			newStr[curLength] = '\0';
+			strList[strListIndex] = newStr;
+		}
+
 		s += curLength;
 	}
 
+	// 빈문자열을 포함시키지 않는 경우
+	if(option == ExcludeEmptyArray)
+	{
+		int pointerCount = 0;
+		for(strListIndex = 0; strListIndex < strListLength; strListIndex++)
+		{
+			if(strList[strListIndex] != NULL) pointerCount++;
+		}
+
+		int newStrListLength = pointerCount;
+		char **newStrList = (char**)malloc(sizeof(char*) * (size_t)(newStrListLength + 1));
+		if(newStrList == NULL) return NULL;
+		newStrList[newStrListLength] = NULL;
+
+		int newStrListIndex = 0;
+		for(strListIndex = 0; strListIndex < strListLength; strListIndex++)
+		{
+			if(strList[strListIndex] != NULL)
+			{
+				newStrList[newStrListIndex] = strList[strListIndex];
+				newStrListIndex++;
+			}
+		}
+
+		free(strList);
+		return newStrList;
+	}
+
 	return strList;
+}
+
+/**
+ * @fn char* MergeString(const char *s, char delimiter)
+ * @brief 문자열을 지정한 구분 문자로 연결하는 함수
+ * @param s 연결할 문자열(입력, 읽기 전용)
+ * @param delimiter 구분 문자(입력)
+ * @return 성공 시 연결된 문자열의 주소, 실패 시 NULL 반환
+ */
+char* MergeString(const char *s, char delimiter)
+{
+	// 문자열이 NULL 또는 빈문자열인 경우, NULL 반환
+	if(s == NULL || strlen(s) == 0) return NULL;
+
+	int delimiterCount = 0;
+	int strIndex = 0;
+	int strLength = (int)strlen(s);
+
+	for( ; strIndex < strLength; strIndex++)
+	{
+		if(s[strIndex] == delimiter) delimiterCount++;
+	}
+	// delimiter 가 문자열에 포함되어 있지 않으면, NULL 반환
+	if(delimiterCount == 0) return NULL;
+
+	int newStrLength = strLength - delimiterCount;
+	char *newStr = (char*)malloc((size_t)(newStrLength + 1));
+	if(newStr == NULL) return NULL;
+	newStr[newStrLength] = '\0';
+
+	int newStrIndex = 0;
+	// delimiter 가 제외된 문자열을 새로운 문자열에 복사
+	for(strIndex = 0; strIndex < strLength; strIndex++)
+	{
+		if(s[strIndex] == delimiter) continue;
+		newStr[newStrIndex++] = s[strIndex];
+	}
+
+	return newStr;
 }
 

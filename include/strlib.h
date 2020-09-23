@@ -2,9 +2,10 @@
 #define __STRLIB_H__
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Enum
+/// Enums
 ///////////////////////////////////////////////////////////////////////////////
 
+// 공통 Bool 열거형
 typedef enum Boolean
 {
 	// 조건 거짓
@@ -12,6 +13,15 @@ typedef enum Boolean
 	// 조건 참
 	True = 1
 } Bool;
+
+// SplitString 함수 옵션 열거형
+typedef enum SplitOption
+{
+	// 빈문자열 포함
+	IncludeEmptyArray = 0,
+	// 빈문자열 제외
+	ExcludeEmptyArray = 1
+} SplitOption;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Macros
@@ -78,6 +88,7 @@ Bool IsAlpha(char c);
 Bool IsLetter(char c);
 Bool IsSpace(char c);
 Bool IsCRLF(char c);
-char** SplitString(const char *s, char delimiter);
+char** SplitString(const char *s, char delimiter, SplitOption option);
+char* MergeString(const char *s, char delimiter);
 
 #endif

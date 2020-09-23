@@ -688,7 +688,7 @@ TEST(SplitString, SplitString, {
 	char *expected1 = "ab";
 	char *expected2 = "zf";
 	char *expected3 = "de";
-	char **actual = SplitString(s, delimit);
+	char **actual = SplitString(s, delimit, IncludeEmptyArray);
 
 	// 반환값 확인 
 	EXPECT_NOT_NULL(actual);
@@ -707,7 +707,7 @@ TEST(SplitString, SplitString, {
 	}
 	free(actual);
 
-	actual = SplitString(s, 'a');
+	actual = SplitString(s, 'a', IncludeEmptyArray);
 	expected1 = "";
 	expected2 = "b|zf|de";
 	EXPECT_STR_EQUAL(actual[0], expected1);
@@ -722,8 +722,21 @@ TEST(SplitString, SplitString, {
 	}
 	free(actual);
 
+	actual = SplitString(s, 'a', ExcludeEmptyArray);
+	expected1 = "b|zf|de";
+	EXPECT_STR_EQUAL(actual[0], expected1);
+	EXPECT_NULL(actual[1]);
+	tempActual = actual;
+	while(*tempActual != NULL)
+	{
+		//printf("%s\n", *tempActual);
+		free(*tempActual);
+		tempActual++;
+	}
+	free(actual);
+
 	s = "1a b 2c\n#ef\n\t@12#tg3\ndg\t2 e!";
-	actual = SplitString(s, '\n');
+	actual = SplitString(s, '\n', IncludeEmptyArray);
 	expected1 = "1a b 2c";
 	expected2 = "#ef";
 	expected3 = "\t@12#tg3";
@@ -743,12 +756,41 @@ TEST(SplitString, SplitString, {
 	free(actual);
 
 	// 비정상 동작
+	// 빈문자열이 들어온 경우, NULL 반환
+	EXPECT_NULL(SplitString("", 'x', IncludeEmptyArray));
 	// 잘못된 delimiter
-	actual = SplitString(s, 'x');
-	EXPECT_NULL(actual);
+	EXPECT_NULL(SplitString(s, 'x', IncludeEmptyArray));
 	// NULL 값이 들어온 경우, NULL 반환
-	actual = SplitString(NULL, 'x');
-	EXPECT_NULL(actual);
+	EXPECT_NULL(SplitString(NULL, 'x', IncludeEmptyArray));
+})
+
+TEST(MergeString, MergeString, {
+	char *s = "ab de wf";
+	char *expected = "abdewf";
+	char delimiter = ' ';
+	char *actual = MergeString(s, delimiter);
+
+	// 반환값 확인
+	EXPECT_NOT_NULL(actual);
+
+	// 정상 동작
+	EXPECT_STR_EQUAL(actual, expected);
+	free(actual);
+
+	s = "a1 2d\n12\t@* @9\n\ncvw e ag\n\n\n4g h";
+	delimiter = '\n';
+	expected = "a1 2d12\t@* @9cvw e ag4g h";
+	actual = MergeString(s, delimiter);
+	EXPECT_STR_EQUAL(actual, expected);
+	free(actual);
+
+	// 비정상 동작
+	// 빈문자열이 들어온 경우, NULL 반환
+	EXPECT_NULL(MergeString("", delimiter));
+	// 잘못된 delimiter
+	EXPECT_NULL(MergeString(s, 'x'));
+	// NULL 값이 들어온 경우, NULL 반환
+	EXPECT_NULL(MergeString(NULL, 'x'));
 })
 
 int main()
@@ -780,7 +822,8 @@ int main()
 		Test_CheckCharIsLetter_IsLetter,
 		Test_CheckCharIsSpace_IsSpace,
 		Test_CheckCharIsCRLF_IsCRLF,
-		Test_SplitString_SplitString
+		Test_SplitString_SplitString,
+		Test_MergeString_MergeString
     );
 
     RUN_ALL_TESTS();
