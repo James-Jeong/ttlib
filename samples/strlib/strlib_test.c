@@ -607,6 +607,43 @@ TEST(SearchString, SearchString, {
 	DeleteString(&str);
 })
 
+TEST(CheckCharIsDigit, IsDigit, {
+	// 정상 케이스
+	// 숫자 문자가 입력일 경우
+	EXPECT_NUM_EQUAL(IsDigit('0'), CTrue);
+	EXPECT_NUM_EQUAL(IsDigit('4'), CTrue);
+	EXPECT_NUM_EQUAL(IsDigit('9'), CTrue);
+
+	// 비정상 케이스
+	// 숫자 문자가 아닌 문자가 입력일 경우
+	EXPECT_NUM_EQUAL(IsDigit('a'), CFalse);
+	EXPECT_NUM_EQUAL(IsDigit('*'), CFalse);
+	EXPECT_NUM_EQUAL(IsDigit('A'), CFalse);
+	// Whitespace 문자가 입력일 경우
+	EXPECT_NUM_EQUAL(IsDigit(' '), CFalse);
+	EXPECT_NUM_EQUAL(IsDigit('\t'), CFalse);
+})
+
+TEST(CheckCharIsAlpha, IsAlpha, {
+	// 정상 케이스
+	// 알파벳 문자가 입력일 경우
+	EXPECT_NUM_EQUAL(IsAlpha('a'), CTrue);
+	EXPECT_NUM_EQUAL(IsAlpha('q'), CTrue);
+	EXPECT_NUM_EQUAL(IsAlpha('z'), CTrue);
+	EXPECT_NUM_EQUAL(IsAlpha('A'), CTrue);
+	EXPECT_NUM_EQUAL(IsAlpha('S'), CTrue);
+	EXPECT_NUM_EQUAL(IsAlpha('Z'), CTrue);
+
+	// 비정상 케이스
+	// 알파벳 문자가 아닌 문자가 입력일 경우
+	EXPECT_NUM_EQUAL(IsAlpha('1'), CFalse);
+	EXPECT_NUM_EQUAL(IsAlpha('*'), CFalse);
+	EXPECT_NUM_EQUAL(IsAlpha('0'), CFalse);
+	// Whitespace 문자가 입력일 경우
+	EXPECT_NUM_EQUAL(IsAlpha(' '), CFalse);
+	EXPECT_NUM_EQUAL(IsAlpha('\t'), CFalse);
+})
+
 int main()
 {
     CREATE_TESTSUIT();
@@ -630,7 +667,9 @@ int main()
 		Test_TruncateString_TruncateString,
 		Test_SubString_SubString,
 		Test_CompareString_CompareString,
-		Test_SearchString_SearchString
+		Test_SearchString_SearchString,
+		Test_CheckCharIsDigit_IsDigit,
+		Test_CheckCharIsAlpha_IsAlpha
     );
 
     RUN_ALL_TESTS();

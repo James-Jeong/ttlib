@@ -15,11 +15,23 @@ typedef enum SearchResult
 
 typedef enum CompareResult
 {
+	// 비교 실패
 	CompareError = -2,
+	// 문자열 정렬 순서가 앞에 있는 경우
 	OrderFront = -1,
+	// 문자열 정렬 순서가 같은 경우
 	OrderEqual = 0,
+	// 문자열 정렬 순서가 뒤에 있는 경우
 	OrderRear = 1
 } CompareResult;
+
+typedef enum CharConditionResult
+{
+	// 문자 검사 조건 거짓
+	CFalse = -1,
+	// 문자 검사 조건 참
+	CTrue = 1
+} CBool;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Macro
@@ -66,9 +78,12 @@ char* FormatString(StringPtr str, const char* format, ...);
 
 char* ConcatString(StringPtr str, const char* s);
 char* TruncateString(StringPtr str, int from);
-StringPtr SubString(StringPtr str, int from, int length);
+StringPtr SubString(const StringPtr str, int from, int length);
 
 CompareResult CompareString(const StringPtr str1, const StringPtr str2);
 SearchResult SearchString(const StringPtr str, const char *pattern);
+
+CBool IsDigit(char c);
+CBool IsAlpha(char c);
 
 #endif

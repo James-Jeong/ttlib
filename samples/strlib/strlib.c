@@ -708,3 +708,30 @@ SearchResult SearchString(const StringPtr str, const char *pattern)
 	return result;
 }
 
+/**
+ * @fn CBool IsDigit(char c)
+ * @brief 지정한 문자가 숫자 문자인지 검사하는 함수
+ * @param c 검사할 문자(입력)
+ * @return 성공 시 CTrue(1), 실패 시 CFalse(-1) 반환
+ */
+CBool IsDigit(char c)
+{
+	return (c >= '0' && c <= '9') ? CTrue : CFalse;
+}
+
+/**
+ * @fn CBool IsAlpha(char c)
+ * @brief 지정한 문자가 알파벳 문자인지 검사하는 함수
+ * @param c 검사할 문자(입력)
+ * @return 성공 시 CTrue(1), 실패 시 CFalse(-1) 반환
+ */
+CBool IsAlpha(char c)
+{
+	CBool result = CFalse;
+	if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+	{
+		result = CTrue;
+	}
+	return result;
+}
+
