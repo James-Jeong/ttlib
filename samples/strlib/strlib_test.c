@@ -685,8 +685,50 @@ TEST(CheckCharIsCRLF, IsCRLF, {
 TEST(SplitString, SplitString, {
 	char *s = "ab|zf|de";
 	char delimit = '|';
+	char *expected1 = "ab";
+	char *expected2 = "zf";
+	char *expected3 = "de";
 	char **actual = SplitString(s, delimit);
+
+	// 반환값 확인 
 	EXPECT_NOT_NULL(actual);
+
+	// 함수 기본 정상 동작 확인
+	EXPECT_STR_EQUAL(actual[0], expected1);
+	EXPECT_STR_EQUAL(actual[1], expected2);
+	EXPECT_STR_EQUAL(actual[2], expected3);
+	EXPECT_NULL(actual[3]);
+	char **tempActual = actual;
+	while(*tempActual != NULL)
+	{
+		//printf("%s|\n", *tempActual);
+		free(*tempActual);
+		tempActual++;
+	}
+	free(actual);
+
+	actual = SplitString(s, 'a');
+	expected1 = "";
+	expected2 = "b|zf|de";
+	EXPECT_STR_EQUAL(actual[0], expected1);
+	EXPECT_STR_EQUAL(actual[1], expected2);
+	EXPECT_NULL(actual[2]);
+	tempActual = actual;
+	while(*tempActual != NULL)
+	{
+		//printf("%s|\n", *tempActual);
+		free(*tempActual);
+		tempActual++;
+	}
+	free(actual);
+
+	// 비정상 동작
+	// 잘못된 delimiter
+	actual = SplitString(s, 'x');
+	EXPECT_NULL(actual);
+	// NULL 값이 들어온 경우, NULL 반환
+	actual = SplitString(NULL, 'x');
+	EXPECT_NULL(actual);
 })
 
 int main()

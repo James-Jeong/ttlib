@@ -18,16 +18,10 @@
  */
 StringPtr NewString(const char *s)
 {
-    if(s == NULL)
-    {
-        return NULL;
-    }
+    if(s == NULL) return NULL;
 
     StringPtr newString = (String*)malloc(sizeof(String));
-    if(newString == NULL)
-    {
-        return NULL;
-    }
+    if(newString == NULL)  return NULL;
     
     int length = (int)strlen(s);
     newString->data = (char*)malloc((size_t)length + 1);
@@ -70,17 +64,11 @@ void DeleteString(StringPtrContainer stringPtrContainer)
  */
 StringPtr CloneString(const StringPtr str)
 {
-    if(str == NULL)
-    {
-        return NULL;
-    }
+    if(str == NULL || str->data == NULL || str->length <= 0) return NULL;
 
     int newLength = str->length;
     char *newData = (char*)malloc((size_t)newLength + 1);
-    if(newData == NULL)
-    {
-        return NULL;
-    }
+    if(newData == NULL) return NULL;
 
     memcpy(newData, str->data, (size_t)newLength);
     *(newData + newLength) = '\0';
@@ -106,11 +94,7 @@ StringPtr CloneString(const StringPtr str)
  */
 int GetLength(const StringPtr str)
 {
-    if(str == NULL)
-    {
-        return 0;
-    }
-
+    if(str == NULL || str->data == NULL) return 0;
     return str->length;
 }
 
@@ -122,11 +106,7 @@ int GetLength(const StringPtr str)
  */
 char* GetPtr(const StringPtr str)
 {
-    if(str == NULL)
-    {
-        return NULL;
-    }
-
+    if(str == NULL) return NULL;
     return str->data;
 }
 
@@ -139,22 +119,16 @@ char* GetPtr(const StringPtr str)
  */
 char* SetString(StringPtr str, const char *s)
 {
-    if(str == NULL || s == NULL)
-    {
-        return NULL;
-    }
+    if(str == NULL || s == NULL) return NULL;
 
     int length = (int)strlen(s);
     char *newData = (char*)malloc((size_t)length + 1);
-    if(newData == NULL)
-    {
-        return NULL;
-    }
+    if(newData == NULL) return NULL;
 
     memcpy(newData, s, (size_t)length);
     *(newData + length) = '\0';
 
-    free(str->data);
+    if(str->data != NULL) free(str->data);
     str->data = newData;
     str->length = length;
 
@@ -169,15 +143,7 @@ char* SetString(StringPtr str, const char *s)
  */
 char* ConvertToUpperCase(StringPtr str)
 {
-	if(str == NULL)
-	{
-		return NULL;
-	}
-
-	if(str->data == NULL)
-	{
-		return NULL;
-	}
+	if(str == NULL || str->data == NULL || str->length <= 0) return NULL;
 
 	int strLength = str->length;
 	int strIndex = 0;
@@ -198,15 +164,7 @@ char* ConvertToUpperCase(StringPtr str)
  */
 char* ConvertToLowerCase(StringPtr str)
 {
-	if(str == NULL)
-	{
-		return NULL;
-	}
-
-	if(str->data == NULL)
-	{
-		return NULL;
-	}
+	if(str == NULL || str->data == NULL || str->length <= 0) return NULL;
 
 	int strLength = str->length;
 	int strIndex = 0;
@@ -227,15 +185,7 @@ char* ConvertToLowerCase(StringPtr str)
  */
 char* RemoveLeftSpace(StringPtr str)
 {
-	if(str == NULL)
-	{
-		return NULL;
-	}
-
-	if(str->data == NULL)
-	{
-		return NULL;
-	}
+	if(str == NULL || str->data == NULL || str->length <= 0) return NULL;
 
 	int strLength = str->length;
 	int strIndex = 0;
@@ -254,11 +204,7 @@ char* RemoveLeftSpace(StringPtr str)
 	{
 		int newDataLength = strLength - leftSpaceCount + 1;
 		char *newData = (char*)malloc((size_t)newDataLength);
-		if(newData == NULL)
-		{
-			return NULL;
-		}
-
+		if(newData == NULL)	return NULL;
 		memcpy(newData, str->data + leftSpaceCount, (size_t)newDataLength);
 		*(newData + newDataLength) = '\0';
 
@@ -277,15 +223,7 @@ char* RemoveLeftSpace(StringPtr str)
  */
 char* RemoveRightSpace(StringPtr str)
 {
-	if(str == NULL)
-	{
-		return NULL;
-	}
-
-	if(str->data == NULL)
-	{
-		return NULL;
-	}
+	if(str == NULL || str->data == NULL || str->length <= 0) return NULL;
 
 	int strLength = str->length;
 	int strIndex = strLength - 1;
@@ -304,11 +242,7 @@ char* RemoveRightSpace(StringPtr str)
 	{
 		int newDataLength = strLength - rightSpaceCount + 1;
 		char *newData = (char*)malloc((size_t)newDataLength);
-		if(newData == NULL)
-		{
-			return NULL;
-		}
-
+		if(newData == NULL) return NULL;
 		str->data[strLength - rightSpaceCount] = '\0';
 		memcpy(newData, str->data, (size_t)newDataLength);
 
@@ -328,19 +262,33 @@ char* RemoveRightSpace(StringPtr str)
  */
 char* RemoveBothSpace(StringPtr str)
 {
-	//TODO Clone -> set -> return str->data
-	char *trimmedString = RemoveRightSpace(str);
-	if(trimmedString == NULL)
+	StringPtr newStr = CloneString(str);
+	if(newStr == NULL) return NULL;
+
+	char *rightTrimmedString = RemoveRightSpace(newStr);
+	if(rightTrimmedString == NULL)
 	{
+		DeleteString(&newStr);
 		return NULL;
 	}
 
-	if(SetString(str, trimmedString) == NULL)
+	if(SetString(newStr, rightTrimmedString) == NULL)
 	{
+		DeleteString(&newStr);
 		return NULL;
 	}
-	
-	return RemoveLeftSpace(str);
+
+	char *leftTrimmedString = RemoveLeftSpace(newStr);
+	if(leftTrimmedString == NULL)
+	{
+		DeleteString(&newStr);
+		return NULL;
+	}
+
+	CopyString(str, newStr);
+	DeleteString(&newStr);
+
+	return str->data;
 }
 
 /**
@@ -352,15 +300,7 @@ char* RemoveBothSpace(StringPtr str)
  */
 char* CopyString(StringPtr dstStr, const StringPtr srcStr)
 {
-	if(dstStr == NULL || srcStr == NULL)
-	{
-		return NULL;
-	}
-
-	if(dstStr->data == NULL || srcStr->data == NULL)
-	{
-		return NULL;
-	}
+	if(dstStr == NULL || dstStr->data == NULL || srcStr == NULL || srcStr->data == NULL) return NULL;
 
 	int dstStrLength = dstStr->length;
 	int srcStrLength = srcStr->length;
@@ -369,10 +309,7 @@ char* CopyString(StringPtr dstStr, const StringPtr srcStr)
 	if(dstStrLength != srcStrLength)
 	{
 		char *newData = (char*)malloc((size_t)srcStrLength + 1);
-		if(newData == NULL)
-		{
-			return NULL;
-		}
+		if(newData == NULL) return NULL;
 		memcpy(newData, srcStr->data, (size_t)srcStrLength);
 
 		free(dstStr->data);
@@ -400,17 +337,7 @@ char* CopyString(StringPtr dstStr, const StringPtr srcStr)
  */
 char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
 {
-	if(length <= 0)
-	{
-		return NULL;
-	}
-
-	if(dstStr == NULL || srcStr == NULL)
-	{
-		return NULL;
-	}
-
-	if(dstStr->data == NULL || srcStr->data == NULL)
+	if(length <= 0 || dstStr == NULL || dstStr->data == NULL || srcStr == NULL || srcStr->data == NULL)
 	{
 		return NULL;
 	}
@@ -421,10 +348,7 @@ char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
 	if(srcStrLength == 0)
 	{
 		char *newData = realloc(dstStr->data, 1);
-		if(newData == NULL)
-		{
-			return NULL;
-		}
+		if(newData == NULL) return NULL;
 		dstStr->data = newData;
 		dstStr->data[0] = '\0';
 		dstStr->length = 0;
@@ -432,29 +356,20 @@ char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
 	}
 
 	// 복사할 길이가 srcStrLength 보다 크면, srcStrLength 만큼 복사
-	if(srcStrLength < length)
-	{
-		length = srcStrLength;
-	}
+	if(srcStrLength < length) length = srcStrLength;
 
 	// 복사할 길이가 dstStrLength 와 같지 않으면 복사할 길이만큼 새로운 문자열 생성
 	if(dstStrLength != length)
 	{
 		char *newData = (char*)malloc((size_t)length + 1);
-		if(newData == NULL)
-		{
-			return NULL;
-		}
+		if(newData == NULL) return NULL;
 		memcpy(newData, srcStr->data, (size_t)length);
 
 		free(dstStr->data);
 		dstStr->data = newData;
 	}
 	// 그렇지 않다면, 생성할 필요 없이 복사할 길이만큼 그대로 복사
-	else
-	{
-		memcpy(dstStr->data, srcStr->data, (size_t)length);
-	}
+	else memcpy(dstStr->data, srcStr->data, (size_t)length);
 
 	dstStr->length = length;
 	dstStr->data[dstStr->length] = '\0';
@@ -472,28 +387,18 @@ char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
  */
 char* FormatString(StringPtr str, const char* format, ...)
 {
-	if(str == NULL || format == NULL)
-	{
-		return NULL;
-	}
+	if(str == NULL || format == NULL) return NULL;
 
 	va_list ap;
-
 	va_start(ap, format);
 
 	int newLength = vsnprintf(NULL, 0, format, ap);
-	if(newLength < 0)
-	{
-		return NULL;
-	}
+	if(newLength < 0) return NULL;
 	newLength++;
 	va_end(ap);
 
 	char *newData = (char*)calloc((size_t)newLength, sizeof(char));
-	if(newData == NULL)
-	{
-		return NULL;
-	}
+	if(newData == NULL) return NULL;
 
 	va_start(ap, format);
 	int copiedLength = vsnprintf(newData, (size_t)newLength, format, ap);
@@ -517,27 +422,17 @@ char* FormatString(StringPtr str, const char* format, ...)
  * @fn char* ConcatString(StringPtr str, const char* s)
  * @brief 원본 문자열 뒤에 지정한 문자열을 붙이는 함수
  * @param str 덧붙여질 문자열을 저장할 문자열 관리 구조체(출력)
- * @param s 덧붙일 문자열(입력, 읽기 전용)
+ * @param s 덧붙일 문자열(입력, 읽기 전용), NULL 이면 덧붙여질 문자열을 반환
  * @return 성공 시 덧붙여진 문자열의 주소, 실패 시 NULL 반환
  */
 char* ConcatString(StringPtr str, const char* s)
 {
-	if(str == NULL || str->data == NULL)
-	{
-		return NULL;
-	}
-
-	if(s == NULL)
-	{
-		return str->data;
-	}
+	if(str == NULL || str->data == NULL) return NULL;
+	if(s == NULL) return str->data;
 
 	int newLength = str->length + (int)strlen(s);
 	char *newData = (char*)malloc((size_t)newLength + 1);
-	if(newData == NULL)
-	{
-		return NULL;
-	}
+	if(newData == NULL) return NULL;
 
 	memcpy(newData, str->data, (size_t)str->length);
 	memcpy(newData + str->length, s, (size_t)strlen(s));
@@ -559,14 +454,9 @@ char* ConcatString(StringPtr str, const char* s)
  */
 char* TruncateString(StringPtr str, int from)
 {
-	if(str == NULL || str->data == NULL || str->length <= 0 || from < 0 || from >= str->length)
-	{
-		return NULL;
-	}
-
+	if(str == NULL || str->data == NULL || str->length <= 0 || from < 0 || from >= str->length) return NULL;
 	*(str->data + from) = '\0';
 	SetString(str, str->data);
-
 	return str->data;
 }
 
@@ -580,16 +470,9 @@ char* TruncateString(StringPtr str, int from)
  */
 StringPtr SubString(const StringPtr str, int from, int length)
 {
-	if(str == NULL || str->data == NULL || str->length <= 0 || length < 0 || from < 0 || from >= str->length)
-	{
-		return NULL;
-	}
-
+	if(str == NULL || str->data == NULL || str->length <= 0 || length < 0 || from < 0 || from >= str->length) return NULL;
 	int to = from + length;
-	if(to > str->length)
-	{
-		to = str->length;
-	}
+	if(to > str->length) to = str->length;
 
 	StringPtr newStr = CloneString(str);
 	*(newStr->data + to) = '\0';
@@ -609,11 +492,7 @@ StringPtr SubString(const StringPtr str, int from, int length)
 int CompareString(const StringPtr str1, const StringPtr str2)
 {
 	int result = 0;
-
-	if(str1 == NULL || str2 == NULL || str1->data == NULL || str2->data == NULL)
-	{
-		return COMPARE_ERROR;
-	}
+	if(str1 == NULL || str2 == NULL || str1->data == NULL || str2->data == NULL) return COMPARE_ERROR;
 
 	// 빈문자열인 경우, 길이 비교
 	if(str1->length <= 0 && str2->length > 0) return -1;
@@ -667,17 +546,10 @@ int CompareString(const StringPtr str1, const StringPtr str2)
 SearchResult SearchString(const StringPtr str, const char *pattern)
 {
 	SearchResult result = SearchFalse;
-
-	if(pattern == NULL || str == NULL || str->data == NULL || str->length <= 0)
-	{
-		return result;
-	}
+	if(pattern == NULL || str == NULL || str->data == NULL || str->length <= 0) return result;
 
 	int patternLength = (int)strlen(pattern);
-	if(patternLength == 0 || patternLength > str->length)
-	{
-		return result;
-	}
+	if(patternLength == 0 || patternLength > str->length) return result;
 
 	int strLength = str->length;
 	int strIndex = 0;
@@ -753,11 +625,58 @@ CBool IsCRLF(char c)
 	return (c == '\r' || c == '\n') ? CTrue : CFalse;
 }
 
-char** SplitString(const char *s, char delimit)
+char** SplitString(const char *s, char delimiter)
 {
+	if(s == NULL) return NULL;
+
 	char **strList;
+	int strIndex = 0;
+	int strLength = (int)strlen(s);
+	int delimiterCount = 0;
 
+	for( ; strIndex < strLength; strIndex++)
+	{
+		if(s[strIndex] == delimiter) delimiterCount++;
+	}
+	// delimiter 가 문자열에 없으면 실패, NULL 반환
+	if(delimiterCount == 0) return NULL;
 
+	int *delimiterPos = (int*)calloc(sizeof(int) * (size_t)(delimiterCount), sizeof(int));
+	if(delimiterPos == NULL) return NULL;
+
+	int delimiterIndex = 0;
+	for(strIndex = 0; strIndex < strLength; strIndex++)
+	{
+		if(s[strIndex] == delimiter) delimiterPos[delimiterIndex++] = strIndex;
+	}
+
+	// (delimiter 개수 + 2) 만큼 포인터 배열의 크기를 생성
+	// +2 : (마지막 delimiter 뒤의 문자열) + (포인터 배열의 끝을 알려주는 널문자)
+	int strListIndex = 0;
+	int strListLength = delimiterCount + 2;
+	strList = (char**)malloc(sizeof(char*) * (size_t)(strListLength));
+	if(strList == NULL) return NULL;
+	for( ; strListIndex < strListLength; strListIndex++) strList[strListIndex] = NULL;
+
+	for(strListIndex = 0; strListIndex < strListLength - 1; strListIndex++)
+	{
+		int curLength = delimiterPos[strListIndex];
+		if(strListIndex > 0){
+			if(curLength != 0) curLength -= (delimiterPos[strListIndex - 1] + 1);
+			// 마지막으로 분리될 문자열
+			else curLength = strLength - (delimiterPos[strListIndex - 1] + 1);
+			// delimiter 문자는 넘어감
+			if(*s == delimiter) s++;
+		}
+
+		char *newStr = (char*)malloc((size_t)(curLength + 1));
+		if(newStr == NULL) return NULL;
+		memcpy(newStr, s, (size_t)curLength);
+		newStr[curLength] = '\0';
+		strList[strListIndex] = newStr;
+		s += curLength;
+	}
 
 	return strList;
 }
+

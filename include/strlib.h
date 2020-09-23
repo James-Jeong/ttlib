@@ -81,6 +81,6 @@ CBool IsAlpha(char c);
 CBool IsLetter(char c);
 CBool IsSpace(char c);
 CBool IsCRLF(char c);
-char** SplitString(const char *s, char delimit);
+char** SplitString(const char *s, char delimiter);
 
 #endif
