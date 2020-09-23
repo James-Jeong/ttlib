@@ -741,6 +741,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 /**
  * @fn char* MergeString(const char *s, char delimiter)
  * @brief 문자열을 지정한 구분 문자로 연결하는 함수
+ * 연결된 문자열은 기존 문자열가 아닌 새로 생성된 문자열
  * @param s 연결할 문자열(입력, 읽기 전용)
  * @param delimiter 구분 문자(입력)
  * @return 성공 시 연결된 문자열의 주소, 실패 시 NULL 반환
