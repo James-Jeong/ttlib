@@ -546,7 +546,7 @@ TEST(CompareString, CompareString, {
 	SetString(str2, s8);
 	EXPECT_NUM_EQUAL(CompareString(str1, str2), OrderRear);
 
-	// 빈문자열을 비교할 경우, NULL 반환
+	//TODO 빈문자열을 비교할 경우, 1 반환
 	SetString(str1, "");
 	EXPECT_NUM_EQUAL(CompareString(str1, str2), CompareError);
 	SetString(str1, s1);
@@ -564,7 +564,7 @@ TEST(CompareString, CompareString, {
 })
 
 TEST(SearchString, SearchString, {
-	char *s1 = "abcde";
+	char *s1 = "abcaabcbcabcdede";
 	char *s2 = "b";
 	char *s3 = "cd";
 	char *s4 = "bcd";
@@ -582,7 +582,7 @@ TEST(SearchString, SearchString, {
 	// 검색할 문자열의 길이가 3
 	EXPECT_NUM_EQUAL(SearchString(str, s4), SearchTrue);
 	// 검색할 문자열의 길이가 4
-	EXPECT_NUM_EQUAL(SearchString(str, s5), SearchTrue);
+	EXPECT_NUM_EQUAL(SearchString(str, s5), SearchTrue);              
 	// 검색할 문자열의 길이가 5
 	EXPECT_NUM_EQUAL(SearchString(str, s6), SearchTrue);
 
@@ -644,6 +644,39 @@ TEST(CheckCharIsAlpha, IsAlpha, {
 	EXPECT_NUM_EQUAL(IsAlpha('\t'), CFalse);
 })
 
+TEST(CheckCharIsLetter, IsLetter, {
+	EXPECT_NUM_EQUAL(IsLetter('a'), CTrue);
+	EXPECT_NUM_EQUAL(IsLetter('_'), CTrue);
+	EXPECT_NUM_EQUAL(IsLetter('Z'), CTrue);
+	EXPECT_NUM_EQUAL(IsLetter('q'), CTrue);
+
+	EXPECT_NUM_EQUAL(IsLetter('1'), CFalse);
+	EXPECT_NUM_EQUAL(IsLetter('-'), CFalse);
+})
+
+TEST(CheckCharIsSpace, IsSpace, {
+	EXPECT_NUM_EQUAL(IsSpace(' '), CTrue);
+	EXPECT_NUM_EQUAL(IsSpace('\t'), CTrue);
+
+	EXPECT_NUM_EQUAL(IsSpace('a'), CFalse);
+	EXPECT_NUM_EQUAL(IsSpace('\n'), CFalse);
+})
+
+TEST(CheckCharIsCRLF, IsCRLF, {
+	EXPECT_NUM_EQUAL(IsCRLF('\r'), CTrue);
+	EXPECT_NUM_EQUAL(IsCRLF('\n'), CTrue);
+
+	EXPECT_NUM_EQUAL(IsCRLF(' '), CFalse);
+	EXPECT_NUM_EQUAL(IsCRLF('a'), CFalse);
+})
+
+TEST(SplitString, SplitString, {
+	char *s = "ab|zf|de";
+	char delimit = '|';
+	char **actual = SplitString(s, delimit);
+	EXPECT_NOT_NULL(actual);
+})
+
 int main()
 {
     CREATE_TESTSUIT();
@@ -669,12 +702,16 @@ int main()
 		Test_CompareString_CompareString,
 		Test_SearchString_SearchString,
 		Test_CheckCharIsDigit_IsDigit,
-		Test_CheckCharIsAlpha_IsAlpha
+		Test_CheckCharIsAlpha_IsAlpha,
+		Test_CheckCharIsLetter_IsLetter,
+		Test_CheckCharIsSpace_IsSpace,
+		Test_CheckCharIsCRLF_IsCRLF,
+		Test_SplitString_SplitString
     );
 
     RUN_ALL_TESTS();
 
     CLEAN_UP_TESTSUIT();
 
-    return 1;
+	return 1;
 }

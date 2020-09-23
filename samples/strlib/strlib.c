@@ -727,11 +727,29 @@ CBool IsDigit(char c)
  */
 CBool IsAlpha(char c)
 {
-	CBool result = CFalse;
-	if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
-	{
-		result = CTrue;
-	}
-	return result;
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ? CTrue : CFalse;
 }
 
+CBool IsLetter(char c)
+{
+	return (IsAlpha(c) == CTrue || c == '_') ? CTrue : CFalse;
+}
+
+CBool IsSpace(char c)
+{
+	return (c == ' ' || c == '\t') ? CTrue : CFalse;
+}
+
+CBool IsCRLF(char c)
+{
+	return (c == '\r' || c == '\n') ? CTrue : CFalse;
+}
+
+char** SplitString(const char *s, char delimit)
+{
+	char **strList;
+
+
+
+	return strList;
+}

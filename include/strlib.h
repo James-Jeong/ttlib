@@ -85,5 +85,9 @@ SearchResult SearchString(const StringPtr str, const char *pattern);
 
 CBool IsDigit(char c);
 CBool IsAlpha(char c);
+CBool IsLetter(char c);
+CBool IsSpace(char c);
+CBool IsCRLF(char c);
+char** SplitString(const char *s, char delimit);
 
 #endif
