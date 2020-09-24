@@ -658,16 +658,20 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 	{
 		if(s[strIndex] == delimiter) delimiterCount++;
 	}
+
 	// delimiter 가 문자열에 없으면 실패, NULL 반환
-	if(delimiterCount == 0) return NULL;
+	if(delimiter != '\0' && delimiterCount == 0) return NULL;
 
-	int *delimiterPos = (int*)calloc(sizeof(int) * (size_t)(delimiterCount), sizeof(int));
-	if(delimiterPos == NULL) return NULL;
-
-	int delimiterIndex = 0;
-	for(strIndex = 0; strIndex < strLength; strIndex++)
+	int *delimiterPos = NULL;
+	if(delimiter != '\0')
 	{
-		if(s[strIndex] == delimiter) delimiterPos[delimiterIndex++] = strIndex;
+		delimiterPos = (int*)calloc(sizeof(int) * (size_t)(delimiterCount), sizeof(int));
+		if(delimiterPos == NULL) return NULL;
+		int delimiterIndex = 0;
+		for(strIndex = 0; strIndex < strLength; strIndex++)
+		{
+			if(s[strIndex] == delimiter) delimiterPos[delimiterIndex++] = strIndex;
+		}
 	}
 
 	// (delimiter 개수 + 1) 만큼 포인터 배열의 크기를 생성 < +1 : (마지막 delimiter 뒤의 문자열)
@@ -679,13 +683,19 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 
 	for(strListIndex = 0; strListIndex < strListLength; strListIndex++)
 	{
-		int curLength = delimiterPos[strListIndex];
-		if(strListIndex > 0){
-			if(curLength != 0) curLength -= (delimiterPos[strListIndex - 1] + 1);
-			// 마지막으로 분리될 문자열
-			else curLength = strLength - (delimiterPos[strListIndex - 1] + 1);
-			// delimiter 문자는 넘어감
-			if(*s == delimiter) s++;
+		int curLength = 0;
+		// delimiter 가 널 문자이면 원본 문자열 전체 복사
+		if(delimiter == '\0') curLength = strLength;
+		else
+		{
+			curLength = delimiterPos[strListIndex];
+			if(strListIndex > 0){
+				if(curLength != 0) curLength -= (delimiterPos[strListIndex - 1] + 1);
+				// 마지막으로 분리될 문자열
+				else curLength = strLength - (delimiterPos[strListIndex - 1] + 1);
+				// delimiter 문자는 넘어감
+				if(*s == delimiter) s++;
+			}
 		}
 
 		if(option == ExcludeEmptyArray && curLength == 0) strList[strListIndex] = NULL;
@@ -710,8 +720,8 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 	}
 	free(delimiterPos);
 
-	// 빈문자열을 포함시키지 않는 경우
-	if(option == ExcludeEmptyArray)
+	// delimiter 가 널 문자가 아니고, 빈문자열을 포함시키지 않는 경우
+	if(delimiter != '\0' && option == ExcludeEmptyArray)
 	{
 		int pointerCount = 0;
 		for(strListIndex = 0; strListIndex < strListLength; strListIndex++)
@@ -762,8 +772,10 @@ char* MergeString(const char *s, char delimiter)
 	{
 		if(s[strIndex] == delimiter) delimiterCount++;
 	}
-	// delimiter 가 문자열에 포함되어 있지 않으면, NULL 반환
-	if(delimiterCount == 0) return NULL;
+
+	// 널 문자가 아닌 delimiter 가 문자열에 포함되어 있지 않으면, NULL 반환
+	// delimiter 가 널 문자이면 원본 문자열 그대로 복사해서 반환
+	if(delimiter != '\0' && delimiterCount == 0) return NULL;
 
 	int newStrLength = strLength - delimiterCount;
 	char *newStr = (char*)malloc((size_t)(newStrLength + 1));

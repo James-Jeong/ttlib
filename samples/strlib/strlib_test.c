@@ -685,11 +685,11 @@ TEST(CheckCharIsCRLF, IsCRLF, {
 
 TEST(SplitString, SplitString, {
 	char *s = "ab|zf|de";
-	char delimit = '|';
+	char delimiter = '|';
 	char *expected1 = "ab";
 	char *expected2 = "zf";
 	char *expected3 = "de";
-	char **actual = SplitString(s, delimit, IncludeEmptyArray);
+	char **actual = SplitString(s, delimiter, IncludeEmptyArray);
 
 	// 반환값 확인 
 	EXPECT_NOT_NULL(actual);
@@ -708,7 +708,8 @@ TEST(SplitString, SplitString, {
 	}
 	free(actual);
 
-	actual = SplitString(s, 'a', IncludeEmptyArray);
+	delimiter = 'a';
+	actual = SplitString(s, delimiter, IncludeEmptyArray);
 	expected1 = "";
 	expected2 = "b|zf|de";
 	EXPECT_STR_EQUAL(actual[0], expected1);
@@ -723,7 +724,8 @@ TEST(SplitString, SplitString, {
 	}
 	free(actual);
 
-	actual = SplitString(s, 'a', ExcludeEmptyArray);
+	delimiter = 'a';
+	actual = SplitString(s, delimiter, ExcludeEmptyArray);
 	expected1 = "b|zf|de";
 	EXPECT_STR_EQUAL(actual[0], expected1);
 	EXPECT_NULL(actual[1]);
@@ -736,8 +738,9 @@ TEST(SplitString, SplitString, {
 	}
 	free(actual);
 
+	delimiter = '\n';
 	s = "1a b 2c\n#ef\n\t@12#tg3\ndg\t2 e!";
-	actual = SplitString(s, '\n', IncludeEmptyArray);
+	actual = SplitString(s, delimiter, IncludeEmptyArray);
 	expected1 = "1a b 2c";
 	expected2 = "#ef";
 	expected3 = "\t@12#tg3";
@@ -747,6 +750,23 @@ TEST(SplitString, SplitString, {
 	EXPECT_STR_EQUAL(actual[2], expected3);
 	EXPECT_STR_EQUAL(actual[3], expected4);
 	EXPECT_NULL(actual[4]);
+	tempActual = actual;
+	while(*tempActual != NULL)
+	{
+		//printf("%s\n", *tempActual);
+		free(*tempActual);
+		tempActual++;
+	}
+	free(actual);
+
+	// delimeter 가 널 문자이면, 원본 문자열 그대로 복사해서 반환
+	delimiter = '\0';
+	s = "ab|de|wf";
+	expected1 = s;
+	// delimiter 가 널 문자인 경우, option 값은 무의미 > 널 문자는 문자열에 미포함
+	actual = SplitString(s, delimiter, IncludeEmptyArray);
+	EXPECT_STR_EQUAL(actual[0], expected1);
+	EXPECT_NULL(actual[1]);
 	tempActual = actual;
 	while(*tempActual != NULL)
 	{
@@ -781,6 +801,14 @@ TEST(MergeString, MergeString, {
 	s = "a1 2d\n12\t@* @9\n\ncvw e ag\n\n\n4g h";
 	delimiter = '\n';
 	expected = "a1 2d12\t@* @9cvw e ag4g h";
+	actual = MergeString(s, delimiter);
+	EXPECT_STR_EQUAL(actual, expected);
+	free(actual);
+
+	// delimeter 가 널 문자이면, 원본 문자열 그대로 복사해서 반환
+	delimiter = '\0';
+	s = "ab de wf";
+	expected = s;
 	actual = MergeString(s, delimiter);
 	EXPECT_STR_EQUAL(actual, expected);
 	free(actual);
