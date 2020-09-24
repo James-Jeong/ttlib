@@ -178,12 +178,12 @@ char* ConvertToLowerCase(StringPtr str)
 }
 
 /**
- * @fn char* RemoveLeftSpace(StringPtr str)
+ * @fn char* LeftTrim(StringPtr str)
  * @brief 구조체에서 관리하는 문자열의 왼쪽 공백을 모두 제거하는 함수
  * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
  * @return 성공 시 왼쪽 공백이 제거된 문자열의 주소, 실패 시 NULL 반환
  */
-char* RemoveLeftSpace(StringPtr str)
+char* LeftTrim(StringPtr str)
 {
 	if(str == NULL || str->data == NULL || str->length <= 0) return NULL;
 
@@ -203,22 +203,23 @@ char* RemoveLeftSpace(StringPtr str)
 		char *newData = (char*)malloc((size_t)(newDataLength + 1));
 		if(newData == NULL)	return NULL;
 		memcpy(newData, str->data + leftSpaceCount, (size_t)newDataLength);
-		*(newData + newDataLength) = '\0';
+		newData[newDataLength] = '\0';
 
 		if(str->data != NULL) free(str->data);
 		str->data = newData;
+		str->length = newDataLength;
 	}
 
 	return str->data;
 }
 
 /**
- * @fn char* RemoveRightSpace(StringPtr str)
+ * @fn char* RightTrim(StringPtr str)
  * @brief 구조체에서 관리하는 문자열의 오른쪽 공백을 모두 제거하는 함수
  * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
  * @return 성공 시 오른쪽 공백이 제거된 문자열의 주소, 실패 시 NULL 반환
  */
-char* RemoveRightSpace(StringPtr str)
+char* RightTrim(StringPtr str)
 {
 	if(str == NULL || str->data == NULL || str->length <= 0) return NULL;
 
@@ -237,29 +238,30 @@ char* RemoveRightSpace(StringPtr str)
 		int newDataLength = strLength - rightSpaceCount;
 		char *newData = (char*)malloc((size_t)(newDataLength + 1));
 		if(newData == NULL) return NULL;
-		str->data[strLength - rightSpaceCount] = '\0';
 		memcpy(newData, str->data, (size_t)newDataLength);
+		newData[newDataLength] = '\0';
 
 		if(str->data != NULL) free(str->data);
 		str->data = newData;
+		str->length = newDataLength;
 	}
 
 	return str->data;
 }
 
 /**
- * @fn char* RemoveBothSpace(StringPtr str)
+ * @fn char* Trim(StringPtr str)
  * @brief 구조체에서 관리하는 문자열의 양쪽 공백을 모두 제거하는 함수
- * RemoveRightSpace 함수에서 전달받은 구조체 포인터와 관리하는 문자열의 NULL 체크를 수행하므로 별도로 체크하지 않는다.
+ * RightTrim 함수에서 전달받은 구조체 포인터와 관리하는 문자열의 NULL 체크를 수행하므로 별도로 체크하지 않는다.
  * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
  * @return 성공 시 양쪽 공백이 제거된 문자열의 주소, 실패 시 NULL 반환
  */
-char* RemoveBothSpace(StringPtr str)
+char* Trim(StringPtr str)
 {
 	StringPtr newStr = CloneString(str);
 	if(newStr == NULL) return NULL;
 
-	char *rightTrimmedString = RemoveRightSpace(newStr);
+	char *rightTrimmedString = RightTrim(newStr);
 	if(rightTrimmedString == NULL)
 	{
 		DeleteString(&newStr);
@@ -272,7 +274,7 @@ char* RemoveBothSpace(StringPtr str)
 		return NULL;
 	}
 
-	char *leftTrimmedString = RemoveLeftSpace(newStr);
+	char *leftTrimmedString = LeftTrim(newStr);
 	if(leftTrimmedString == NULL)
 	{
 		DeleteString(&newStr);
@@ -425,10 +427,10 @@ char* ConcatString(StringPtr str, const char* s)
 	if(s == NULL) return str->data;
 
 	int newLength = str->length + (int)strlen(s);
-	char *newData = (char*)malloc((size_t)newLength + 1);
+	char *newData = (char*)malloc((size_t)(newLength + 1));
 	if(newData == NULL) return NULL;
 
-	memcpy(newData, str->data, (size_t)str->length);
+	memcpy(newData, str->data, (size_t)(str->length));
 	memcpy(newData + str->length, s, (size_t)strlen(s));
 	newData[newLength] = '\0';
 

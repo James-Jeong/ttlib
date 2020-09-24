@@ -67,9 +67,9 @@ char* SetString(StringPtr str, const char *s);
 char* ConvertToUpperCase(StringPtr str);
 char* ConvertToLowerCase(StringPtr str);
 
-char* RemoveLeftSpace(StringPtr str);
-char* RemoveRightSpace(StringPtr str);
-char* RemoveBothSpace(StringPtr str);
+char* LeftTrim(StringPtr str);
+char* RightTrim(StringPtr str);
+char* Trim(StringPtr str);
 
 char* CopyString(StringPtr dstStr, const StringPtr srcStr);
 char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length);

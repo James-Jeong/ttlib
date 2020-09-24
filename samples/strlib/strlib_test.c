@@ -174,94 +174,94 @@ TEST(ConvertToLowerCase, LowerString, {
     DeleteString(&str);
 })
 
-TEST(TrimString, RemoveLeftSpace, {
+TEST(TrimString, LeftTrim, {
 	char *s = " \tabcde";
 	char *expected = "abcde"; 
     StringPtr str = NewString(s);
 
 	// 반환값 확인
-	EXPECT_NOT_NULL(RemoveLeftSpace(str));
+	EXPECT_NOT_NULL(LeftTrim(str));
 
 	// 왼쪽 공백만 있는 경우
 	s = " \t\t \tabcde";
     SetString(str, s);
-	EXPECT_STR_EQUAL(RemoveLeftSpace(str), expected);
+	EXPECT_STR_EQUAL(LeftTrim(str), expected);
 
 	// 왼쪽, 오른쪽 공백과 문자열 중간에 공백이 있는 경우
 	s = " \ta b c d e   ";
 	expected = "a b c d e   ";
     SetString(str, s);
-	EXPECT_STR_EQUAL(RemoveLeftSpace(str), expected);
+	EXPECT_STR_EQUAL(LeftTrim(str), expected);
 
 	// 빈 문자열을 정상처리해야 한다.
 	s = "";
 	expected = "";
     SetString(str, s);
-	EXPECT_STR_EQUAL(RemoveLeftSpace(str), expected);
+	EXPECT_STR_EQUAL(LeftTrim(str), expected);
 
 	// NULL 값이 들어온 경우, NULL 반환
-	EXPECT_NULL(RemoveLeftSpace(NULL));
+	EXPECT_NULL(LeftTrim(NULL));
 
     DeleteString(&str);
 })
 
-TEST(TrimString, RemoveRightSpace, {
+TEST(TrimString, RightTrim, {
 	char *s = "abcde \t";
 	char *expected = "abcde"; 
     StringPtr str = NewString(s);
 
 	// 반환값 확인
-	EXPECT_NOT_NULL(RemoveRightSpace(str));
+	EXPECT_NOT_NULL(RightTrim(str));
 
 	// 오른쪽 공백만 있는 경우
 	s = "abcde \t\t \t";
     SetString(str, s);
-	EXPECT_STR_EQUAL(RemoveRightSpace(str), expected);
+	EXPECT_STR_EQUAL(RightTrim(str), expected);
 
 	s = " a b c d e \t\t \t";
 	expected = " a b c d e";
     SetString(str, s);
-	EXPECT_STR_EQUAL(RemoveRightSpace(str), expected);
+	EXPECT_STR_EQUAL(RightTrim(str), expected);
 
 	// 빈 문자열을 정상처리해야 한다.
 	s = "";
 	expected = "";
     SetString(str, s);
-	EXPECT_STR_EQUAL(RemoveRightSpace(str), expected);
+	EXPECT_STR_EQUAL(RightTrim(str), expected);
 
 	// NULL 값이 들어온 경우, NULL 반환
-	EXPECT_NULL(RemoveRightSpace(NULL));
+	EXPECT_NULL(RightTrim(NULL));
 
     DeleteString(&str);
 })
 
-TEST(TrimString, RemoveBothSpace, {
+TEST(TrimString, Trim, {
 	char *s = "\t abcde \t";
 	char *expected = "abcde"; 
     StringPtr str = NewString(s);
 
 	// 반환값 확인
-	EXPECT_NOT_NULL(RemoveBothSpace(str));
+	EXPECT_NOT_NULL(Trim(str));
 
 	// 양쪽에 공백이 있는 경우
 	s = "\t \t\t abcde \t\t \t";
      SetString(str, s);
-	EXPECT_STR_EQUAL(RemoveBothSpace(str), expected);
+	EXPECT_STR_EQUAL(Trim(str), expected);
 
 	// 양쪽에 공백이 있고 문자열 중간에 공백이 있는 경우
 	s = "\t \t\t a b c d e \t\t \t";
 	expected = "a b c d e";
 	SetString(str, s);
-	EXPECT_STR_EQUAL(RemoveBothSpace(str), expected);
+	EXPECT_STR_EQUAL(Trim(str), expected);
 
 	// 빈 문자열을 정상처리해야 한다.
 	s = "";
 	expected = "";
     SetString(str, s);
-	EXPECT_STR_EQUAL(RemoveBothSpace(str), expected);
+	EXPECT_STR_EQUAL(Trim(str), expected);
 
 	// NULL 값이 들어온 경우, NULL 반환
-	EXPECT_NULL(RemoveBothSpace(NULL));
+	EXPECT_NULL(Trim(NULL));
 
     DeleteString(&str);
 })
@@ -786,13 +786,18 @@ TEST(MergeString, MergeString, {
 	free(actual);
 
 	delimiter = '\n';
-	s = "a1 2d\n12\t@* @9\ncvw e ag\n4g h";
-	sList = SplitString(s, delimiter, IncludeEmptyArray);
-	expected = "a1 2d\n12\t@* @9\ncvw e ag\n4g h";
+	char *s1 = "\t a1 2d\n12\t@* @9\n \t";
+	char *s2 = "cvw e ag\n4g h";
+	StringPtr str = NewString(s1);
+	Trim(str);
+	ConcatString(str, s2);
+	sList = SplitString(GetPtr(str), delimiter, IncludeEmptyArray);
+	expected = "a1 2d\n12\t@* @9cvw e ag\n4g h";
 	actual = MergeString(sList, delimiter);
 	EXPECT_STR_EQUAL(actual, expected);
 	DeleteCharPtrConatiner(sList);
 	free(actual);
+	DeleteString(&str);
 
 	// delimiter 가 널 문자일 경우, 원본 문자열 그대로 반환
 	delimiter = '\0';
@@ -836,9 +841,9 @@ int main()
         Test_SetString_SetNewValue,
 		Test_ConvertToUpperCase_UpperString,
 		Test_ConvertToLowerCase_LowerString,
-		Test_TrimString_RemoveLeftSpace,
-		Test_TrimString_RemoveRightSpace,
-		Test_TrimString_RemoveBothSpace,
+		Test_TrimString_LeftTrim,
+		Test_TrimString_RightTrim,
+		Test_TrimString_Trim,
 		Test_CopyString_CopyString,
 		Test_CopyString_CopyNString,
 		Test_FormatString_FormatString,
