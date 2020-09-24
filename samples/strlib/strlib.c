@@ -73,7 +73,7 @@ StringPtr CloneString(const StringPtr str)
     memcpy(newData, str->data, (size_t)newLength);
     *(newData + newLength) = '\0';
 
-    StringPtr newString = (String*)malloc(sizeof(String));
+    StringPtr newString = (StringPtr)malloc(sizeof(String));
     if(newString == NULL)
     {
         free(newData);
@@ -193,17 +193,14 @@ char* RemoveLeftSpace(StringPtr str)
 
 	for( ; strIndex < strLength; strIndex++)
 	{
-		if(isspace(str->data[strIndex]) != 0)
-		{
-			leftSpaceCount++;
-		}
+		if(isspace(str->data[strIndex]) != 0) leftSpaceCount++;
 		else break;
 	}
 
 	if(leftSpaceCount > 0)
 	{
-		int newDataLength = strLength - leftSpaceCount + 1;
-		char *newData = (char*)malloc((size_t)newDataLength);
+		int newDataLength = strLength - leftSpaceCount;
+		char *newData = (char*)malloc((size_t)(newDataLength + 1));
 		if(newData == NULL)	return NULL;
 		memcpy(newData, str->data + leftSpaceCount, (size_t)newDataLength);
 		*(newData + newDataLength) = '\0';
@@ -231,17 +228,14 @@ char* RemoveRightSpace(StringPtr str)
 
 	for( ; strIndex >= 0; strIndex--)
 	{
-		if(isspace(str->data[strIndex]) != 0)
-		{
-			rightSpaceCount++;
-		}
+		if(isspace(str->data[strIndex]) != 0) rightSpaceCount++;
 		else break;
 	}
 
 	if(rightSpaceCount > 0)
 	{
-		int newDataLength = strLength - rightSpaceCount + 1;
-		char *newData = (char*)malloc((size_t)newDataLength);
+		int newDataLength = strLength - rightSpaceCount;
+		char *newData = (char*)malloc((size_t)(newDataLength + 1));
 		if(newData == NULL) return NULL;
 		str->data[strLength - rightSpaceCount] = '\0';
 		memcpy(newData, str->data, (size_t)newDataLength);
@@ -312,8 +306,9 @@ char* CopyString(StringPtr dstStr, const StringPtr srcStr)
 		if(newData == NULL) return NULL;
 		memcpy(newData, srcStr->data, (size_t)srcStrLength);
 
-		free(dstStr->data);
+		if(dstStr->data != NULL) free(dstStr->data);
 		dstStr->data = newData;
+		dstStr->length = srcStrLength;
 	}
 	// 그렇지 않다면, 생성할 필요 없이 srcStrLength 만큼 그대로 복사
 	else
@@ -321,9 +316,7 @@ char* CopyString(StringPtr dstStr, const StringPtr srcStr)
 		memcpy(dstStr->data, srcStr->data, (size_t)srcStrLength);
 	}
 
-	dstStr->length = srcStrLength;
 	dstStr->data[dstStr->length] = '\0';
-
 	return dstStr->data;
 }
 
@@ -345,6 +338,7 @@ char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
 	int dstStrLength = dstStr->length;
 	int srcStrLength = srcStr->length;
 
+	// srcStr 이 빈문자열이면 dstStr 을 빈문자열로 만들어서 반환
 	if(srcStrLength == 0)
 	{
 		char *newData = realloc(dstStr->data, 1);
@@ -365,7 +359,7 @@ char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
 		if(newData == NULL) return NULL;
 		memcpy(newData, srcStr->data, (size_t)length);
 
-		free(dstStr->data);
+		if(dstStr->data != NULL) free(dstStr->data);
 		dstStr->data = newData;
 	}
 	// 그렇지 않다면, 생성할 필요 없이 복사할 길이만큼 그대로 복사
@@ -397,7 +391,7 @@ char* FormatString(StringPtr str, const char* format, ...)
 	newLength++;
 	va_end(ap);
 
-	char *newData = (char*)calloc((size_t)newLength, sizeof(char));
+	char *newData = (char*)malloc((size_t)(newLength + 1));
 	if(newData == NULL) return NULL;
 
 	va_start(ap, format);
@@ -411,7 +405,7 @@ char* FormatString(StringPtr str, const char* format, ...)
 	newData[newLength] = '\0';
 	va_end(ap);
 
-	free(str->data);
+	if(str->data != NULL) free(str->data);
 	str->data = newData;
 	str->length = newLength;
 
@@ -649,7 +643,7 @@ Bool IsCRLF(char c)
  * @param s 나눌 문자열(입력, 읽기 전용)
  * @param delimiter 구분 문자(입력)
  * @param option 빈문자열이 포함된 배열을 포함할 것인지 선택 여부(입력, SplitOption 열거형 참고)
- * @return 성공 시 나눠진 문자열들의 주소를 저장한 동적 배열, 실패 시 NULL 반환
+ * @return 성공 시 나눠진 문자열들의 주소를 저장한 새로운 동적 배열, 실패 시 NULL 반환
  */
 char** SplitString(const char *s, char delimiter, SplitOption option)
 {
@@ -698,7 +692,15 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 		else
 		{
 			char *newStr = (char*)malloc((size_t)(curLength + 1));
-			if(newStr == NULL) return NULL;
+			// 분리된 문자열에 대해 동적 생성 실패하면 이전에 생성한 문자열들(strList[strListIndex])과
+			// 생성된 모든 문자열들에 대한 주소를 가지고 있는 포인터 배열(strList)을 삭제하고 NULL 반환
+			if(newStr == NULL){
+				int tempIndex = 0;
+				for( ; tempIndex < strListIndex; tempIndex++) free(strList[tempIndex]);
+				free(strList);
+				return NULL;
+			}
+			// 현재 delimiter 까지 지정한 길이 만큼의 문자열을 복사
 			memcpy(newStr, s, (size_t)curLength);
 			newStr[curLength] = '\0';
 			strList[strListIndex] = newStr;
@@ -706,6 +708,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 
 		s += curLength;
 	}
+	free(delimiterPos);
 
 	// 빈문자열을 포함시키지 않는 경우
 	if(option == ExcludeEmptyArray)
@@ -718,7 +721,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 
 		int newStrListLength = pointerCount;
 		char **newStrList = (char**)malloc(sizeof(char*) * (size_t)(newStrListLength + 1));
-		if(newStrList == NULL) return NULL;
+		if(newStrList == NULL) return strList;
 		newStrList[newStrListLength] = NULL;
 
 		int newStrListIndex = 0;

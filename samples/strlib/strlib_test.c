@@ -76,6 +76,7 @@ TEST(CloneString, InstanceClone, {
     EXPECT_PTR_NOT_EQUAL(str1->data, str2->data);
     EXPECT_NUM_EQUAL(GetLength(str1), GetLength(str2));
     DeleteString(&str1);
+    DeleteString(&str2);
 
 	// NULL 값이 들어온 경우, NULL 반환
     str2 = CloneString(NULL);
