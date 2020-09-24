@@ -638,11 +638,10 @@ TEST(CheckCharIsDigit, IsDigit, {
 	EXPECT_NUM_EQUAL(IsDigit('9'), True);
 
 	// 비정상 케이스
-	// 숫자 문자가 아닌 문자가 입력일 경우
+	// 다른 문자가 입력일 경우
 	EXPECT_NUM_EQUAL(IsDigit('a'), False);
 	EXPECT_NUM_EQUAL(IsDigit('*'), False);
 	EXPECT_NUM_EQUAL(IsDigit('A'), False);
-	// Whitespace 문자가 입력일 경우
 	EXPECT_NUM_EQUAL(IsDigit(' '), False);
 	EXPECT_NUM_EQUAL(IsDigit('\t'), False);
 })
@@ -658,37 +657,48 @@ TEST(CheckCharIsAlpha, IsAlpha, {
 	EXPECT_NUM_EQUAL(IsAlpha('Z'), True);
 
 	// 비정상 케이스
-	// 알파벳 문자가 아닌 문자가 입력일 경우
+	// 댜른 문자가 입력일 경우
 	EXPECT_NUM_EQUAL(IsAlpha('1'), False);
 	EXPECT_NUM_EQUAL(IsAlpha('*'), False);
 	EXPECT_NUM_EQUAL(IsAlpha('0'), False);
-	// Whitespace 문자가 입력일 경우
 	EXPECT_NUM_EQUAL(IsAlpha(' '), False);
 	EXPECT_NUM_EQUAL(IsAlpha('\t'), False);
 })
 
 TEST(CheckCharIsLetter, IsLetter, {
+	// 정상 케이스
+	// 알파벳 문자 또는 underscore 문자가 입력일 경우
 	EXPECT_NUM_EQUAL(IsLetter('a'), True);
 	EXPECT_NUM_EQUAL(IsLetter('_'), True);
 	EXPECT_NUM_EQUAL(IsLetter('Z'), True);
 	EXPECT_NUM_EQUAL(IsLetter('q'), True);
 
+	// 비정상 케이스
+	// 다른 문자가 입력일 경우
 	EXPECT_NUM_EQUAL(IsLetter('1'), False);
 	EXPECT_NUM_EQUAL(IsLetter('-'), False);
 })
 
 TEST(CheckCharIsSpace, IsSpace, {
+	// 정상 케이스
+	// 공백 문자 또는 탭 문자가 입력일 경우
 	EXPECT_NUM_EQUAL(IsSpace(' '), True);
 	EXPECT_NUM_EQUAL(IsSpace('\t'), True);
 
+	// 비정상 케이스
+	// 다른 문자가 입력일 경우
 	EXPECT_NUM_EQUAL(IsSpace('a'), False);
 	EXPECT_NUM_EQUAL(IsSpace('\n'), False);
 })
 
 TEST(CheckCharIsCRLF, IsCRLF, {
+	// 정상 케이스
+	// CR('\r') 또는 LF('\n') 문자가 입력일 경우
 	EXPECT_NUM_EQUAL(IsCRLF('\r'), True);
 	EXPECT_NUM_EQUAL(IsCRLF('\n'), True);
 
+	// 비정상 케이스
+	// 다른 문자가 입력일 경우
 	EXPECT_NUM_EQUAL(IsCRLF(' '), False);
 	EXPECT_NUM_EQUAL(IsCRLF('a'), False);
 })
@@ -786,9 +796,9 @@ TEST(MergeString, MergeString, {
 
 	// delimiter 가 널 문자일 경우, 원본 문자열 그대로 반환
 	delimiter = '\0';
-	s = "ab de fg";
+	s = "ab de\tfg";
 	sList = SplitString(s, delimiter, IncludeEmptyArray);
-	expected = "ab de fg";
+	expected = "ab de\tfg";
 	actual = MergeString(sList, delimiter);
 	EXPECT_STR_EQUAL(actual, expected);
 	DeleteCharPtrConatiner(sList);
