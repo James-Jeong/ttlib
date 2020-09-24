@@ -205,7 +205,7 @@ char* RemoveLeftSpace(StringPtr str)
 		memcpy(newData, str->data + leftSpaceCount, (size_t)newDataLength);
 		*(newData + newDataLength) = '\0';
 
-		free(str->data);
+		if(str->data != NULL) free(str->data);
 		str->data = newData;
 	}
 
@@ -240,7 +240,7 @@ char* RemoveRightSpace(StringPtr str)
 		str->data[strLength - rightSpaceCount] = '\0';
 		memcpy(newData, str->data, (size_t)newDataLength);
 
-		free(str->data);
+		if(str->data != NULL) free(str->data);
 		str->data = newData;
 	}
 
@@ -765,7 +765,6 @@ char* MergeString(char **sList, char delimiter)
 	if(sList == NULL) return NULL;
 
 	int delimiterCount = 0;
-	int strListIndex = 0;
 	int strListLength = 0;
 	int strLength = 0;
 	char **tempList = sList;
@@ -786,9 +785,10 @@ char* MergeString(char **sList, char delimiter)
 	if(newStr == NULL) return NULL;
 	newStr[newStrLength] = '\0';
 
+	int strListIndex = 0;
 	int totalStrLength = 0;
 	// delimiter 가 제외된 문자열을 새로운 문자열에 복사
-	for(strListIndex = 0; strListIndex < strListLength; strListIndex++)
+	for( ; strListIndex < strListLength; strListIndex++)
 	{
 		if(sList[strListIndex] != NULL){
 			int curStrLength = (int)strlen(sList[strListIndex]);
