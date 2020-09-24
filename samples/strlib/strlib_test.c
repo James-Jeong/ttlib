@@ -1,6 +1,16 @@
 #include "ttlib.h"
 #include "strlib.h"
 
+////////////////////////////////////////////////////////////////////////////////
+/// Predefinition of Util Function
+////////////////////////////////////////////////////////////////////////////////
+
+void DeleteCharPtrConatiner(char **container);
+
+////////////////////////////////////////////////////////////////////////////////
+/// Definitions of Test
+////////////////////////////////////////////////////////////////////////////////
+
 DECLARE_TEST();
 
 TEST(NewString, InstanceCreation, {
@@ -699,14 +709,7 @@ TEST(SplitString, SplitString, {
 	EXPECT_STR_EQUAL(actual[1], expected2);
 	EXPECT_STR_EQUAL(actual[2], expected3);
 	EXPECT_NULL(actual[3]);
-	char **tempActual = actual;
-	while(*tempActual != NULL)
-	{
-		//printf("%s\n", *tempActual);
-		free(*tempActual);
-		tempActual++;
-	}
-	free(actual);
+	DeleteCharPtrConatiner(actual);
 
 	delimiter = 'a';
 	actual = SplitString(s, delimiter, IncludeEmptyArray);
@@ -715,28 +718,14 @@ TEST(SplitString, SplitString, {
 	EXPECT_STR_EQUAL(actual[0], expected1);
 	EXPECT_STR_EQUAL(actual[1], expected2);
 	EXPECT_NULL(actual[2]);
-	tempActual = actual;
-	while(*tempActual != NULL)
-	{
-		//printf("%s\n", *tempActual);
-		free(*tempActual);
-		tempActual++;
-	}
-	free(actual);
+	DeleteCharPtrConatiner(actual);
 
 	delimiter = 'a';
 	actual = SplitString(s, delimiter, ExcludeEmptyArray);
 	expected1 = "b|zf|de";
 	EXPECT_STR_EQUAL(actual[0], expected1);
 	EXPECT_NULL(actual[1]);
-	tempActual = actual;
-	while(*tempActual != NULL)
-	{
-		//printf("%s\n", *tempActual);
-		free(*tempActual);
-		tempActual++;
-	}
-	free(actual);
+	DeleteCharPtrConatiner(actual);
 
 	delimiter = '\n';
 	s = "1a b 2c\n#ef\n\t@12#tg3\ndg\t2 e!";
@@ -750,16 +739,9 @@ TEST(SplitString, SplitString, {
 	EXPECT_STR_EQUAL(actual[2], expected3);
 	EXPECT_STR_EQUAL(actual[3], expected4);
 	EXPECT_NULL(actual[4]);
-	tempActual = actual;
-	while(*tempActual != NULL)
-	{
-		//printf("%s\n", *tempActual);
-		free(*tempActual);
-		tempActual++;
-	}
-	free(actual);
+	DeleteCharPtrConatiner(actual);
 
-	// delimeter 가 널 문자이면, 원본 문자열 그대로 복사해서 반환
+	// delimeter 가 널 문자이면, 원본 문자열 그대로 반환
 	delimiter = '\0';
 	s = "ab|de|wf";
 	expected1 = s;
@@ -767,14 +749,7 @@ TEST(SplitString, SplitString, {
 	actual = SplitString(s, delimiter, IncludeEmptyArray);
 	EXPECT_STR_EQUAL(actual[0], expected1);
 	EXPECT_NULL(actual[1]);
-	tempActual = actual;
-	while(*tempActual != NULL)
-	{
-		//printf("%s\n", *tempActual);
-		free(*tempActual);
-		tempActual++;
-	}
-	free(actual);
+	DeleteCharPtrConatiner(actual);
 
 	// 비정상 동작
 	// 빈문자열이 들어온 경우, NULL 반환
@@ -786,41 +761,57 @@ TEST(SplitString, SplitString, {
 })
 
 TEST(MergeString, MergeString, {
-	char *s = "ab de wf";
-	char *expected = "abdewf";
+	char *s = "abc dee wfw zzq";
 	char delimiter = ' ';
-	char *actual = MergeString(s, delimiter);
+	char **sList = SplitString(s, delimiter, IncludeEmptyArray);
+	char *expected = "abc dee wfw zzq";
+	char *actual = MergeString(sList, delimiter);
 
 	// 반환값 확인
 	EXPECT_NOT_NULL(actual);
 
 	// 정상 동작
 	EXPECT_STR_EQUAL(actual, expected);
+	DeleteCharPtrConatiner(sList);
 	free(actual);
 
-	s = "a1 2d\n12\t@* @9\n\ncvw e ag\n\n\n4g h";
 	delimiter = '\n';
-	expected = "a1 2d12\t@* @9cvw e ag4g h";
-	actual = MergeString(s, delimiter);
+	s = "a1 2d\n12\t@* @9\ncvw e ag\n4g h";
+	sList = SplitString(s, delimiter, IncludeEmptyArray);
+	expected = "a1 2d\n12\t@* @9\ncvw e ag\n4g h";
+	actual = MergeString(sList, delimiter);
 	EXPECT_STR_EQUAL(actual, expected);
+	DeleteCharPtrConatiner(sList);
 	free(actual);
 
-	// delimeter 가 널 문자이면, 원본 문자열 그대로 복사해서 반환
+	// delimiter 가 널 문자일 경우, 원본 문자열 그대로 반환
 	delimiter = '\0';
-	s = "ab de wf";
-	expected = s;
-	actual = MergeString(s, delimiter);
+	s = "ab de fg";
+	sList = SplitString(s, delimiter, IncludeEmptyArray);
+	expected = "ab de fg";
+	actual = MergeString(sList, delimiter);
 	EXPECT_STR_EQUAL(actual, expected);
+	DeleteCharPtrConatiner(sList);
+	free(actual);
+
+	// 연결하려는 문자열 중에 빈문자열이 있는 경우에도 정상 동작
+	delimiter = 'a';
+	s = "ab de fg";
+	sList = SplitString(s, delimiter, IncludeEmptyArray);
+	expected = "ab de fg";
+	actual = MergeString(sList, delimiter);
+	EXPECT_STR_EQUAL(actual, expected);
+	DeleteCharPtrConatiner(sList);
 	free(actual);
 
 	// 비정상 동작
-	// 빈문자열이 들어온 경우, NULL 반환
-	EXPECT_NULL(MergeString("", delimiter));
-	// 잘못된 delimiter
-	EXPECT_NULL(MergeString(s, 'x'));
 	// NULL 값이 들어온 경우, NULL 반환
 	EXPECT_NULL(MergeString(NULL, 'x'));
 })
+
+////////////////////////////////////////////////////////////////////////////////
+/// Main Function
+////////////////////////////////////////////////////////////////////////////////
 
 int main()
 {
@@ -861,3 +852,20 @@ int main()
 
 	return 1;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Util Function
+////////////////////////////////////////////////////////////////////////////////
+
+void DeleteCharPtrConatiner(char **container)
+{
+	char **tempContainer = container;
+	while(*tempContainer != NULL)
+	{
+		//printf("%s\n", *tempActual);
+		free(*tempContainer);
+		tempContainer++;
+	}
+	free(container);
+}
+

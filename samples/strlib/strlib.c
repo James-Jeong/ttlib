@@ -659,7 +659,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 		if(s[strIndex] == delimiter) delimiterCount++;
 	}
 
-	// delimiter 가 문자열에 없으면 실패, NULL 반환
+	// delimiter 가 널 문자가 아니고, delimiter 가 문자열에 없으면 실패, NULL 반환
 	if(delimiter != '\0' && delimiterCount == 0) return NULL;
 
 	int *delimiterPos = NULL;
@@ -752,42 +752,54 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 }
 
 /**
- * @fn char* MergeString(const char *s, char delimiter)
+ * @fn char* MergeString(const char **sList, char delimiter)
  * @brief 문자열을 지정한 구분 문자로 연결하는 함수
  * 연결된 문자열은 기존 문자열가 아닌 새로 생성된 문자열
- * @param s 연결할 문자열(입력, 읽기 전용)
+ * @param s 연결할 문자열들을 저장된 문자열 배열(입력)
  * @param delimiter 구분 문자(입력)
  * @return 성공 시 연결된 문자열의 주소, 실패 시 NULL 반환
  */
-char* MergeString(const char *s, char delimiter)
+char* MergeString(char **sList, char delimiter)
 {
 	// 문자열이 NULL 또는 빈문자열인 경우, NULL 반환
-	if(s == NULL || strlen(s) == 0) return NULL;
+	if(sList == NULL) return NULL;
 
 	int delimiterCount = 0;
-	int strIndex = 0;
-	int strLength = (int)strlen(s);
+	int strListIndex = 0;
+	int strListLength = 0;
+	int strLength = 0;
+	char **tempList = sList;
 
-	for( ; strIndex < strLength; strIndex++)
+	// (문자열 개수(>0) - 1)만큼 delimiter 가 포함되어야 한다.
+	while(*tempList != NULL)
 	{
-		if(s[strIndex] == delimiter) delimiterCount++;
+		strLength += (int)strlen(*tempList);
+		delimiterCount++;
+		tempList++;
 	}
+	strListLength = delimiterCount;
+	if(delimiterCount > 0) delimiterCount--;
+	else return NULL;
 
-	// 널 문자가 아닌 delimiter 가 문자열에 포함되어 있지 않으면, NULL 반환
-	// delimiter 가 널 문자이면 원본 문자열 그대로 복사해서 반환
-	if(delimiter != '\0' && delimiterCount == 0) return NULL;
-
-	int newStrLength = strLength - delimiterCount;
+	int newStrLength = strLength + delimiterCount;
 	char *newStr = (char*)malloc((size_t)(newStrLength + 1));
 	if(newStr == NULL) return NULL;
 	newStr[newStrLength] = '\0';
 
-	int newStrIndex = 0;
+	int totalStrLength = 0;
 	// delimiter 가 제외된 문자열을 새로운 문자열에 복사
-	for(strIndex = 0; strIndex < strLength; strIndex++)
+	for(strListIndex = 0; strListIndex < strListLength; strListIndex++)
 	{
-		if(s[strIndex] == delimiter) continue;
-		newStr[newStrIndex++] = s[strIndex];
+		if(sList[strListIndex] != NULL){
+			int curStrLength = (int)strlen(sList[strListIndex]);
+			memcpy(newStr + totalStrLength, sList[strListIndex], (size_t)curStrLength);
+			// 마지막 문자열이면 뒤에 delimiter 를 포함하지 않는다.
+			if(strListIndex < (strListLength - 1))
+			{
+				totalStrLength += curStrLength;
+				newStr[totalStrLength++] = delimiter;
+			}
+		}
 	}
 
 	return newStr;

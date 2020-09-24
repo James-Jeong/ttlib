@@ -89,6 +89,6 @@ Bool IsLetter(char c);
 Bool IsSpace(char c);
 Bool IsCRLF(char c);
 char** SplitString(const char *s, char delimiter, SplitOption option);
-char* MergeString(const char *s, char delimiter);
+char* MergeString(char **sList, char delimiter);
 
 #endif
