@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 static char* CloneCharArray(int size, const char *s);
-static char** RemoveNullPointerInCharPtrContainer(char **container, int size);
+char** RemoveNullPointerInCharPtrContainer(char **container);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// 공용 APIs
@@ -636,7 +636,6 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 	// 1-1) 문자열 내의 delimiter 의 모든 위치를 기억한다.
 	int *delimiterPos = (int*)calloc(sizeof(int) * (size_t)(delimiterCount), sizeof(int));
 	if(delimiterPos == NULL) return NULL;
-
 	int delimiterIndex = 0;
 	for(strIndex = 0; strIndex < strLength; strIndex++)
 	{
@@ -669,6 +668,8 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 		else
 		{
 			char *newStr = CloneCharArray(curLength, s);
+			// 분리된 문자열에 대해 동적 생성 실패하면 이전에 생성한 문자열들(strList[strListIndex])과
+			// 생성된 모든 문자열들에 대한 주소를 가지고 있는 포인터 배열(strList)을 삭제하고 NULL 반환
 			if(newStr == NULL){
 				strList[strListIndex] = NULL;
 				DeleteCharPtrContainer(strList);
@@ -685,7 +686,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 	// 빈문자열을 포함시키지 않는 경우
 	if(option == ExcludeEmptyString)
 	{
-		return RemoveNullPointerInCharPtrContainer(strList,strListLength);
+		return RemoveNullPointerInArray(strList);
 	}
 
 	return strList;
@@ -758,7 +759,7 @@ static char* CloneCharArray(int size, const char *s)
 	return newStr;
 }
 
-static char** RemoveNullPointerInCharPtrContainer(char **container, int size)
+char** RemoveNullPointerInCharPtrContainer(char **container, int size)
 {
 	int pointerCount = 0;
 	int containerIndex = 0;
@@ -768,23 +769,23 @@ static char** RemoveNullPointerInCharPtrContainer(char **container, int size)
 		if(container[containerIndex] != NULL) pointerCount++;
 	}
 
-	int newContainerSize = pointerCount;
-	char **newContainer = NewCharPtrContainer(newContainerSize);
-	if(newContainer == NULL) return container;
+	int newStrListLength = pointerCount;
+	char **newStrList = NewCharPtrContainer(newStrListLength);
+	if(newStrList == NULL) return strList;
 
-	int newContainerIndex = 0;
-	for(containerIndex = 0; containerIndex < size; containerIndex++)
+	int newStrListIndex = 0;
+	for(strListIndex = 0; strListIndex < strListLength; strListIndex++)
 	{
-		if(container[containerIndex] != NULL)
+		if(strList[strListIndex] != NULL)
 		{
-			newContainer[newContainerIndex] = container[containerIndex];
-			newContainerIndex++;
+			newStrList[newStrListIndex] = strList[strListIndex];
+			newStrListIndex++;
 		}
 	}
-	newContainer[newContainerSize] = NULL;
+	newStrList[newStrListLength] = NULL;
 
-	free(container);
-	return newContainer;
+	free(strList);
+	return newStrList;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

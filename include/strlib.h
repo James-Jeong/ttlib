@@ -93,4 +93,12 @@ Bool IsCRLF(char c);
 char** SplitString(const char *s, char delimiter, SplitOption option);
 char* MergeString(char **sList, char delimiter);
 
+///////////////////////////////////////////////////////////////////////////////
+// Util Functions
+///////////////////////////////////////////////////////////////////////////////
+
+char** NewCharPtrContainer(int size);
+void DeleteCharPtrContainer(char **container);
+
 #endif
+
