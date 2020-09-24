@@ -18,9 +18,9 @@ typedef enum Boolean
 typedef enum SplitOption
 {
 	// 빈문자열 포함
-	IncludeEmptyArray = 0,
+	IncludeEmptyString = 0,
 	// 빈문자열 제외
-	ExcludeEmptyArray = 1
+	ExcludeEmptyString = 1
 } SplitOption;
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -649,7 +649,7 @@ Bool IsCRLF(char c)
  */
 char** SplitString(const char *s, char delimiter, SplitOption option)
 {
-	if(s == NULL || strlen(s) == 0) return NULL;
+	if(s == NULL || strlen(s) == 0 || delimiter == '\0') return NULL;
 
 	char **strList;
 	int strIndex = 0;
@@ -662,22 +662,18 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 		if(s[strIndex] == delimiter) delimiterCount++;
 	}
 
-	// delimiter 가 널 문자가 아니고, delimiter 가 문자열에 없으면 실패, NULL 반환
-	if(delimiter != '\0' && delimiterCount == 0) return NULL;
+	// delimiter 가 문자열에 없으면 실패, NULL 반환
+	if(delimiterCount == 0) return NULL;
 
-	int *delimiterPos = NULL;
-	if(delimiter != '\0')
+	// 1-1) 문자열 내의 delimiter 의 모든 위치를 기억한다.
+	int *delimiterPos = (int*)calloc(sizeof(int) * (size_t)(delimiterCount), sizeof(int));
+	if(delimiterPos == NULL) return NULL;
+	int delimiterIndex = 0;
+	for(strIndex = 0; strIndex < strLength; strIndex++)
 	{
-		// 1-1) delimiter 가 널 문자가 아니면 문자열 내의 delimiter 의 모든 위치를 기억한다.
-		delimiterPos = (int*)calloc(sizeof(int) * (size_t)(delimiterCount), sizeof(int));
-		if(delimiterPos == NULL) return NULL;
-		int delimiterIndex = 0;
-		for(strIndex = 0; strIndex < strLength; strIndex++)
-		{
-			if(s[strIndex] == delimiter) delimiterPos[delimiterIndex++] = strIndex;
-		}
+		if(s[strIndex] == delimiter) delimiterPos[delimiterIndex++] = strIndex;
 	}
-
+	
 	// 2) delimiter 로 분리될 문자열들을 저장하기 위한 배열을 생성한다.
 	// (delimiter 개수 + 1) 만큼 포인터 배열의 크기를 생성 < +1 : (마지막 delimiter 뒤의 문자열)
 	int strListIndex = 0;
@@ -689,23 +685,18 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 	// 3) delimiter 로 문자열을 분리해서 생성한 배열에 저장한다.
 	for(strListIndex = 0; strListIndex < strListLength; strListIndex++)
 	{
-		int curLength = 0;
-		// delimiter 가 널 문자이면 원본 문자열 전체 복사
-		if(delimiter == '\0') curLength = strLength;
-		else
-		{
-			curLength = delimiterPos[strListIndex];
-			if(strListIndex > 0){
-				if(curLength != 0) curLength -= (delimiterPos[strListIndex - 1] + 1);
-				// 마지막으로 분리될 문자열
-				else curLength = strLength - (delimiterPos[strListIndex - 1] + 1);
-				// delimiter 문자는 넘어감
-				if(*s == delimiter) s++;
-			}
+
+		int curLength = delimiterPos[strListIndex];
+		if(strListIndex > 0){
+			if(curLength != 0) curLength -= (delimiterPos[strListIndex - 1] + 1);
+			// 마지막으로 분리될 문자열
+			else curLength = strLength - (delimiterPos[strListIndex - 1] + 1);
+			// delimiter 문자는 넘어감
+			if(*s == delimiter) s++;
 		}
 
 		// 3-1-1) 빈문자열을 배열에 저장하지 않으면 해당 배열 위치에 NULL 을 저장한다.
-		if(option == ExcludeEmptyArray && curLength == 0) strList[strListIndex] = NULL;
+		if(option == ExcludeEmptyString && curLength == 0) strList[strListIndex] = NULL;
 		// 3-1-2) 모든 문자열을 저장한다.
 		else
 		{
@@ -729,8 +720,8 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 	free(delimiterPos);
 
 	// 3-2) 빈문자열을 배열에 저장하지 않으면 배열에서 NULL 이 아닌 포인터만 선택해서 다시 저장한다.
-	// delimiter 가 널 문자가 아니고, 빈문자열을 포함시키지 않는 경우
-	if(delimiter != '\0' && option == ExcludeEmptyArray)
+	// 빈문자열을 포함시키지 않는 경우
+	if(option == ExcludeEmptyString)
 	{
 		int pointerCount = 0;
 		for(strListIndex = 0; strListIndex < strListLength; strListIndex++)
@@ -770,8 +761,8 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
  */
 char* MergeString(char **sList, char delimiter)
 {
-	// 문자열이 NULL 또는 빈문자열인 경우, NULL 반환
-	if(sList == NULL) return NULL;
+	// 문자열이 NULL 또는 빈문자열인 경우, delimiter 가 널 문자인 경우, NULL 반환
+	if(sList == NULL || delimiter == '\0') return NULL;
 
 	int delimiterCount = 0;
 	int strListLength = 0;

@@ -5,7 +5,7 @@
 /// Predefinition of Util Function
 ////////////////////////////////////////////////////////////////////////////////
 
-void DeleteCharPtrConatiner(char **container);
+void DeleteCharPtrContainer(char **container);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Definitions of Test
@@ -709,7 +709,7 @@ TEST(SplitString, SplitString, {
 	char *expected1 = "ab";
 	char *expected2 = "zf";
 	char *expected3 = "de";
-	char **actual = SplitString(s, delimiter, IncludeEmptyArray);
+	char **actual = SplitString(s, delimiter, IncludeEmptyString);
 
 	// 반환값 확인 
 	EXPECT_NOT_NULL(actual);
@@ -719,27 +719,56 @@ TEST(SplitString, SplitString, {
 	EXPECT_STR_EQUAL(actual[1], expected2);
 	EXPECT_STR_EQUAL(actual[2], expected3);
 	EXPECT_NULL(actual[3]);
-	DeleteCharPtrConatiner(actual);
+	DeleteCharPtrContainer(actual);
 
+	s = "||a|||b|c||||||d||e|||f||||";
+	actual = SplitString(s, delimiter, IncludeEmptyString);
+	EXPECT_NOT_NULL(actual);
+	EXPECT_STR_EQUAL(actual[0], "");
+	EXPECT_STR_EQUAL(actual[1], "");
+	EXPECT_STR_EQUAL(actual[2], "a");
+	EXPECT_STR_EQUAL(actual[3], "");
+	EXPECT_STR_EQUAL(actual[4], "");
+	EXPECT_STR_EQUAL(actual[5], "b");
+	EXPECT_STR_EQUAL(actual[6], "c");
+	EXPECT_STR_EQUAL(actual[7], "");
+	EXPECT_STR_EQUAL(actual[8], "");
+	EXPECT_STR_EQUAL(actual[9], "");
+	EXPECT_STR_EQUAL(actual[10], "");
+	EXPECT_STR_EQUAL(actual[11], "");
+	EXPECT_STR_EQUAL(actual[12], "d");
+	EXPECT_STR_EQUAL(actual[13], "");
+	EXPECT_STR_EQUAL(actual[14], "e");
+	EXPECT_STR_EQUAL(actual[15], "");
+	EXPECT_STR_EQUAL(actual[16], "");
+	EXPECT_STR_EQUAL(actual[17], "f");
+	EXPECT_STR_EQUAL(actual[18], "");
+	EXPECT_STR_EQUAL(actual[19], "");
+	EXPECT_STR_EQUAL(actual[20], "");
+	EXPECT_STR_EQUAL(actual[21], "");
+	EXPECT_NULL(actual[22]);
+	DeleteCharPtrContainer(actual);
+
+	s = "ab|zf|de";
 	delimiter = 'a';
-	actual = SplitString(s, delimiter, IncludeEmptyArray);
+	actual = SplitString(s, delimiter, IncludeEmptyString);
 	expected1 = "";
 	expected2 = "b|zf|de";
 	EXPECT_STR_EQUAL(actual[0], expected1);
 	EXPECT_STR_EQUAL(actual[1], expected2);
 	EXPECT_NULL(actual[2]);
-	DeleteCharPtrConatiner(actual);
+	DeleteCharPtrContainer(actual);
 
 	delimiter = 'a';
-	actual = SplitString(s, delimiter, ExcludeEmptyArray);
+	actual = SplitString(s, delimiter, ExcludeEmptyString);
 	expected1 = "b|zf|de";
 	EXPECT_STR_EQUAL(actual[0], expected1);
 	EXPECT_NULL(actual[1]);
-	DeleteCharPtrConatiner(actual);
+	DeleteCharPtrContainer(actual);
 
-	delimiter = '\n';
 	s = "1a b 2c\n#ef\n\t@12#tg3\ndg\t2 e!";
-	actual = SplitString(s, delimiter, IncludeEmptyArray);
+	delimiter = '\n';
+	actual = SplitString(s, delimiter, IncludeEmptyString);
 	expected1 = "1a b 2c";
 	expected2 = "#ef";
 	expected3 = "\t@12#tg3";
@@ -749,31 +778,23 @@ TEST(SplitString, SplitString, {
 	EXPECT_STR_EQUAL(actual[2], expected3);
 	EXPECT_STR_EQUAL(actual[3], expected4);
 	EXPECT_NULL(actual[4]);
-	DeleteCharPtrConatiner(actual);
-
-	// delimeter 가 널 문자이면, 원본 문자열 그대로 반환
-	delimiter = '\0';
-	s = "ab|de|wf";
-	expected1 = s;
-	// delimiter 가 널 문자인 경우, option 값은 무의미 > 널 문자는 문자열에 미포함
-	actual = SplitString(s, delimiter, IncludeEmptyArray);
-	EXPECT_STR_EQUAL(actual[0], expected1);
-	EXPECT_NULL(actual[1]);
-	DeleteCharPtrConatiner(actual);
+	DeleteCharPtrContainer(actual);
 
 	// 비정상 동작
+	// delimeter 가 널 문자이면, NULL 반환
+	EXPECT_NULL(SplitString(s, '\0', IncludeEmptyString));
 	// 빈문자열이 들어온 경우, NULL 반환
-	EXPECT_NULL(SplitString("", 'x', IncludeEmptyArray));
-	// 잘못된 delimiter
-	EXPECT_NULL(SplitString(s, 'x', IncludeEmptyArray));
+	EXPECT_NULL(SplitString("", 'x', IncludeEmptyString));
+	// 문자열에 지정한 delimiter 가 포함되지 않은 경우
+	EXPECT_NULL(SplitString(s, 'x', IncludeEmptyString));
 	// NULL 값이 들어온 경우, NULL 반환
-	EXPECT_NULL(SplitString(NULL, 'x', IncludeEmptyArray));
+	EXPECT_NULL(SplitString(NULL, 'x', IncludeEmptyString));
 })
 
 TEST(MergeString, MergeString, {
 	char *s = "abc dee wfw zzq";
 	char delimiter = ' ';
-	char **sList = SplitString(s, delimiter, IncludeEmptyArray);
+	char **sList = SplitString(s, delimiter, IncludeEmptyString);
 	char *expected = "abc dee wfw zzq";
 	char *actual = MergeString(sList, delimiter);
 
@@ -782,7 +803,7 @@ TEST(MergeString, MergeString, {
 
 	// 정상 동작
 	EXPECT_STR_EQUAL(actual, expected);
-	DeleteCharPtrConatiner(sList);
+	DeleteCharPtrContainer(sList);
 	free(actual);
 
 	delimiter = '\n';
@@ -791,35 +812,29 @@ TEST(MergeString, MergeString, {
 	StringPtr str = NewString(s1);
 	Trim(str);
 	ConcatString(str, s2);
-	sList = SplitString(GetPtr(str), delimiter, IncludeEmptyArray);
+	sList = SplitString(GetPtr(str), delimiter, IncludeEmptyString);
 	expected = "a1 2d\n12\t@* @9cvw e ag\n4g h";
 	actual = MergeString(sList, delimiter);
 	EXPECT_STR_EQUAL(actual, expected);
-	DeleteCharPtrConatiner(sList);
+	DeleteCharPtrContainer(sList);
 	free(actual);
 	DeleteString(&str);
-
-	// delimiter 가 널 문자일 경우, 원본 문자열 그대로 반환
-	delimiter = '\0';
-	s = "ab de\tfg";
-	sList = SplitString(s, delimiter, IncludeEmptyArray);
-	expected = "ab de\tfg";
-	actual = MergeString(sList, delimiter);
-	EXPECT_STR_EQUAL(actual, expected);
-	DeleteCharPtrConatiner(sList);
-	free(actual);
 
 	// 연결하려는 문자열 중에 빈문자열이 있는 경우에도 정상 동작
 	delimiter = 'a';
 	s = "ab de fg";
-	sList = SplitString(s, delimiter, IncludeEmptyArray);
+	sList = SplitString(s, delimiter, IncludeEmptyString);
 	expected = "ab de fg";
 	actual = MergeString(sList, delimiter);
 	EXPECT_STR_EQUAL(actual, expected);
-	DeleteCharPtrConatiner(sList);
+	DeleteCharPtrContainer(sList);
 	free(actual);
 
 	// 비정상 동작
+	// delimiter 가 널 문자일 경우, NULL 반환
+	sList = SplitString(s, delimiter, IncludeEmptyString);
+	EXPECT_NULL(MergeString(sList, '\0'));
+	DeleteCharPtrContainer(sList);
 	// NULL 값이 들어온 경우, NULL 반환
 	EXPECT_NULL(MergeString(NULL, 'x'));
 })
@@ -872,7 +887,7 @@ int main()
 /// Util Function
 ////////////////////////////////////////////////////////////////////////////////
 
-void DeleteCharPtrConatiner(char **container)
+void DeleteCharPtrContainer(char **container)
 {
 	char **tempContainer = container;
 	while(*tempContainer != NULL)
