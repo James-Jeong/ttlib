@@ -10,6 +10,7 @@
 /// Predefinition of Static Functions
 ////////////////////////////////////////////////////////////////////////////////
 
+static StringPtr InitializeString(StringPtr str, const char *s, int length);
 static char* CloneCharArray(int size, const char *s);
 static char** RemoveNullPointerInCharPtrContainer(char **container, int size);
 
@@ -27,19 +28,17 @@ StringPtr NewString(const char *s)
 {
     if(s == NULL) return NULL;
 
-    StringPtr newString = (StringPtr)malloc(sizeof(String));
-    if(newString == NULL)  return NULL;
+    StringPtr newStr = (StringPtr)malloc(sizeof(String));
+    if(newStr == NULL)  return NULL;
     
     int length = (int)strlen(s);
-	newString->data = CloneCharArray(length, s);
-    if(newString->data == NULL)
-    {
-        free(newString);
-        return NULL;
-    }
-    newString->length = length;
-
-    return newString;
+	if(InitializeString(newStr, s, length) == NULL)
+	{
+		free(newStr);
+		return NULL;
+	}
+	
+    return newStr;
 }
 
 /**
@@ -69,21 +68,17 @@ StringPtr CloneString(const StringPtr str)
 {
     if(str == NULL || str->data == NULL || str->length <= 0) return NULL;
 
+    StringPtr newStr = (StringPtr)malloc(sizeof(String));
+    if(newStr == NULL) return str;
+
     int newLength = str->length;
-    char *newData = CloneCharArray(newLength, str->data);
-    if(newData == NULL) return NULL;
+	if(InitializeString(newStr, str->data, newLength) == NULL)
+	{
+		free(newStr);
+		return str;
+	}
 
-    StringPtr newString = (StringPtr)malloc(sizeof(String));
-    if(newString == NULL)
-    {
-        free(newData);
-        return NULL;
-    }
-
-    newString->data = newData;
-    newString->length = newLength;
-
-    return newString;
+    return newStr;
 }
 
 /**
@@ -748,6 +743,15 @@ char* MergeString(char **sList, char delimiter)
 ////////////////////////////////////////////////////////////////////////////////
 /// Static Functions
 ////////////////////////////////////////////////////////////////////////////////
+
+static StringPtr InitializeString(StringPtr str, const char *s, int length)
+{
+	char *data = CloneCharArray(length, s);
+    if(data == NULL) return NULL;
+	str->data = data;
+    str->length = length;
+	return str;
+}
 
 static char* CloneCharArray(int size, const char *s)
 {
