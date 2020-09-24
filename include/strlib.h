@@ -43,8 +43,11 @@ typedef enum SplitOption
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Definition
+/// Definitions
 ///////////////////////////////////////////////////////////////////////////////
+
+// 문자와 관련된 작업을 하기 위한 함수 포인터, 표준 함수의 프로토타입을 따름
+typedef int (*CharFunction_f)(int c);
 
 // 문자열 관리 구조체
 typedef struct _string_t {
@@ -64,8 +67,7 @@ int GetLength(const StringPtr str);
 char* GetPtr(const StringPtr str);
 
 char* SetString(StringPtr str, const char *s);
-char* ConvertToUpperCase(StringPtr str);
-char* ConvertToLowerCase(StringPtr str);
+char* ChangeStringCase(StringPtr str, CharFunction_f func);
 
 char* LeftTrim(StringPtr str);
 char* RightTrim(StringPtr str);

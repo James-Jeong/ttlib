@@ -7,6 +7,12 @@
 #include "strlib.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+/// Predefinition of Static Function
+////////////////////////////////////////////////////////////////////////////////
+
+static char* CloneCharArray(int size, const char *s);
+
+////////////////////////////////////////////////////////////////////////////////
 /// 공용 APIs
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -24,16 +30,12 @@ StringPtr NewString(const char *s)
     if(newString == NULL)  return NULL;
     
     int length = (int)strlen(s);
-    newString->data = (char*)malloc((size_t)length + 1);
+	newString->data = CloneCharArray(length, s);
     if(newString->data == NULL)
     {
         free(newString);
         return NULL;
     }
-
-    memcpy(newString->data, s, (size_t)length);
-    *(newString->data + length) = '\0';
-
     newString->length = length;
 
     return newString;
@@ -67,11 +69,8 @@ StringPtr CloneString(const StringPtr str)
     if(str == NULL || str->data == NULL || str->length <= 0) return NULL;
 
     int newLength = str->length;
-    char *newData = (char*)malloc((size_t)newLength + 1);
+    char *newData = CloneCharArray(newLength, str->data);
     if(newData == NULL) return NULL;
-
-    memcpy(newData, str->data, (size_t)newLength);
-    *(newData + newLength) = '\0';
 
     StringPtr newString = (StringPtr)malloc(sizeof(String));
     if(newString == NULL)
@@ -122,12 +121,8 @@ char* SetString(StringPtr str, const char *s)
     if(str == NULL || s == NULL) return NULL;
 
     int length = (int)strlen(s);
-    char *newData = (char*)malloc((size_t)length + 1);
+    char *newData = CloneCharArray(length, s);
     if(newData == NULL) return NULL;
-
-    memcpy(newData, s, (size_t)length);
-    *(newData + length) = '\0';
-
     if(str->data != NULL) free(str->data);
     str->data = newData;
     str->length = length;
@@ -136,33 +131,13 @@ char* SetString(StringPtr str, const char *s)
 }
 
 /**
- * @fn char* ConvertToUpperCase(StringPtr str)
- * @brief 구조체에서 관리하는 문자열을 모두 대문자로 변경하는 함수
- * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
- * @return 성공 시 대문자로 변경된 문자열의 주소, 실패 시 NULL 반환
- */
-char* ConvertToUpperCase(StringPtr str)
-{
-	if(str == NULL || str->data == NULL || str->length <= 0) return NULL;
-
-	int strLength = str->length;
-	int strIndex = 0;
-
-	for( ; strIndex < strLength; strIndex++)
-	{
-		str->data[strIndex] = (char)toupper(str->data[strIndex]);
-	}
-
-	return str->data;
-}
-
-/**
- * @fn char* ConvertToLowerCase(StringPtr str)
+ * @fn char* ChangeStringCase(StringPtr str, CharFunction_f func)
  * @brief 구조체에서 관리하는 문자열을 모두 소문자로 변경하는 함수
  * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
+ * @param func 문자의 case 를 변경하기 위한 함수(입력)
  * @return 성공 시 소문자로 변경된 문자열의 주소, 실패 시 NULL 반환
  */
-char* ConvertToLowerCase(StringPtr str)
+char* ChangeStringCase(StringPtr str, CharFunction_f func)
 {
 	if(str == NULL || str->data == NULL || str->length <= 0) return NULL;
 
@@ -171,7 +146,7 @@ char* ConvertToLowerCase(StringPtr str)
 
 	for( ; strIndex < strLength; strIndex++)
 	{
-		str->data[strIndex] = (char)tolower(str->data[strIndex]);
+		str->data[strIndex] = (char)func(str->data[strIndex]);
 	}
 
 	return str->data;
@@ -193,18 +168,15 @@ char* LeftTrim(StringPtr str)
 
 	for( ; strIndex < strLength; strIndex++)
 	{
-		if(isspace(str->data[strIndex]) != 0) leftSpaceCount++;
+		if(IsSpace(str->data[strIndex]) == True) leftSpaceCount++;
 		else break;
 	}
 
 	if(leftSpaceCount > 0)
 	{
 		int newDataLength = strLength - leftSpaceCount;
-		char *newData = (char*)malloc((size_t)(newDataLength + 1));
+		char *newData = CloneCharArray(newDataLength, str->data + leftSpaceCount);
 		if(newData == NULL)	return NULL;
-		memcpy(newData, str->data + leftSpaceCount, (size_t)newDataLength);
-		newData[newDataLength] = '\0';
-
 		if(str->data != NULL) free(str->data);
 		str->data = newData;
 		str->length = newDataLength;
@@ -229,18 +201,15 @@ char* RightTrim(StringPtr str)
 
 	for( ; strIndex >= 0; strIndex--)
 	{
-		if(isspace(str->data[strIndex]) != 0) rightSpaceCount++;
+		if(IsSpace(str->data[strIndex]) == True) rightSpaceCount++;
 		else break;
 	}
 
 	if(rightSpaceCount > 0)
 	{
 		int newDataLength = strLength - rightSpaceCount;
-		char *newData = (char*)malloc((size_t)(newDataLength + 1));
+		char *newData = CloneCharArray(newDataLength, str->data);
 		if(newData == NULL) return NULL;
-		memcpy(newData, str->data, (size_t)newDataLength);
-		newData[newDataLength] = '\0';
-
 		if(str->data != NULL) free(str->data);
 		str->data = newData;
 		str->length = newDataLength;
@@ -304,10 +273,8 @@ char* CopyString(StringPtr dstStr, const StringPtr srcStr)
 	// srcStrLength 가 dstStrLength 와 같지 않으면 해당 길이만큼 새로운 문자열 생성
 	if(dstStrLength != srcStrLength)
 	{
-		char *newData = (char*)malloc((size_t)srcStrLength + 1);
+		char *newData = CloneCharArray(srcStrLength, srcStr->data);
 		if(newData == NULL) return NULL;
-		memcpy(newData, srcStr->data, (size_t)srcStrLength);
-
 		if(dstStr->data != NULL) free(dstStr->data);
 		dstStr->data = newData;
 		dstStr->length = srcStrLength;
@@ -316,9 +283,9 @@ char* CopyString(StringPtr dstStr, const StringPtr srcStr)
 	else
 	{
 		memcpy(dstStr->data, srcStr->data, (size_t)srcStrLength);
+		dstStr->data[dstStr->length] = '\0';
 	}
 
-	dstStr->data[dstStr->length] = '\0';
 	return dstStr->data;
 }
 
@@ -357,18 +324,18 @@ char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
 	// 복사할 길이가 dstStrLength 와 같지 않으면 복사할 길이만큼 새로운 문자열 생성
 	if(dstStrLength != length)
 	{
-		char *newData = (char*)malloc((size_t)length + 1);
+		char *newData = CloneCharArray(length, srcStr->data);
 		if(newData == NULL) return NULL;
-		memcpy(newData, srcStr->data, (size_t)length);
-
 		if(dstStr->data != NULL) free(dstStr->data);
 		dstStr->data = newData;
+		dstStr->length = length;
 	}
 	// 그렇지 않다면, 생성할 필요 없이 복사할 길이만큼 그대로 복사
-	else memcpy(dstStr->data, srcStr->data, (size_t)length);
-
-	dstStr->length = length;
-	dstStr->data[dstStr->length] = '\0';
+	else
+	{
+		memcpy(dstStr->data, srcStr->data, (size_t)length);
+		dstStr->data[dstStr->length] = '\0';
+	}
 
 	return dstStr->data;
 }
@@ -393,7 +360,7 @@ char* FormatString(StringPtr str, const char* format, ...)
 	newLength++;
 	va_end(ap);
 
-	char *newData = (char*)malloc((size_t)(newLength + 1));
+	char *newData = CloneCharArray(newLength, "");
 	if(newData == NULL) return NULL;
 
 	va_start(ap, format);
@@ -700,7 +667,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 		// 3-1-2) 모든 문자열을 저장한다.
 		else
 		{
-			char *newStr = (char*)malloc((size_t)(curLength + 1));
+			char *newStr = CloneCharArray(curLength, s);
 			// 분리된 문자열에 대해 동적 생성 실패하면 이전에 생성한 문자열들(strList[strListIndex])과
 			// 생성된 모든 문자열들에 대한 주소를 가지고 있는 포인터 배열(strList)을 삭제하고 NULL 반환
 			if(newStr == NULL){
@@ -709,9 +676,6 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 				free(strList);
 				return NULL;
 			}
-			// 현재 delimiter 까지 지정한 길이 만큼의 문자열을 복사
-			memcpy(newStr, s, (size_t)curLength);
-			newStr[curLength] = '\0';
 			strList[strListIndex] = newStr;
 		}
 
@@ -782,10 +746,8 @@ char* MergeString(char **sList, char delimiter)
 	else return NULL;
 
 	// 2) 연결할 문자열을 새로 생성한다.
-	int newStrLength = strLength + delimiterCount;
-	char *newStr = (char*)malloc((size_t)(newStrLength + 1));
+	char *newStr = CloneCharArray(strLength + delimiterCount, "");
 	if(newStr == NULL) return NULL;
-	newStr[newStrLength] = '\0';
 
 	// 3) 분리된 문자열을 delimiter 를 추가하면서 하나의 문자열로 연결한다.
 	int strListIndex = 0;
@@ -804,6 +766,19 @@ char* MergeString(char **sList, char delimiter)
 		}
 	}
 
+	return newStr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Static Function
+////////////////////////////////////////////////////////////////////////////////
+
+static char* CloneCharArray(int size, const char *s)
+{
+	char *newStr = (char*)malloc((size_t)(size + 1));
+	if(newStr == NULL) return NULL;
+	memcpy(newStr, s, (size_t)size);
+	*(newStr + size) = '\0';
 	return newStr;
 }
 

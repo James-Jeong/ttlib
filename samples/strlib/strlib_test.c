@@ -114,62 +114,62 @@ TEST(SetString, SetNewValue, {
     DeleteString(&str);
 })
 
-TEST(ConvertToUpperCase, UpperString, {
+TEST(ChangeStringCase, UpperString, {
 	char *s = "abcd";
 	char *expected = "ABCD"; 
     StringPtr str = NewString(s);
 
 	// 반환값 확인
-	EXPECT_NOT_NULL(ConvertToUpperCase(str));
+	EXPECT_NOT_NULL(ChangeStringCase(str, toupper));
 
 	// 기본적인 변환 테스트
 	s = "abcd";
     SetString(str, s);
-	EXPECT_STR_EQUAL(ConvertToUpperCase(str), expected);
+	EXPECT_STR_EQUAL(ChangeStringCase(str, toupper), expected);
 
     // 빈 문자열을 정상처리해야 한다.
 	s = "";
 	expected = "";
     SetString(str, s);
-	EXPECT_STR_EQUAL(ConvertToUpperCase(str), expected);
+	EXPECT_STR_EQUAL(ChangeStringCase(str, toupper), expected);
 
 	s = "123-*ab-c+d(ef)";
 	expected = "123-*AB-C+D(EF)";
 	SetString(str, s);
-	EXPECT_STR_EQUAL(ConvertToUpperCase(str), expected);
+	EXPECT_STR_EQUAL(ChangeStringCase(str, toupper), expected);
 
 	// NULL 값이 들어온 경우, NULL 반환
-	EXPECT_NULL(ConvertToUpperCase(NULL));
+	EXPECT_NULL(ChangeStringCase(NULL, toupper));
 
     DeleteString(&str);
 })
 
-TEST(ConvertToLowerCase, LowerString, {
+TEST(ChangeStringCase, LowerString, {
 	char *s = "ABCD";
 	char *expected = "abcd"; 
     StringPtr str = NewString(s);
 
 	// 반환값 확인
-	EXPECT_NOT_NULL(ConvertToLowerCase(str));
+	EXPECT_NOT_NULL(ChangeStringCase(str, tolower));
 
 	// 기본적인 변환 테스트
 	s = "ABCD";
 	SetString(str, s);
-	EXPECT_STR_EQUAL(ConvertToLowerCase(str), expected);
+	EXPECT_STR_EQUAL(ChangeStringCase(str, tolower), expected);
 
     // 빈 문자열을 정상처리해야 한다.
 	s = "";
 	expected = "";
     SetString(str, s);
-	EXPECT_STR_EQUAL(ConvertToLowerCase(str), expected);
+	EXPECT_STR_EQUAL(ChangeStringCase(str, tolower), expected);
 
 	s = "123-*AB-C+D(EF)";
 	expected = "123-*ab-c+d(ef)";
 	SetString(str, s);
-	EXPECT_STR_EQUAL(ConvertToLowerCase(str), expected);
+	EXPECT_STR_EQUAL(ChangeStringCase(str, tolower), expected);
 
 	// NULL 값이 들어온 경우, NULL 반환
-	EXPECT_NULL(ConvertToLowerCase(NULL));
+	EXPECT_NULL(ChangeStringCase(NULL, tolower));
 
     DeleteString(&str);
 })
@@ -795,27 +795,22 @@ TEST(MergeString, MergeString, {
 	char *s = "abc dee wfw zzq";
 	char delimiter = ' ';
 	char **sList = SplitString(s, delimiter, IncludeEmptyString);
-	char *expected = "abc dee wfw zzq";
 	char *actual = MergeString(sList, delimiter);
 
 	// 반환값 확인
 	EXPECT_NOT_NULL(actual);
 
 	// 정상 동작
-	EXPECT_STR_EQUAL(actual, expected);
+	EXPECT_STR_EQUAL(actual, s);
 	DeleteCharPtrContainer(sList);
 	free(actual);
 
 	delimiter = '\n';
-	char *s1 = "\t a1 2d\n12\t@* @9\n \t";
-	char *s2 = "cvw e ag\n4g h";
-	StringPtr str = NewString(s1);
-	Trim(str);
-	ConcatString(str, s2);
+	s = "a1 2d\n12\t@* @9\ncvw e ag\n4g h";
+	StringPtr str = NewString(s);
 	sList = SplitString(GetPtr(str), delimiter, IncludeEmptyString);
-	expected = "a1 2d\n12\t@* @9cvw e ag\n4g h";
 	actual = MergeString(sList, delimiter);
-	EXPECT_STR_EQUAL(actual, expected);
+	EXPECT_STR_EQUAL(actual, s);
 	DeleteCharPtrContainer(sList);
 	free(actual);
 	DeleteString(&str);
@@ -824,9 +819,8 @@ TEST(MergeString, MergeString, {
 	delimiter = 'a';
 	s = "ab de fg";
 	sList = SplitString(s, delimiter, IncludeEmptyString);
-	expected = "ab de fg";
 	actual = MergeString(sList, delimiter);
-	EXPECT_STR_EQUAL(actual, expected);
+	EXPECT_STR_EQUAL(actual, s);
 	DeleteCharPtrContainer(sList);
 	free(actual);
 
@@ -854,8 +848,8 @@ int main()
         Test_GetPtr_PointerToStringData,
         Test_CloneString_InstanceClone,
         Test_SetString_SetNewValue,
-		Test_ConvertToUpperCase_UpperString,
-		Test_ConvertToLowerCase_LowerString,
+		Test_ChangeStringCase_UpperString,
+		Test_ChangeStringCase_LowerString,
 		Test_TrimString_LeftTrim,
 		Test_TrimString_RightTrim,
 		Test_TrimString_Trim,
