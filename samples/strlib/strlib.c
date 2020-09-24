@@ -702,8 +702,9 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 			}
 		}
 
-		// 3-1) 빈문자열을 배열에 저장하지 않으면 해당 배열 위치에 NULL 을 저장한다.
+		// 3-1-1) 빈문자열을 배열에 저장하지 않으면 해당 배열 위치에 NULL 을 저장한다.
 		if(option == ExcludeEmptyArray && curLength == 0) strList[strListIndex] = NULL;
+		// 3-1-2) 모든 문자열을 저장한다.
 		else
 		{
 			char *newStr = (char*)malloc((size_t)(curLength + 1));
@@ -775,7 +776,8 @@ char* MergeString(char **sList, char delimiter)
 	int strLength = 0;
 	char **tempList = sList;
 
-	// (문자열 개수(>0) - 1)만큼 delimiter 가 포함되어야 한다.
+	// 1) 추가해야할 delimiter 개수와 연결할 문자열의 총 길이를 구한다.
+	// 연결할 문자열에는 (문자열 개수(>0) - 1)만큼 delimiter 가 포함되어야 한다.
 	while(*tempList != NULL)
 	{
 		strLength += (int)strlen(*tempList);
@@ -786,20 +788,21 @@ char* MergeString(char **sList, char delimiter)
 	if(delimiterCount > 0) delimiterCount--;
 	else return NULL;
 
+	// 2) 연결할 문자열을 새로 생성한다.
 	int newStrLength = strLength + delimiterCount;
 	char *newStr = (char*)malloc((size_t)(newStrLength + 1));
 	if(newStr == NULL) return NULL;
 	newStr[newStrLength] = '\0';
 
+	// 3) 분리된 문자열을 delimiter 를 추가하면서 하나의 문자열로 연결한다.
 	int strListIndex = 0;
 	int totalStrLength = 0;
-	// delimiter 가 제외된 문자열을 새로운 문자열에 복사
 	for( ; strListIndex < strListLength; strListIndex++)
 	{
 		if(sList[strListIndex] != NULL){
 			int curStrLength = (int)strlen(sList[strListIndex]);
 			memcpy(newStr + totalStrLength, sList[strListIndex], (size_t)curStrLength);
-			// 마지막 문자열이면 뒤에 delimiter 를 포함하지 않는다.
+			// 3-1) 마지막 문자열이면 뒤에 delimiter 를 포함하지 않는다.
 			if(strListIndex < (strListLength - 1))
 			{
 				totalStrLength += curStrLength;
