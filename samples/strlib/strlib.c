@@ -654,6 +654,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 	int strLength = (int)strlen(s);
 	int delimiterCount = 0;
 
+	// 1) 문자열 내 delimiter 개수를 구한다.
 	for( ; strIndex < strLength; strIndex++)
 	{
 		if(s[strIndex] == delimiter) delimiterCount++;
@@ -665,6 +666,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 	int *delimiterPos = NULL;
 	if(delimiter != '\0')
 	{
+		// 1-1) delimiter 가 널 문자가 아니면 문자열 내의 delimiter 의 모든 위치를 기억한다.
 		delimiterPos = (int*)calloc(sizeof(int) * (size_t)(delimiterCount), sizeof(int));
 		if(delimiterPos == NULL) return NULL;
 		int delimiterIndex = 0;
@@ -674,6 +676,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 		}
 	}
 
+	// 2) delimiter 로 분리될 문자열들을 저장하기 위한 배열을 생성한다.
 	// (delimiter 개수 + 1) 만큼 포인터 배열의 크기를 생성 < +1 : (마지막 delimiter 뒤의 문자열)
 	int strListIndex = 0;
 	int strListLength = delimiterCount + 1;
@@ -681,6 +684,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 	if(strList == NULL) return NULL;
 	strList[strListLength] = NULL;
 
+	// 3) delimiter 로 문자열을 분리해서 생성한 배열에 저장한다.
 	for(strListIndex = 0; strListIndex < strListLength; strListIndex++)
 	{
 		int curLength = 0;
@@ -698,6 +702,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 			}
 		}
 
+		// 3-1) 빈문자열을 배열에 저장하지 않으면 해당 배열 위치에 NULL 을 저장한다.
 		if(option == ExcludeEmptyArray && curLength == 0) strList[strListIndex] = NULL;
 		else
 		{
@@ -720,6 +725,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 	}
 	free(delimiterPos);
 
+	// 3-2) 빈문자열을 배열에 저장하지 않으면 배열에서 NULL 이 아닌 포인터만 선택해서 다시 저장한다.
 	// delimiter 가 널 문자가 아니고, 빈문자열을 포함시키지 않는 경우
 	if(delimiter != '\0' && option == ExcludeEmptyArray)
 	{
