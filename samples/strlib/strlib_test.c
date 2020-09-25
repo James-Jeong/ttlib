@@ -359,11 +359,7 @@ TEST(FormatString, FormatString, {
 	// NULL 값이 들어온 경우, NULL 반환
 	EXPECT_NULL(FormatString(NULL, format, s));
 	EXPECT_NULL(FormatString(str, NULL, s));
-	EXPECT_NULL(FormatString(str, format, NULL));
-	EXPECT_NULL(FormatString(str, NULL, NULL));
 	EXPECT_NULL(FormatString(NULL, NULL, s));
-	EXPECT_NULL(FormatString(NULL, format, NULL));
-	EXPECT_NULL(FormatString(NULL, NULL, NULL));
 
 	DeleteString(&str);
 })
@@ -387,8 +383,8 @@ TEST(ConcatString, ConcatString, {
 	SetString(str, "");
 	EXPECT_STR_EQUAL(ConcatString(str, s2), s2);
 
-	// 붙이려는 문자열이 NULL 인 경우, 원본 문자열을 반환
-	EXPECT_NOT_NULL(ConcatString(str, NULL));
+	// 붙이려는 문자열이 NULL 인 경우, NULL 반환
+	EXPECT_NULL(ConcatString(str, NULL));
 	// 원본 문자열 관리 구조체가 NULL 인 경우, NULL 반환
 	EXPECT_NULL(ConcatString(NULL, s2));
 	EXPECT_NULL(ConcatString(NULL, NULL));
@@ -827,6 +823,39 @@ TEST(MergeString, MergeString, {
 	EXPECT_NULL(MergeString(NULL, 'x'));
 })
 
+TEST(TestStringAPI, StringTest, {
+	StringPtr str1 = NewString("abc");
+	StringPtr str2 = CloneString(str1);
+
+	SetString(str1, "\t abc \t");
+	SetString(str2, "*123@");
+	Trim(str1);
+	CopyString(str1, str2);
+	CopyNString(str2, str1, 2);
+
+	FormatString(str1, "\t \t[%s]", "465b7c");
+	LeftTrim(str1);
+	ChangeStringCase(str1, toupper);
+	ConcatString(str1, "\t @7 X% y8 Z$w 9 \t \t");
+	RightTrim(str1);
+	ChangeStringCase(str1, tolower);
+	TruncateString(str1, 15);
+
+	StringPtr str3 = SubString(str1, 1, 3);
+	EXPECT_NUM_EQUAL(CompareString(str1, str3), 1);
+	EXPECT_NUM_EQUAL(SearchString(str1, "5b"), True);
+
+	char **actualCharPtrContainer = SplitString(GetPtr(str1), '@', ExcludeEmptyString);
+	char *actualCharPtr = MergeString(actualCharPtrContainer, '@');
+	EXPECT_STR_EQUAL(actualCharPtr, GetPtr(str1));
+
+	DeleteString(&str1);
+	DeleteString(&str2);
+	DeleteString(&str3);
+	DeleteCharPtrContainer(actualCharPtrContainer);
+	free(actualCharPtr);
+})
+
 ////////////////////////////////////////////////////////////////////////////////
 /// Main Function
 ////////////////////////////////////////////////////////////////////////////////
@@ -861,7 +890,8 @@ int main()
 		Test_CheckCharIsSpace_IsSpace,
 		Test_CheckCharIsCRLF_IsCRLF,
 		Test_SplitString_SplitString,
-		Test_MergeString_MergeString
+		Test_MergeString_MergeString,
+		Test_TestStringAPI_StringTest
     );
 
     RUN_ALL_TESTS();

@@ -1,303 +1,78 @@
-==16255== Memcheck, a memory error detector
-==16255== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==16255== Using Valgrind-3.15.0-608cb11914-20190413 and LibVEX; rerun with -h for copyright info
-==16255== Command: ./run
-==16255== Parent PID: 1726
-==16255== 
---16255-- 
---16255-- Valgrind options:
---16255--    --leak-check=full
---16255--    --show-leak-kinds=all
---16255--    --log-file=valgrind_log.txt
---16255--    -v
---16255--    --error-limit=no
---16255--    --track-origins=yes
---16255-- Contents of /proc/version:
---16255--   Linux version 3.10.0-862.el7.x86_64 (builder@kbuilder.dev.centos.org) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-28) (GCC) ) #1 SMP Fri Apr 20 16:44:24 UTC 2018
---16255-- 
---16255-- Arch and hwcaps: AMD64, LittleEndian, amd64-rdtscp-sse3-ssse3
---16255-- Page sizes: currently 4096, max supported 4096
---16255-- Valgrind library directory: /usr/libexec/valgrind
---16255-- Reading syms from /home/dev1/src_test/ttlib/samples/strlib/run
---16255-- Reading syms from /usr/lib64/ld-2.17.so
---16255-- Reading syms from /usr/libexec/valgrind/memcheck-amd64-linux
---16255--    object doesn't have a symbol table
---16255--    object doesn't have a dynamic symbol table
---16255-- Scheduler: using generic scheduler lock implementation.
---16255-- Reading suppressions file: /usr/libexec/valgrind/default.supp
-==16255== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-16255-by-dev1-on-dev1
-==16255== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-16255-by-dev1-on-dev1
-==16255== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-16255-by-dev1-on-dev1
-==16255== 
-==16255== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==16255== don't want to do, unless you know exactly what you're doing,
-==16255== or are doing some strange experiment):
-==16255==   /usr/libexec/valgrind/../../bin/vgdb --pid=16255 ...command...
-==16255== 
-==16255== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==16255==   /path/to/gdb ./run
-==16255== and then give GDB the following command
-==16255==   target remote | /usr/libexec/valgrind/../../bin/vgdb --pid=16255
-==16255== --pid is optional if only one valgrind process is running
-==16255== 
---16255-- REDIR: 0x4019e30 (ld-linux-x86-64.so.2:strlen) redirected to 0x580c7ed5 (???)
---16255-- REDIR: 0x4019c00 (ld-linux-x86-64.so.2:index) redirected to 0x580c7eef (???)
---16255-- Reading syms from /usr/libexec/valgrind/vgpreload_core-amd64-linux.so
---16255-- Reading syms from /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so
-==16255== WARNING: new redirection conflicts with existing -- ignoring it
---16255--     old: 0x04019e30 (strlen              ) R-> (0000.0) 0x580c7ed5 ???
---16255--     new: 0x04019e30 (strlen              ) R-> (2007.0) 0x04c2d1b0 strlen
---16255-- REDIR: 0x4019db0 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4c2e300 (strcmp)
---16255-- REDIR: 0x401aa70 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4c31f90 (mempcpy)
---16255-- Reading syms from /usr/lib64/libc-2.17.so
---16255-- REDIR: 0x4ec7130 (libc.so.6:strcasecmp) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
---16255-- REDIR: 0x4ec3eb0 (libc.so.6:strnlen) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
---16255-- REDIR: 0x4ec9400 (libc.so.6:strncasecmp) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
---16255-- REDIR: 0x4ec6910 (libc.so.6:memset) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
---16255-- REDIR: 0x4ec68c0 (libc.so.6:memcpy@GLIBC_2.2.5) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
---16255-- REDIR: 0x4ec58a0 (libc.so.6:__GI_strrchr) redirected to 0x4c2cb70 (__GI_strrchr)
---16255-- REDIR: 0x4ebc6b0 (libc.so.6:malloc) redirected to 0x4c29eec (malloc)
---16255-- REDIR: 0x4ec3dd0 (libc.so.6:__GI_strlen) redirected to 0x4c2d110 (__GI_strlen)
---16255-- REDIR: 0x4ecbb40 (libc.so.6:__GI_memcpy) redirected to 0x4c2efb0 (__GI_memcpy)
---16255-- REDIR: 0x4ebcbb0 (libc.so.6:realloc) redirected to 0x4c2c1c5 (realloc)
---16255-- REDIR: 0x4ecd3c0 (libc.so.6:strchrnul) redirected to 0x4c31ab0 (strchrnul)
---16255-- REDIR: 0x4ec6ae0 (libc.so.6:__GI_mempcpy) redirected to 0x4c31cc0 (__GI_mempcpy)
---16255-- REDIR: 0x4ebcad0 (libc.so.6:free) redirected to 0x4c2afe6 (free)
---16255-- REDIR: 0x4ec3d80 (libc.so.6:strlen) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
---16255-- REDIR: 0x4ecbad0 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
---16255-- REDIR: 0x4ec3f90 (libc.so.6:strncmp) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
---16255-- REDIR: 0x4ec3fd0 (libc.so.6:__GI_strncmp) redirected to 0x4c2d940 (__GI_strncmp)
-==16255== Conditional jump or move depends on uninitialised value(s)
-==16255==    at 0x4C2D128: __GI_strlen (vg_replace_strmem.c:462)
-==16255==    by 0x407FDC: SetString (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408445: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402615: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==  Uninitialised value was created by a heap allocation
-==16255==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
-==16255==    by 0x40836A: RemoveRightSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408414: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402615: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255== 
-==16255== Invalid read of size 1
-==16255==    at 0x4C2F340: __GI_memcpy (vg_replace_strmem.c:1037)
-==16255==    by 0x40854F: CopyString (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40849A: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402615: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==  Address 0x5208cc6 is 0 bytes after a block of size 6 alloc'd
-==16255==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
-==16255==    by 0x408241: RemoveLeftSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408469: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402615: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255== 
-==16255== Conditional jump or move depends on uninitialised value(s)
-==16255==    at 0x4C2D128: __GI_strlen (vg_replace_strmem.c:462)
-==16255==    by 0x407FDC: SetString (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408445: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40268E: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==  Uninitialised value was created by a heap allocation
-==16255==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
-==16255==    by 0x40836A: RemoveRightSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408414: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40268E: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255== 
-==16255== Invalid read of size 2
-==16255==    at 0x4C2F140: __GI_memcpy (vg_replace_strmem.c:1037)
-==16255==    by 0x40854F: CopyString (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40849A: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40268E: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==  Address 0x5208ef8 is 2 bytes after a block of size 6 alloc'd
-==16255==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
-==16255==    by 0x408241: RemoveLeftSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408469: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40268E: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255== 
-==16255== Conditional jump or move depends on uninitialised value(s)
-==16255==    at 0x4C2D128: __GI_strlen (vg_replace_strmem.c:462)
-==16255==    by 0x407FDC: SetString (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408445: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402745: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==  Uninitialised value was created by a heap allocation
-==16255==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
-==16255==    by 0x40836A: RemoveRightSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408414: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402745: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255== 
-==16255== Invalid read of size 2
-==16255==    at 0x4C2F140: __GI_memcpy (vg_replace_strmem.c:1037)
-==16255==    by 0x40854F: CopyString (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40849A: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402745: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==  Address 0x520914a is 0 bytes after a block of size 10 alloc'd
-==16255==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
-==16255==    by 0x408241: RemoveLeftSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408469: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402745: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255== 
-==16255== Invalid read of size 2
-==16255==    at 0x4C2F14F: __GI_memcpy (vg_replace_strmem.c:1037)
-==16255==    by 0x40854F: CopyString (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40849A: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402745: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==  Address 0x520914c is 2 bytes after a block of size 10 alloc'd
-==16255==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
-==16255==    by 0x408241: RemoveLeftSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408469: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402745: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255== 
---16255-- REDIR: 0x4ebd0d0 (libc.so.6:calloc) redirected to 0x4c2bff3 (calloc)
-==16255== 
-==16255== HEAP SUMMARY:
-==16255==     in use at exit: 0 bytes in 0 blocks
-==16255==   total heap usage: 302 allocs, 302 frees, 6,049 bytes allocated
-==16255== 
-==16255== All heap blocks were freed -- no leaks are possible
-==16255== 
-==16255== ERROR SUMMARY: 7 errors from 7 contexts (suppressed: 0 from 0)
-==16255== 
-==16255== 1 errors in context 1 of 7:
-==16255== Invalid read of size 2
-==16255==    at 0x4C2F14F: __GI_memcpy (vg_replace_strmem.c:1037)
-==16255==    by 0x40854F: CopyString (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40849A: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402745: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==  Address 0x520914c is 2 bytes after a block of size 10 alloc'd
-==16255==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
-==16255==    by 0x408241: RemoveLeftSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408469: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402745: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255== 
-==16255== 
-==16255== 1 errors in context 2 of 7:
-==16255== Invalid read of size 2
-==16255==    at 0x4C2F140: __GI_memcpy (vg_replace_strmem.c:1037)
-==16255==    by 0x40854F: CopyString (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40849A: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402745: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==  Address 0x520914a is 0 bytes after a block of size 10 alloc'd
-==16255==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
-==16255==    by 0x408241: RemoveLeftSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408469: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402745: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255== 
-==16255== 
-==16255== 1 errors in context 3 of 7:
-==16255== Conditional jump or move depends on uninitialised value(s)
-==16255==    at 0x4C2D128: __GI_strlen (vg_replace_strmem.c:462)
-==16255==    by 0x407FDC: SetString (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408445: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402745: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==  Uninitialised value was created by a heap allocation
-==16255==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
-==16255==    by 0x40836A: RemoveRightSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408414: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402745: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255== 
-==16255== 
-==16255== 1 errors in context 4 of 7:
-==16255== Invalid read of size 2
-==16255==    at 0x4C2F140: __GI_memcpy (vg_replace_strmem.c:1037)
-==16255==    by 0x40854F: CopyString (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40849A: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40268E: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==  Address 0x5208ef8 is 2 bytes after a block of size 6 alloc'd
-==16255==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
-==16255==    by 0x408241: RemoveLeftSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408469: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40268E: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255== 
-==16255== 
-==16255== 1 errors in context 5 of 7:
-==16255== Conditional jump or move depends on uninitialised value(s)
-==16255==    at 0x4C2D128: __GI_strlen (vg_replace_strmem.c:462)
-==16255==    by 0x407FDC: SetString (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408445: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40268E: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==  Uninitialised value was created by a heap allocation
-==16255==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
-==16255==    by 0x40836A: RemoveRightSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408414: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40268E: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255== 
-==16255== 
-==16255== 1 errors in context 6 of 7:
-==16255== Invalid read of size 1
-==16255==    at 0x4C2F340: __GI_memcpy (vg_replace_strmem.c:1037)
-==16255==    by 0x40854F: CopyString (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40849A: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402615: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==  Address 0x5208cc6 is 0 bytes after a block of size 6 alloc'd
-==16255==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
-==16255==    by 0x408241: RemoveLeftSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408469: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402615: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255== 
-==16255== 
-==16255== 1 errors in context 7 of 7:
-==16255== Conditional jump or move depends on uninitialised value(s)
-==16255==    at 0x4C2D128: __GI_strlen (vg_replace_strmem.c:462)
-==16255==    by 0x407FDC: SetString (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408445: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402615: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==  Uninitialised value was created by a heap allocation
-==16255==    at 0x4C29F73: malloc (vg_replace_malloc.c:309)
-==16255==    by 0x40836A: RemoveRightSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x408414: RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x402615: _TrimString_RemoveBothSpace (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x40984A: RunAllTests (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255==    by 0x407D27: main (in /home/dev1/src_test/ttlib/samples/strlib/run)
-==16255== 
-==16255== ERROR SUMMARY: 7 errors from 7 contexts (suppressed: 0 from 0)
+==11764== Memcheck, a memory error detector
+==11764== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==11764== Using Valgrind-3.15.0-608cb11914-20190413 and LibVEX; rerun with -h for copyright info
+==11764== Command: ./run
+==11764== Parent PID: 2307
+==11764== 
+--11764-- 
+--11764-- Valgrind options:
+--11764--    --leak-check=full
+--11764--    --show-leak-kinds=all
+--11764--    --log-file=valgrind_log.txt
+--11764--    -v
+--11764--    --error-limit=no
+--11764--    --track-origins=yes
+--11764-- Contents of /proc/version:
+--11764--   Linux version 3.10.0-862.el7.x86_64 (builder@kbuilder.dev.centos.org) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-28) (GCC) ) #1 SMP Fri Apr 20 16:44:24 UTC 2018
+--11764-- 
+--11764-- Arch and hwcaps: AMD64, LittleEndian, amd64-rdtscp-sse3-ssse3
+--11764-- Page sizes: currently 4096, max supported 4096
+--11764-- Valgrind library directory: /usr/libexec/valgrind
+--11764-- Reading syms from /home/dev1/src_test/ttlib/samples/strlib/run
+--11764-- Reading syms from /usr/lib64/ld-2.17.so
+--11764-- Reading syms from /usr/libexec/valgrind/memcheck-amd64-linux
+--11764--    object doesn't have a symbol table
+--11764--    object doesn't have a dynamic symbol table
+--11764-- Scheduler: using generic scheduler lock implementation.
+--11764-- Reading suppressions file: /usr/libexec/valgrind/default.supp
+==11764== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-11764-by-dev1-on-dev1
+==11764== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-11764-by-dev1-on-dev1
+==11764== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-11764-by-dev1-on-dev1
+==11764== 
+==11764== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==11764== don't want to do, unless you know exactly what you're doing,
+==11764== or are doing some strange experiment):
+==11764==   /usr/libexec/valgrind/../../bin/vgdb --pid=11764 ...command...
+==11764== 
+==11764== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==11764==   /path/to/gdb ./run
+==11764== and then give GDB the following command
+==11764==   target remote | /usr/libexec/valgrind/../../bin/vgdb --pid=11764
+==11764== --pid is optional if only one valgrind process is running
+==11764== 
+--11764-- REDIR: 0x4019e30 (ld-linux-x86-64.so.2:strlen) redirected to 0x580c7ed5 (???)
+--11764-- REDIR: 0x4019c00 (ld-linux-x86-64.so.2:index) redirected to 0x580c7eef (???)
+--11764-- Reading syms from /usr/libexec/valgrind/vgpreload_core-amd64-linux.so
+--11764-- Reading syms from /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so
+==11764== WARNING: new redirection conflicts with existing -- ignoring it
+--11764--     old: 0x04019e30 (strlen              ) R-> (0000.0) 0x580c7ed5 ???
+--11764--     new: 0x04019e30 (strlen              ) R-> (2007.0) 0x04c2d1b0 strlen
+--11764-- REDIR: 0x4019db0 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4c2e300 (strcmp)
+--11764-- REDIR: 0x401aa70 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4c31f90 (mempcpy)
+--11764-- Reading syms from /usr/lib64/libc-2.17.so
+--11764-- REDIR: 0x4ec7130 (libc.so.6:strcasecmp) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
+--11764-- REDIR: 0x4ec3eb0 (libc.so.6:strnlen) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
+--11764-- REDIR: 0x4ec9400 (libc.so.6:strncasecmp) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
+--11764-- REDIR: 0x4ec6910 (libc.so.6:memset) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
+--11764-- REDIR: 0x4ec68c0 (libc.so.6:memcpy@GLIBC_2.2.5) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
+--11764-- REDIR: 0x4ec58a0 (libc.so.6:__GI_strrchr) redirected to 0x4c2cb70 (__GI_strrchr)
+--11764-- REDIR: 0x4ebc6b0 (libc.so.6:malloc) redirected to 0x4c29eec (malloc)
+--11764-- REDIR: 0x4ec3dd0 (libc.so.6:__GI_strlen) redirected to 0x4c2d110 (__GI_strlen)
+--11764-- REDIR: 0x4ecbb40 (libc.so.6:__GI_memcpy) redirected to 0x4c2efb0 (__GI_memcpy)
+--11764-- REDIR: 0x4ebcbb0 (libc.so.6:realloc) redirected to 0x4c2c1c5 (realloc)
+--11764-- REDIR: 0x4ecd3c0 (libc.so.6:strchrnul) redirected to 0x4c31ab0 (strchrnul)
+--11764-- REDIR: 0x4ec6ae0 (libc.so.6:__GI_mempcpy) redirected to 0x4c31cc0 (__GI_mempcpy)
+--11764-- REDIR: 0x4ebcad0 (libc.so.6:free) redirected to 0x4c2afe6 (free)
+--11764-- REDIR: 0x4ec3d80 (libc.so.6:strlen) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
+--11764-- REDIR: 0x4ecbad0 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
+--11764-- REDIR: 0x4ec3f90 (libc.so.6:strncmp) redirected to 0x4a247a0 (_vgnU_ifunc_wrapper)
+--11764-- REDIR: 0x4ec3fd0 (libc.so.6:__GI_strncmp) redirected to 0x4c2d940 (__GI_strncmp)
+--11764-- REDIR: 0x4ebd0d0 (libc.so.6:calloc) redirected to 0x4c2bff3 (calloc)
+==11764== 
+==11764== HEAP SUMMARY:
+==11764==     in use at exit: 0 bytes in 0 blocks
+==11764==   total heap usage: 357 allocs, 357 frees, 7,102 bytes allocated
+==11764== 
+==11764== All heap blocks were freed -- no leaks are possible
+==11764== 
+==11764== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

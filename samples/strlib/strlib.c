@@ -207,31 +207,18 @@ char* Trim(StringPtr str)
 	if(newStr == NULL) return NULL;
 
 	char *rightTrimmedString = RightTrim(newStr);
-	if(rightTrimmedString == NULL)
-	{
-		DeleteString(&newStr);
-		return NULL;
-	}
-
-	if(SetString(newStr, rightTrimmedString) == NULL)
-	{
-		DeleteString(&newStr);
-		return NULL;
-	}
+	if(rightTrimmedString == NULL) goto Error;
+	if(SetString(newStr, rightTrimmedString) == NULL) goto Error;
 
 	char *leftTrimmedString = LeftTrim(newStr);
-	if(leftTrimmedString == NULL)
-	{
-		DeleteString(&newStr);
-		return NULL;
-	}
+	if(leftTrimmedString == NULL) goto Error;
+	if(CopyString(str, newStr) == NULL) goto Error;
+	goto Exit;
 
-	if(CopyString(str, newStr) == NULL)
-	{
-		DeleteString(&newStr);
-		return NULL;
-	}
-
+Error:
+	DeleteString(&newStr);
+	return NULL;
+Exit:
 	DeleteString(&newStr);
 	return str->data;
 }
@@ -337,10 +324,12 @@ char* FormatString(StringPtr str, const char* format, ...)
 
 	va_start(ap, format);
 	int copiedLength = vsnprintf(newData, (size_t)newLength, format, ap);
-	if(copiedLength < 0 // glibc < 2.1
-		 || (size_t)copiedLength >= sizeof(newData)) // glibc >= 2.1
+	if((strlen(newData) == 0)
+		&& (copiedLength < 0 // glibc < 2.1
+		 || (size_t)copiedLength >= sizeof(newData))) // glibc >= 2.1
 	{
 		free(newData);
+		va_end(ap);
 		return NULL;
 	}
 	newData[newLength] = '\0';
@@ -348,7 +337,7 @@ char* FormatString(StringPtr str, const char* format, ...)
 
 	if(str->data != NULL) free(str->data);
 	str->data = newData;
-	str->length = newLength;
+	str->length = (int)strlen(newData);
 
 	return str->data;
 }
@@ -362,8 +351,7 @@ char* FormatString(StringPtr str, const char* format, ...)
  */
 char* ConcatString(StringPtr str, const char* s)
 {
-	if(str == NULL || str->data == NULL) return NULL;
-	if(s == NULL) return str->data;
+	if(str == NULL || str->data == NULL || s == NULL) return NULL;
 
 	int newLength = str->length + (int)strlen(s);
 	char *newData = (char*)malloc((size_t)(newLength + 1));
@@ -624,7 +612,6 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 	// 3) delimiter 로 문자열을 분리해서 생성한 배열에 저장한다.
 	for(strListIndex = 0; strListIndex < strListLength; strListIndex++)
 	{
-
 		int curLength = delimiterPos[strListIndex];
 		if(strListIndex > 0){
 			if(curLength != 0) curLength -= (delimiterPos[strListIndex - 1] + 1);
@@ -760,10 +747,10 @@ static StringPtr InitializeString(StringPtr str, const char *s, int length)
  */
 static char* CloneCharArray(const char *s, int length)
 {
-	char *newStr = (char*)malloc((size_t)(size + 1));
+	char *newStr = (char*)malloc((size_t)(length + 1));
 	if(newStr == NULL) return NULL;
-	memcpy(newStr, s, (size_t)size);
-	*(newStr + size) = '\0';
+	memcpy(newStr, s, (size_t)length);
+	*(newStr + length) = '\0';
 	return newStr;
 }
 
@@ -832,7 +819,6 @@ void DeleteCharPtrContainer(char **container)
     char **tempContainer = container;
     while(*tempContainer != NULL)
     {
-        //printf("%s\n", *tempActual);
         free(*tempContainer);
         tempContainer++;
     }
