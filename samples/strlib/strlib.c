@@ -14,6 +14,7 @@ static StringPtr CreateString();
 static StringPtr InitializeString(StringPtr str, const char *s, int length);
 static char* CloneCharArray(const char *s, int length);
 static char** RemoveNullPointerInCharPtrContainer(char **container, int size);
+static int* MakeDelimiterPosArray(const char *s, char delimiter, int *delimiterCount);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// 공용 APIs
@@ -232,7 +233,7 @@ Exit:
  */
 char* CopyString(StringPtr dstStr, const StringPtr srcStr)
 {
-	if(dstStr == NULL || dstStr->data == NULL || srcStr == NULL || srcStr->data == NULL) return NULL;
+	if(dstStr == NULL || srcStr == NULL) return NULL;
 
 	int dstStrLength = dstStr->length;
 	int srcStrLength = srcStr->length;
@@ -262,7 +263,7 @@ char* CopyString(StringPtr dstStr, const StringPtr srcStr)
  */
 char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
 {
-	if(length <= 0 || dstStr == NULL || dstStr->data == NULL || srcStr == NULL || srcStr->data == NULL)
+	if(length <= 0 || dstStr == NULL || srcStr == NULL)
 	{
 		return NULL;
 	}
@@ -573,35 +574,17 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 {
 	if(s == NULL || strlen(s) == 0 || delimiter == '\0') return NULL;
 
-	char **strList;
-	int strIndex = 0;
-	int strLength = (int)strlen(s);
+	// 1) 문자열 내 delimiter 개수를 구하고 문자열 내 delimiter 위치를 저장한 배열을 생성한다.
 	int delimiterCount = 0;
-
-	// 1) 문자열 내 delimiter 개수를 구한다.
-	for( ; strIndex < strLength; strIndex++)
-	{
-		if(s[strIndex] == delimiter) delimiterCount++;
-	}
-
-	// delimiter 가 문자열에 없으면 실패, NULL 반환
-	if(delimiterCount == 0) return NULL;
-
-	// 1-1) 문자열 내의 delimiter 의 모든 위치를 기억한다.
-	int *delimiterPos = (int*)calloc(sizeof(int) * (size_t)(delimiterCount), sizeof(int));
+	int *delimiterPos = MakeDelimiterPosArray(s, delimiter, &delimiterCount);
 	if(delimiterPos == NULL) return NULL;
-
-	int delimiterIndex = 0;
-	for(strIndex = 0; strIndex < strLength; strIndex++)
-	{
-		if(s[strIndex] == delimiter) delimiterPos[delimiterIndex++] = strIndex;
-	}
 	
 	// 2) delimiter 로 분리될 문자열들을 저장하기 위한 배열을 생성한다.
 	// (delimiter 개수 + 1) 만큼 포인터 배열의 크기를 생성 < +1 : (마지막 delimiter 뒤의 문자열)
+	int strLength = (int)strlen(s);
 	int strListIndex = 0;
 	int strListLength = delimiterCount + 1;
-	strList = NewCharPtrContainer(strListLength);
+	char **strList = NewCharPtrContainer(strListLength);
 	if(strList == NULL) return NULL;
 
 	// 3) delimiter 로 문자열을 분리해서 생성한 배열에 저장한다.
@@ -629,7 +612,6 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 			}
 			strList[strListIndex] = newStr;
 		}
-
 		s += curLength;
 	}
 	free(delimiterPos);
@@ -638,7 +620,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 	// 빈문자열을 포함시키지 않는 경우
 	if(option == ExcludeEmptyString)
 	{
-		return RemoveNullPointerInCharPtrContainer(strList,strListLength);
+		return RemoveNullPointerInCharPtrContainer(strList, strListLength);
 	}
 
 	return strList;
@@ -719,6 +701,7 @@ static StringPtr CreateString()
 /**
  * @fn static StringPtr InitializeString(StringPtr str, const char *s, int length)
  * @brief 문자열 관리 구조체를 지정한 문자열로 설정하는 함수
+ * 호출된 함수에서 전달받은 구조체 포인터와 문자열, 문자열의 길이에 대한 예외 검사를 수행하였기 때문에 진행하지 않는다.
  * @param s 설정할 문자열(입력, 읽기 전용)
  * @param length 문자열의 길이(입력)
  * @return 성공 시 문자열 관리 구조체의 주소, 실패 시 NULL 반환
@@ -736,6 +719,7 @@ static StringPtr InitializeString(StringPtr str, const char *s, int length)
 /**
  * @fn static char* CloneCharArray(const char *s, int length)
  * @brief 문자열을 복제하는 함수
+ * 호출된 함수에서 전달받은 문자열과 문자열의 길이에 대한 예외 검사를 수행하였기 때문에 진행하지 않는다.
  * @param s 복제할 문자열(입력, 읽기 전용)
  * @param size 문자열의 길이(입력)
  * @return 성공 시 복제된 문자열, 실패 시 NULL 반환
@@ -752,6 +736,7 @@ static char* CloneCharArray(const char *s, int length)
 /**
  * @fn static char** RemoveNullPointerInCharPtrContainer(char **container, int size)
  * @brief 문자열 배열에서 널 포인터가 아닌 문자열 주소만 새로 저장하도록 하는 함수
+ * SplitString 함수에서 호출되기 때문에 전달받은 문자열 배열과 크기에 대한 예외 검사를 수행하지 않는다.
  * @param container 널 포인터를 삭제할 문자열 배열(출력)
  * @param size 문자열 배열의 크기(입력)
  * @return 성공 시 문자열 배열, 실패 시 NULL 반환
@@ -783,6 +768,40 @@ static char** RemoveNullPointerInCharPtrContainer(char **container, int size)
 
 	free(container);
 	return newContainer;
+}
+
+/**
+ * @fn static int* MakeDelimiterPosArray(const char *s, char delimiter, int *delimiterCount)
+ * @brief 문자열에서 지정한 delimiter 의 위치를 저장한 배열을 반환하는 함수
+ * SplitString 함수에서 호출되기 때문에 전달받은 문자열과 delimiter, delimiterCount 에 대한 예외 검사를 수행하지 않는다.
+ * @param s delimiter 를 검사할 문자열(입력, 읽기 전용)
+ * @param delimiter 구분 문자(입력)
+ * @param delimiterCount 구분 문자 개수(출력)
+ * @return 성공 시 delimiter 위치를 저장한 배열, 실패 시 NULL 반환
+ */
+static int* MakeDelimiterPosArray(const char *s, char delimiter, int *delimiterCount)
+{
+	int strLength = (int)strlen(s);
+	int strIndex = 0;
+	int delimiterIndex = 0;
+
+	for( ; strIndex < strLength; strIndex++)
+	{
+		if(s[strIndex] == delimiter) (*delimiterCount)++;
+	}
+
+	// delimiter 가 문자열에 없으면 실패, NULL 반환
+	if(*delimiterCount == 0) return NULL;
+
+	int *delimiterPos = (int*)calloc(sizeof(int) * (size_t)(*delimiterCount), sizeof(int));
+	if(delimiterPos == NULL) return NULL;
+
+	for(strIndex = 0; strIndex < strLength; strIndex++)
+	{
+		if(s[strIndex] == delimiter) delimiterPos[delimiterIndex++] = strIndex;
+	}
+
+	return delimiterPos;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
