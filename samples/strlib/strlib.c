@@ -7,14 +7,21 @@
 #include "strlib.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+/// Static Definition
+////////////////////////////////////////////////////////////////////////////////
+
+// 문자와 관련된 작업을 하기 위한 함수 지정을 위한 함수 포인터
+typedef int (*CharFunction_f)(int c);
+
+////////////////////////////////////////////////////////////////////////////////
 /// Predefinition of Static Functions
 ////////////////////////////////////////////////////////////////////////////////
 
 static StringPtr CreateString();
-static StringPtr InitializeString(StringPtr str, const char *s, int length);
 static char* CloneCharArray(const char *s, int length);
 static char** RemoveNullPointerInCharPtrContainer(char **container, int size);
 static int* MakeDelimiterPosArray(const char *s, char delimiter, int *delimiterCount);
+static char* ChangeStringCase(StringPtr str, CharFunction_f func);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// 공용 APIs
@@ -33,7 +40,7 @@ StringPtr NewString(const char *s)
     StringPtr newStr = CreateString();
     if(newStr == NULL)  return NULL;
     
-	if(InitializeString(newStr, s, (int)strlen(s)) == NULL)
+	if(SetString(newStr, s) == NULL)
 	{
 		free(newStr);
 		return NULL;
@@ -63,7 +70,7 @@ void DeleteString(StringPtrContainer stringPtrContainer)
  * @fn StringPtr CloneString(StringPtr str)
  * @brief 문자열 관리 구조체를 새로 복제하는 함수
  * @param str 복제할 문자열 관리 구조체(입력, 읽기 전용)
- * @return 성공 시 새로 복제된 String 객체 주소, 실패 시 NULL 반환
+ * @return 성공 시 새로 복제된 String 객체 주소, 실패 시 NULL 또는 str 반환
  */
 StringPtr CloneString(const StringPtr str)
 {
@@ -107,39 +114,53 @@ char* GetPtr(const StringPtr str)
 char* SetString(StringPtr str, const char *s)
 {
     if(str == NULL || s == NULL) return NULL;
-	if(InitializeString(str, s, (int)strlen(s)) == NULL) return NULL;
+
+	int sLength = (int)strlen(s);
+	int length = (str->length == sLength) ? str->length : sLength;
+
+	char *data = CloneCharArray(s, length);
+    if(data == NULL) return NULL;
+
+	if(str->data != NULL) free(str->data);
+	str->data = data;
+    str->length = length;
+
     return str->data;
 }
 
 /**
- * @fn char* ChangeStringCase(StringPtr str, CharFunction_f func)
- * @brief 구조체에서 관리하는 문자열을 모두 소문자로 변경하는 함수
+ * @fn char* ConvertToUpperString(StringPtr str)
+ * @brief 구조체에서 관리하는 문자열을 모두 대문자로 변경하는 함수
  * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
- * @param func 문자의 case 를 변경하기 위한 함수(입력)
- * @return 성공 시 소문자로 변경된 문자열, 실패 시 NULL 반환
+ * @return 성공 시 대문자로 변경된 문자열, 실패 시 NULL 반환
  */
-char* ChangeStringCase(StringPtr str, CharFunction_f func)
+char* ConvertToUpperString(StringPtr str)
 {
 	if(str == NULL || str->data == NULL || str->length <= 0) return NULL;
-
-	int strLength = str->length;
-	int strIndex = 0;
-
-	for( ; strIndex < strLength; strIndex++)
-	{
-		str->data[strIndex] = (char)func(str->data[strIndex]);
-	}
-
+	ChangeStringCase(str, toupper);
 	return str->data;
 }
 
 /**
- * @fn char* LeftTrim(StringPtr str)
+ * @fn char* ConvertToLowerString(StringPtr str)
+ * @brief 구조체에서 관리하는 문자열을 모두 소문자로 변경하는 함수
+ * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
+ * @return 성공 시 소문자로 변경된 문자열, 실패 시 NULL 반환
+ */
+char* ConvertToLowerString(StringPtr str)
+{
+	if(str == NULL || str->data == NULL || str->length <= 0) return NULL;
+	ChangeStringCase(str, tolower);
+	return str->data;
+}
+
+/**
+ * @fn char* TrimLeft(StringPtr str)
  * @brief 구조체에서 관리하는 문자열의 왼쪽 공백을 모두 제거하는 함수
  * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
  * @return 성공 시 왼쪽 공백이 제거된 문자열, 실패 시 NULL 반환
  */
-char* LeftTrim(StringPtr str)
+char* TrimLeft(StringPtr str)
 {
 	if(str == NULL || str->data == NULL || str->length <= 0) return NULL;
 
@@ -155,7 +176,8 @@ char* LeftTrim(StringPtr str)
 
 	if(leftSpaceCount > 0)
 	{
-		if(InitializeString(str, str->data + leftSpaceCount, strLength - leftSpaceCount) == NULL)
+		str->length = strLength - leftSpaceCount;
+		if(SetString(str, str->data + leftSpaceCount) == NULL)
 		{
 			return NULL;
 		}
@@ -165,12 +187,12 @@ char* LeftTrim(StringPtr str)
 }
 
 /**
- * @fn char* RightTrim(StringPtr str)
+ * @fn char* TrimRight(StringPtr str)
  * @brief 구조체에서 관리하는 문자열의 오른쪽 공백을 모두 제거하는 함수
  * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
  * @return 성공 시 오른쪽 공백이 제거된 문자열, 실패 시 NULL 반환
  */
-char* RightTrim(StringPtr str)
+char* TrimRight(StringPtr str)
 {
 	if(str == NULL || str->data == NULL || str->length <= 0) return NULL;
 
@@ -186,7 +208,8 @@ char* RightTrim(StringPtr str)
 
 	if(rightSpaceCount > 0)
 	{
-		if(InitializeString(str, str->data, strLength - rightSpaceCount) == NULL)
+		str->length = strLength - rightSpaceCount;
+		if(SetString(str, str->data) == NULL)
 		{
 			return NULL;
 		}
@@ -198,29 +221,13 @@ char* RightTrim(StringPtr str)
 /**
  * @fn char* Trim(StringPtr str)
  * @brief 구조체에서 관리하는 문자열의 양쪽 공백을 모두 제거하는 함수
- * RightTrim 함수에서 전달받은 구조체 포인터와 관리하는 문자열의 NULL 체크를 수행하므로 별도로 체크하지 않는다.
+ * TrimRight 함수에서 전달받은 구조체 포인터와 관리하는 문자열의 NULL 체크를 수행하므로 별도로 체크하지 않는다.
  * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
  * @return 성공 시 양쪽 공백이 제거된 문자열, 실패 시 NULL 반환
  */
 char* Trim(StringPtr str)
 {
-	StringPtr newStr = CloneString(str);
-	if(newStr == NULL) return NULL;
-
-	char *rightTrimmedString = RightTrim(newStr);
-	if(rightTrimmedString == NULL) goto Error;
-	if(SetString(newStr, rightTrimmedString) == NULL) goto Error;
-
-	char *leftTrimmedString = LeftTrim(newStr);
-	if(leftTrimmedString == NULL) goto Error;
-	if(CopyString(str, newStr) == NULL) goto Error;
-	goto Exit;
-
-Error:
-	DeleteString(&newStr);
-	return NULL;
-Exit:
-	DeleteString(&newStr);
+	if(str == NULL || TrimRight(str) == NULL || TrimLeft(str) == NULL) return NULL;
 	return str->data;
 }
 
@@ -241,7 +248,7 @@ char* CopyString(StringPtr dstStr, const StringPtr srcStr)
 	// srcStrLength 가 dstStrLength 와 같지 않으면 해당 길이만큼 새로운 문자열 생성
 	if(dstStrLength != srcStrLength)
 	{
-		if(InitializeString(dstStr, srcStr->data, srcStrLength) == NULL) return NULL;
+		if(SetString(dstStr, srcStr->data) == NULL) return NULL;
 	}
 	// 그렇지 않다면, 생성할 필요 없이 srcStrLength 만큼 그대로 복사
 	else
@@ -274,7 +281,7 @@ char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
 	// srcStr 이 빈문자열이면 dstStr 을 빈문자열로 만들어서 반환
 	if(srcStrLength == 0)
 	{
-		if(InitializeString(dstStr, "", 0) == NULL) return NULL;
+		if(SetString(dstStr, "") == NULL) return NULL;
 	}
 
 	// 복사할 길이가 srcStrLength 보다 크면, srcStrLength 만큼 복사
@@ -283,7 +290,7 @@ char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
 	// 복사할 길이가 dstStrLength 와 같지 않으면 복사할 길이만큼 새로운 문자열 생성
 	if(dstStrLength != length)
 	{
-		if(InitializeString(dstStr, srcStr->data, length) == NULL) return NULL;
+		if(SetString(dstStr, srcStr->data) == NULL) return NULL;
 	}
 	// 그렇지 않다면, 생성할 필요 없이 복사할 길이만큼 그대로 복사
 	else
@@ -328,7 +335,6 @@ char* FormatString(StringPtr str, const char* format, ...)
 		va_end(ap);
 		return NULL;
 	}
-	newData[newLength] = '\0';
 	va_end(ap);
 
 	if(str->data != NULL) free(str->data);
@@ -699,24 +705,6 @@ static StringPtr CreateString()
 }
 
 /**
- * @fn static StringPtr InitializeString(StringPtr str, const char *s, int length)
- * @brief 문자열 관리 구조체를 지정한 문자열로 설정하는 함수
- * 호출된 함수에서 전달받은 구조체 포인터와 문자열, 문자열의 길이에 대한 예외 검사를 수행하였기 때문에 진행하지 않는다.
- * @param s 설정할 문자열(입력, 읽기 전용)
- * @param length 문자열의 길이(입력)
- * @return 성공 시 문자열 관리 구조체의 주소, 실패 시 NULL 반환
- */
-static StringPtr InitializeString(StringPtr str, const char *s, int length)
-{
-	char *data = CloneCharArray(s, length);
-    if(data == NULL) return NULL;
-	if(str->data != NULL) free(str->data);
-	str->data = data;
-    str->length = length;
-	return str;
-}
-
-/**
  * @fn static char* CloneCharArray(const char *s, int length)
  * @brief 문자열을 복제하는 함수
  * 호출된 함수에서 전달받은 문자열과 문자열의 길이에 대한 예외 검사를 수행하였기 때문에 진행하지 않는다.
@@ -802,6 +790,26 @@ static int* MakeDelimiterPosArray(const char *s, char delimiter, int *delimiterC
 	}
 
 	return delimiterPos;
+}
+
+/**
+ * @fn static char* ChangeStringCase(StringPtr str, CharFunction_f func)
+ * @brief 구조체에서 관리하는 문자열을 특정 문자 Case 로 변경하는 함수
+ * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
+ * @param func 문자의 case 를 변경하기 위한 함수(입력)
+ * @return 성공 시 변경된 문자열, 실패 시 NULL 반환
+ */
+static char* ChangeStringCase(StringPtr str, CharFunction_f func)
+{
+	int strLength = str->length;
+	int strIndex = 0;
+
+	for( ; strIndex < strLength; strIndex++)
+	{
+		str->data[strIndex] = (char)func(str->data[strIndex]);
+	}
+
+	return str->data;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

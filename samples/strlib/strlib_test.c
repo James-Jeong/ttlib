@@ -114,26 +114,26 @@ TEST(ChangeStringCase, UpperString, {
     StringPtr str = NewString(s);
 
 	// 반환값 확인
-	EXPECT_NOT_NULL(ChangeStringCase(str, toupper));
+	EXPECT_NOT_NULL(ConvertToUpperString(str));
 
 	// 기본적인 변환 테스트
 	s = "abcd";
     SetString(str, s);
-	EXPECT_STR_EQUAL(ChangeStringCase(str, toupper), expected);
+	EXPECT_STR_EQUAL(ConvertToUpperString(str), expected);
 
     // 빈 문자열을 정상처리해야 한다.
 	s = "";
 	expected = "";
     SetString(str, s);
-	EXPECT_STR_EQUAL(ChangeStringCase(str, toupper), expected);
+	EXPECT_STR_EQUAL(ConvertToUpperString(str), expected);
 
 	s = "123-*ab-c+d(ef)";
 	expected = "123-*AB-C+D(EF)";
 	SetString(str, s);
-	EXPECT_STR_EQUAL(ChangeStringCase(str, toupper), expected);
+	EXPECT_STR_EQUAL(ConvertToUpperString(str), expected);
 
 	// NULL 값이 들어온 경우, NULL 반환
-	EXPECT_NULL(ChangeStringCase(NULL, toupper));
+	EXPECT_NULL(ConvertToUpperString(NULL));
 
     DeleteString(&str);
 })
@@ -144,87 +144,87 @@ TEST(ChangeStringCase, LowerString, {
     StringPtr str = NewString(s);
 
 	// 반환값 확인
-	EXPECT_NOT_NULL(ChangeStringCase(str, tolower));
+	EXPECT_NOT_NULL(ConvertToLowerString(str));
 
 	// 기본적인 변환 테스트
 	s = "ABCD";
 	SetString(str, s);
-	EXPECT_STR_EQUAL(ChangeStringCase(str, tolower), expected);
+	EXPECT_STR_EQUAL(ConvertToLowerString(str), expected);
 
     // 빈 문자열을 정상처리해야 한다.
 	s = "";
 	expected = "";
     SetString(str, s);
-	EXPECT_STR_EQUAL(ChangeStringCase(str, tolower), expected);
+	EXPECT_STR_EQUAL(ConvertToLowerString(str), expected);
 
 	s = "123-*AB-C+D(EF)";
 	expected = "123-*ab-c+d(ef)";
 	SetString(str, s);
-	EXPECT_STR_EQUAL(ChangeStringCase(str, tolower), expected);
+	EXPECT_STR_EQUAL(ConvertToLowerString(str), expected);
 
 	// NULL 값이 들어온 경우, NULL 반환
-	EXPECT_NULL(ChangeStringCase(NULL, tolower));
+	EXPECT_NULL(ConvertToLowerString(NULL));
 
     DeleteString(&str);
 })
 
-TEST(TrimString, LeftTrim, {
+TEST(TrimString, TrimLeft, {
 	char *s = " \tabcde";
 	char *expected = "abcde"; 
     StringPtr str = NewString(s);
 
 	// 반환값 확인
-	EXPECT_NOT_NULL(LeftTrim(str));
+	EXPECT_NOT_NULL(TrimLeft(str));
 
 	// 왼쪽 공백만 있는 경우
 	s = " \t\t \tabcde";
     SetString(str, s);
-	EXPECT_STR_EQUAL(LeftTrim(str), expected);
+	EXPECT_STR_EQUAL(TrimLeft(str), expected);
 
 	// 왼쪽, 오른쪽 공백과 문자열 중간에 공백이 있는 경우
 	s = " \ta b c d e   ";
 	expected = "a b c d e   ";
     SetString(str, s);
-	EXPECT_STR_EQUAL(LeftTrim(str), expected);
+	EXPECT_STR_EQUAL(TrimLeft(str), expected);
 
 	// 빈 문자열을 정상처리해야 한다.
 	s = "";
 	expected = "";
     SetString(str, s);
-	EXPECT_STR_EQUAL(LeftTrim(str), expected);
+	EXPECT_STR_EQUAL(TrimLeft(str), expected);
 
 	// NULL 값이 들어온 경우, NULL 반환
-	EXPECT_NULL(LeftTrim(NULL));
+	EXPECT_NULL(TrimLeft(NULL));
 
     DeleteString(&str);
 })
 
-TEST(TrimString, RightTrim, {
+TEST(TrimString, TrimRight, {
 	char *s = "abcde \t";
 	char *expected = "abcde"; 
     StringPtr str = NewString(s);
 
 	// 반환값 확인
-	EXPECT_NOT_NULL(RightTrim(str));
+	EXPECT_NOT_NULL(TrimRight(str));
 
 	// 오른쪽 공백만 있는 경우
 	s = "abcde \t\t \t";
     SetString(str, s);
-	EXPECT_STR_EQUAL(RightTrim(str), expected);
+	EXPECT_STR_EQUAL(TrimRight(str), expected);
 
 	s = " a b c d e \t\t \t";
 	expected = " a b c d e";
     SetString(str, s);
-	EXPECT_STR_EQUAL(RightTrim(str), expected);
+	EXPECT_STR_EQUAL(TrimRight(str), expected);
 
 	// 빈 문자열을 정상처리해야 한다.
 	s = "";
 	expected = "";
     SetString(str, s);
-	EXPECT_STR_EQUAL(RightTrim(str), expected);
+	EXPECT_STR_EQUAL(TrimRight(str), expected);
 
 	// NULL 값이 들어온 경우, NULL 반환
-	EXPECT_NULL(RightTrim(NULL));
+	EXPECT_NULL(TrimRight(NULL));
 
     DeleteString(&str);
 })
@@ -834,11 +834,11 @@ TEST(TestStringAPI, StringTest, {
 	CopyNString(str2, str1, 2);
 
 	FormatString(str1, "\t \t[%s]", "465b7c");
-	LeftTrim(str1);
-	ChangeStringCase(str1, toupper);
+	TrimLeft(str1);
+	ConvertToUpperString(str1);
 	ConcatString(str1, "\t @7 X% y8 Z$w 9 \t \t");
-	RightTrim(str1);
-	ChangeStringCase(str1, tolower);
+	TrimRight(str1);
+	ConvertToLowerString(str1);
 	TruncateString(str1, 15);
 
 	StringPtr str3 = SubString(str1, 1, 3);
@@ -873,8 +873,8 @@ int main()
 		Test_SetString_SetNewValue,
 		Test_ChangeStringCase_UpperString,
 		Test_ChangeStringCase_LowerString,
-		Test_TrimString_LeftTrim,
-		Test_TrimString_RightTrim,
+		Test_TrimString_TrimLeft,
+		Test_TrimString_TrimRight,
 		Test_TrimString_Trim,
 		Test_CopyString_CopyString,
 		Test_CopyString_CopyNString,
