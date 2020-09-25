@@ -836,12 +836,12 @@ int main()
     CREATE_TESTSUIT();
 
     REGISTER_TESTS(
-        Test_NewString_InstanceCreation,
-        Test_DeleteString_InstanceDeletion,
-        Test_GetLength_LengthOfString,
-        Test_GetPtr_PointerToStringData,
-        Test_CloneString_InstanceClone,
-        Test_SetString_SetNewValue,
+		Test_NewString_InstanceCreation,
+		Test_DeleteString_InstanceDeletion,
+		Test_GetLength_LengthOfString,
+		Test_GetPtr_PointerToStringData,
+		Test_CloneString_InstanceClone,
+		Test_SetString_SetNewValue,
 		Test_ChangeStringCase_UpperString,
 		Test_ChangeStringCase_LowerString,
 		Test_TrimString_LeftTrim,

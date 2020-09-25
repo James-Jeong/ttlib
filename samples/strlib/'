@@ -12,7 +12,7 @@
 
 static StringPtr CreateString();
 static StringPtr InitializeString(StringPtr str, const char *s, int length);
-static char* CloneCharArray(const char *s, int length);
+static char* CloneCharArray(int size, const char *s);
 static char** RemoveNullPointerInCharPtrContainer(char **container, int size);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ int GetLength(const StringPtr str)
  * @fn char* GetPtr(StringPtr str)
  * @brief 구조체에서 관리하는 문자열의 주소를 반환하는 함수
  * @param str 문자열의 정보를 가지는 문자열 관리 구조체(입력, 읽기 전용)
- * @return 성공 시 관리하는 문자열, 실패 시 NULL 반환
+ * @return 성공 시 관리하는 문자열의 주소, 실패 시 NULL 반환
  */
 char* GetPtr(const StringPtr str)
 {
@@ -101,7 +101,7 @@ char* GetPtr(const StringPtr str)
  * @brief 구조체에서 관리하는 문자열을 지정한 문자열로 새로 설정하는 함수
  * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
  * @param s 새로 설정할 문자열(입력, 읽기 전용)
- * @return 성공 시 새로 설정된 문자열, 실패 시 NULL 반환
+ * @return 성공 시 새로 설정된 문자열의 주소, 실패 시 NULL 반환
  */
 char* SetString(StringPtr str, const char *s)
 {
@@ -115,7 +115,7 @@ char* SetString(StringPtr str, const char *s)
  * @brief 구조체에서 관리하는 문자열을 모두 소문자로 변경하는 함수
  * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
  * @param func 문자의 case 를 변경하기 위한 함수(입력)
- * @return 성공 시 소문자로 변경된 문자열, 실패 시 NULL 반환
+ * @return 성공 시 소문자로 변경된 문자열의 주소, 실패 시 NULL 반환
  */
 char* ChangeStringCase(StringPtr str, CharFunction_f func)
 {
@@ -136,7 +136,7 @@ char* ChangeStringCase(StringPtr str, CharFunction_f func)
  * @fn char* LeftTrim(StringPtr str)
  * @brief 구조체에서 관리하는 문자열의 왼쪽 공백을 모두 제거하는 함수
  * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
- * @return 성공 시 왼쪽 공백이 제거된 문자열, 실패 시 NULL 반환
+ * @return 성공 시 왼쪽 공백이 제거된 문자열의 주소, 실패 시 NULL 반환
  */
 char* LeftTrim(StringPtr str)
 {
@@ -167,7 +167,7 @@ char* LeftTrim(StringPtr str)
  * @fn char* RightTrim(StringPtr str)
  * @brief 구조체에서 관리하는 문자열의 오른쪽 공백을 모두 제거하는 함수
  * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
- * @return 성공 시 오른쪽 공백이 제거된 문자열, 실패 시 NULL 반환
+ * @return 성공 시 오른쪽 공백이 제거된 문자열의 주소, 실패 시 NULL 반환
  */
 char* RightTrim(StringPtr str)
 {
@@ -199,7 +199,7 @@ char* RightTrim(StringPtr str)
  * @brief 구조체에서 관리하는 문자열의 양쪽 공백을 모두 제거하는 함수
  * RightTrim 함수에서 전달받은 구조체 포인터와 관리하는 문자열의 NULL 체크를 수행하므로 별도로 체크하지 않는다.
  * @param str 문자열의 정보를 가지는 문자열 관리 구조체(출력)
- * @return 성공 시 양쪽 공백이 제거된 문자열, 실패 시 NULL 반환
+ * @return 성공 시 양쪽 공백이 제거된 문자열의 주소, 실패 시 NULL 반환
  */
 char* Trim(StringPtr str)
 {
@@ -241,7 +241,7 @@ char* Trim(StringPtr str)
  * @brief source 문자열 관리 구조체에서 destination 문자열 관리 구조체로 동일한 문자열을 복사하는 함수(길이도 포함)
  * @param dstStr 복사될 문자열 관리 구조체(출력)
  * @param srcStr 복사할 문자열 관리 구조체(입력, 읽기 전용)
- * @return 성공 시 복사된 문자열, 실패 시 NULL 반환
+ * @return 성공 시 복사된 문자열의 주소, 실패 시 NULL 반환
  */
 char* CopyString(StringPtr dstStr, const StringPtr srcStr)
 {
@@ -271,7 +271,7 @@ char* CopyString(StringPtr dstStr, const StringPtr srcStr)
  * @param dstStr 복사될 문자열 관리 구조체(출력)
  * @param srcStr 복사할 문자열 관리 구조체(입력, 읽기 전용)
  * @param length 복사할 길이(입력)
- * @return 성공 시 복사된 문자열, 실패 시 NULL 반환
+ * @return 성공 시 복사된 문자열의 주소, 실패 시 NULL 반환
  */
 char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
 {
@@ -318,7 +318,7 @@ char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
  * @param str 출력된 문자열을 저장할 문자열 관리 구조체(출력)
  * @param format 가변 문자열을 출력 형식을 저장한 문자열(입력, 읽기 전용)
  * @param ... 가변 문자열(입력)
- * @return 성공 시 출력된 문자열, 실패 시 NULL 반환
+ * @return 성공 시 출력된 문자열의 주소, 실패 시 NULL 반환
  */
 char* FormatString(StringPtr str, const char* format, ...)
 {
@@ -332,7 +332,7 @@ char* FormatString(StringPtr str, const char* format, ...)
 	newLength++;
 	va_end(ap);
 
-	char *newData = CloneCharArray("", newLength);
+	char *newData = CloneCharArray(newLength, "");
 	if(newData == NULL) return NULL;
 
 	va_start(ap, format);
@@ -358,7 +358,7 @@ char* FormatString(StringPtr str, const char* format, ...)
  * @brief 원본 문자열 뒤에 지정한 문자열을 붙이는 함수
  * @param str 덧붙여질 문자열을 저장할 문자열 관리 구조체(출력)
  * @param s 덧붙일 문자열(입력, 읽기 전용), NULL 이면 덧붙여질 문자열을 반환
- * @return 성공 시 덧붙여진 문자열, 실패 시 NULL 반환
+ * @return 성공 시 덧붙여진 문자열의 주소, 실패 시 NULL 반환
  */
 char* ConcatString(StringPtr str, const char* s)
 {
@@ -385,7 +385,7 @@ char* ConcatString(StringPtr str, const char* s)
  * @brief 문자열에서 지정한 위치부터 끝까지 잘라내는 함수
  * @param str 잘라낼 문자열을 저장할 문자열 관리 구조체(출력)
  * @param from 잘라낼 문자열의 시작 위치(입력)
- * @return 성공 시 잘라낸 문자열, 실패 시 NULL 반환
+ * @return 성공 시 잘라낸 문자열의 주소, 실패 시 NULL 반환
  */
 char* TruncateString(StringPtr str, int from)
 {
@@ -584,7 +584,7 @@ Bool IsCRLF(char c)
  * @param s 나눌 문자열(입력, 읽기 전용)
  * @param delimiter 구분 문자(입력)
  * @param option 빈문자열이 포함된 배열을 포함할 것인지 선택 여부(입력, SplitOption 열거형 참고)
- * @return 성공 시 나눠진 문자열들의 주소를 저장한 새로운 문자열 배열, 실패 시 NULL 반환
+ * @return 성공 시 나눠진 문자열들의 주소를 저장한 새로운 동적 배열, 실패 시 NULL 반환
  */
 char** SplitString(const char *s, char delimiter, SplitOption option)
 {
@@ -639,7 +639,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 		// 3-1-2) 모든 문자열을 저장한다.
 		else
 		{
-			char *newStr = CloneCharArray(s, curLength);
+			char *newStr = CloneCharArray(curLength, s);
 			if(newStr == NULL){
 				strList[strListIndex] = NULL;
 				DeleteCharPtrContainer(strList);
@@ -668,7 +668,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
  * 연결된 문자열은 기존 문자열가 아닌 새로 생성된 문자열
  * @param s 연결할 문자열들을 저장된 문자열 배열(입력)
  * @param delimiter 구분 문자(입력)
- * @return 성공 시 연결된 문자열, 실패 시 NULL 반환
+ * @return 성공 시 연결된 문자열의 주소, 실패 시 NULL 반환
  */
 char* MergeString(char **sList, char delimiter)
 {
@@ -693,7 +693,7 @@ char* MergeString(char **sList, char delimiter)
 	else return NULL;
 
 	// 2) 연결할 문자열을 새로 생성한다.
-	char *newStr = CloneCharArray("", strLength + delimiterCount);
+	char *newStr = CloneCharArray(strLength + delimiterCount, "");
 	if(newStr == NULL) return NULL;
 
 	// 3) 분리된 문자열을 delimiter 를 추가하면서 하나의 문자열로 연결한다.
@@ -720,11 +720,6 @@ char* MergeString(char **sList, char delimiter)
 /// Static Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * @fn static StringPtr CreateString()
- * @brief 문자열 관리 구조체를 새로 생성하고 초기화하는 함수
- * @return 성공 시 문자열 관리 구조체의 주소, 실패 시 NULL 반환
- */
 static StringPtr CreateString()
 {
 	StringPtr str = (StringPtr)malloc(sizeof(String));
@@ -734,16 +729,9 @@ static StringPtr CreateString()
 	return str;
 }
 
-/**
- * @fn static StringPtr InitializeString(StringPtr str, const char *s, int length)
- * @brief 문자열 관리 구조체를 지정한 문자열로 설정하는 함수
- * @param s 설정할 문자열(입력, 읽기 전용)
- * @param length 문자열의 길이(입력)
- * @return 성공 시 문자열 관리 구조체의 주소, 실패 시 NULL 반환
- */
 static StringPtr InitializeString(StringPtr str, const char *s, int length)
 {
-	char *data = CloneCharArray(s, length);
+	char *data = CloneCharArray(length, s);
     if(data == NULL) return NULL;
 	if(str->data != NULL) free(str->data);
 	str->data = data;
@@ -751,14 +739,7 @@ static StringPtr InitializeString(StringPtr str, const char *s, int length)
 	return str;
 }
 
-/**
- * @fn static char* CloneCharArray(const char *s, int length)
- * @brief 문자열을 복제하는 함수
- * @param s 복제할 문자열(입력, 읽기 전용)
- * @param size 문자열의 길이(입력)
- * @return 성공 시 복제된 문자열, 실패 시 NULL 반환
- */
-static char* CloneCharArray(const char *s, int length)
+static char* CloneCharArray(int size, const char *s)
 {
 	char *newStr = (char*)malloc((size_t)(size + 1));
 	if(newStr == NULL) return NULL;
@@ -767,13 +748,6 @@ static char* CloneCharArray(const char *s, int length)
 	return newStr;
 }
 
-/**
- * @fn static char** RemoveNullPointerInCharPtrContainer(char **container, int size)
- * @brief 문자열 배열에서 널 포인터가 아닌 문자열 주소만 새로 저장하도록 하는 함수
- * @param container 널 포인터를 삭제할 문자열 배열(출력)
- * @param size 문자열 배열의 크기(입력)
- * @return 성공 시 문자열 배열, 실패 시 NULL 반환
- */
 static char** RemoveNullPointerInCharPtrContainer(char **container, int size)
 {
 	int pointerCount = 0;
@@ -807,12 +781,6 @@ static char** RemoveNullPointerInCharPtrContainer(char **container, int size)
 /// Util Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * @fn char** NewCharPtrContainer(int size)
- * @brief 문자열 배열을 새로 생성하고 초기화하는 함수
- * @param size 새로 생성할 문자열 배열의 크기(입력)
- * @return 성공 시 생성된 문자열 배열, 실패 시 NULL 반환
- */
 char** NewCharPtrContainer(int size)
 {
 	char **newContainer = (char**)malloc(sizeof(char*) * (size_t)(size + 1));
@@ -821,12 +789,6 @@ char** NewCharPtrContainer(int size)
 	return newContainer;
 }
 
-/**
- * @fn void DeleteCharPtrContainer(char **container)
- * @brief 문자열 배열을 삭제하는 함수
- * @param container 삭제할 문자열 배열(입력)
- * @return 반환값 없음
- */
 void DeleteCharPtrContainer(char **container)
 {
     char **tempContainer = container;
