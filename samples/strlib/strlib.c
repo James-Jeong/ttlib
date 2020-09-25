@@ -273,16 +273,11 @@ char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)
 	// srcStr 이 빈문자열이면 dstStr 을 빈문자열로 만들어서 반환
 	if(srcStrLength == 0)
 	{
-		char *newData = realloc(dstStr->data, 1);
-		if(newData == NULL) return NULL;
-		newData[0] = '\0';
-		dstStr->data = newData;
-		dstStr->length = 0;
-		return dstStr->data;
+		if(InitializeString(dstStr, "", 0) == NULL) return NULL;
 	}
 
 	// 복사할 길이가 srcStrLength 보다 크면, srcStrLength 만큼 복사
-	if(srcStrLength < length) length = srcStrLength;
+	if(length > srcStrLength) length = srcStrLength;
 
 	// 복사할 길이가 dstStrLength 와 같지 않으면 복사할 길이만큼 새로운 문자열 생성
 	if(dstStrLength != length)
