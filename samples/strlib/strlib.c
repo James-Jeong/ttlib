@@ -582,8 +582,8 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 
 	// 1) 문자열 내 delimiter 개수를 구하고 문자열 내 delimiter 위치를 저장한 배열을 생성한다.
 	int delimiterCount = 0;
-	int *delimiterPos = MakeDelimiterPosArray(s, delimiter, &delimiterCount);
-	if(delimiterPos == NULL) return NULL;
+	int *delimiterPosArray = MakeDelimiterPosArray(s, delimiter, &delimiterCount);
+	if(delimiterPosArray == NULL) return NULL;
 	
 	// 2) delimiter 로 분리될 문자열들을 저장하기 위한 배열을 생성한다.
 	// (delimiter 개수 + 1) 만큼 포인터 배열의 크기를 생성 < +1 : (마지막 delimiter 뒤의 문자열)
@@ -596,11 +596,11 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 	// 3) delimiter 로 문자열을 분리해서 생성한 배열에 저장한다.
 	for(strListIndex = 0; strListIndex < strListLength; strListIndex++)
 	{
-		int curLength = delimiterPos[strListIndex];
+		int curLength = delimiterPosArray[strListIndex];
 		if(strListIndex > 0){
-			if(curLength != 0) curLength -= (delimiterPos[strListIndex - 1] + 1);
+			if(curLength != 0) curLength -= (delimiterPosArray[strListIndex - 1] + 1);
 			// 마지막으로 분리될 문자열
-			else curLength = strLength - (delimiterPos[strListIndex - 1] + 1);
+			else curLength = strLength - (delimiterPosArray[strListIndex - 1] + 1);
 			// delimiter 문자는 넘어감
 			if(*s == delimiter) s++;
 		}
@@ -620,7 +620,7 @@ char** SplitString(const char *s, char delimiter, SplitOption option)
 		}
 		s += curLength;
 	}
-	free(delimiterPos);
+	free(delimiterPosArray);
 
 	// 3-2) 빈문자열을 배열에 저장하지 않으면 배열에서 NULL 이 아닌 포인터만 선택해서 다시 저장한다.
 	// 빈문자열을 포함시키지 않는 경우
@@ -781,15 +781,15 @@ static int* MakeDelimiterPosArray(const char *s, char delimiter, int *delimiterC
 	// delimiter 가 문자열에 없으면 실패, NULL 반환
 	if(*delimiterCount == 0) return NULL;
 
-	int *delimiterPos = (int*)calloc(sizeof(int) * (size_t)(*delimiterCount), sizeof(int));
-	if(delimiterPos == NULL) return NULL;
+	int *delimiterPosArray = (int*)calloc(sizeof(int) * (size_t)(*delimiterCount), sizeof(int));
+	if(delimiterPosArray == NULL) return NULL;
 
 	for(strIndex = 0; strIndex < strLength; strIndex++)
 	{
-		if(s[strIndex] == delimiter) delimiterPos[delimiterIndex++] = strIndex;
+		if(s[strIndex] == delimiter) delimiterPosArray[delimiterIndex++] = strIndex;
 	}
 
-	return delimiterPos;
+	return delimiterPosArray;
 }
 
 /**
