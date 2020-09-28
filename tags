@@ -1,0 +1,153 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ASSERT_NOT_NULL	include/ttlib.h	/^#define ASSERT_NOT_NULL(/;"	d
+ASSERT_NULL	include/ttlib.h	/^#define ASSERT_NULL(/;"	d
+ASSERT_NUM_EQUAL	include/ttlib.h	/^#define ASSERT_NUM_EQUAL(/;"	d
+ASSERT_NUM_EVEN	include/ttlib.h	/^#define ASSERT_NUM_EVEN(/;"	d
+ASSERT_NUM_GREATER_EQUAL	include/ttlib.h	/^#define ASSERT_NUM_GREATER_EQUAL(/;"	d
+ASSERT_NUM_GREATER_THAN	include/ttlib.h	/^#define ASSERT_NUM_GREATER_THAN(/;"	d
+ASSERT_NUM_LESS_EQUAL	include/ttlib.h	/^#define ASSERT_NUM_LESS_EQUAL(/;"	d
+ASSERT_NUM_LESS_THAN	include/ttlib.h	/^#define ASSERT_NUM_LESS_THAN(/;"	d
+ASSERT_NUM_NOT_EQUAL	include/ttlib.h	/^#define ASSERT_NUM_NOT_EQUAL(/;"	d
+ASSERT_NUM_ODD	include/ttlib.h	/^#define ASSERT_NUM_ODD(/;"	d
+ASSERT_STR_EQUAL	include/ttlib.h	/^#define ASSERT_STR_EQUAL(/;"	d
+ASSERT_STR_NOT_EQUAL	include/ttlib.h	/^#define ASSERT_STR_NOT_EQUAL(/;"	d
+AddTest	src/ttlib.c	/^TestPtr AddTest(TestSuitPtr testSuit, Test test)$/;"	f
+Bool	include/strlib.h	/^} Bool;$/;"	t	typeref:enum:Boolean
+Boolean	include/mylib.h	/^} Boolean;$/;"	t	typeref:enum:_boolean_t
+Boolean	include/strlib.h	/^typedef enum Boolean$/;"	g
+CLEAN_UP_TESTSUIT	include/ttlib.h	/^#define CLEAN_UP_TESTSUIT(/;"	d
+COMPARE_ERROR	include/strlib.h	/^#define COMPARE_ERROR /;"	d
+CREATE_TESTSUIT	include/ttlib.h	/^#define CREATE_TESTSUIT(/;"	d
+ChangeStringCase	samples/strlib/strlib.c	/^static char* ChangeStringCase(StringPtr str, CharFunction_f func)$/;"	f	file:
+CharFunction_f	samples/strlib/strlib.c	/^typedef int (*CharFunction_f)(int c);$/;"	t	file:
+CloneCharArray	samples/strlib/strlib.c	/^static char* CloneCharArray(const char *s, int length)$/;"	f	file:
+CloneString	samples/strlib/strlib.c	/^StringPtr CloneString(const StringPtr str)$/;"	f
+CompareString	samples/strlib/strlib.c	/^int CompareString(const StringPtr str1, const StringPtr str2)$/;"	f
+ConcatString	samples/strlib/strlib.c	/^char* ConcatString(StringPtr str, const char* s)$/;"	f
+ConvertToLowerString	samples/strlib/strlib.c	/^char* ConvertToLowerString(StringPtr str)$/;"	f
+ConvertToUpperString	samples/strlib/strlib.c	/^char* ConvertToUpperString(StringPtr str)$/;"	f
+CopyNString	samples/strlib/strlib.c	/^char* CopyNString(StringPtr dstStr, const StringPtr srcStr, int length)$/;"	f
+CopyString	samples/strlib/strlib.c	/^char* CopyString(StringPtr dstStr, const StringPtr srcStr)$/;"	f
+CreateString	samples/strlib/strlib.c	/^static StringPtr CreateString()$/;"	f	file:
+DECLARE_TEST	include/ttlib.h	/^#define DECLARE_TEST(/;"	d
+DeleteCharPtrContainer	samples/strlib/strlib.c	/^void DeleteCharPtrContainer(char **container)$/;"	f
+DeleteString	samples/strlib/strlib.c	/^void DeleteString(StringPtrContainer stringPtrContainer)$/;"	f
+DeleteTest	src/ttlib.c	/^static void DeleteTest(TestPtr test)$/;"	f	file:
+DeleteTestPtrContainer	src/ttlib.c	/^static void DeleteTestPtrContainer(TestPtrContainer testPtrContainer, int numberOfTests)$/;"	f	file:
+DeleteTestSuit	src/ttlib.c	/^void DeleteTestSuit(TestSuitPtrContainer testSuitContainer)$/;"	f
+EXPECT_NOT_NULL	include/ttlib.h	/^#define EXPECT_NOT_NULL(/;"	d
+EXPECT_NULL	include/ttlib.h	/^#define EXPECT_NULL(/;"	d
+EXPECT_NUM_EQUAL	include/ttlib.h	/^#define EXPECT_NUM_EQUAL(/;"	d
+EXPECT_NUM_EVEN	include/ttlib.h	/^#define EXPECT_NUM_EVEN(/;"	d
+EXPECT_NUM_GREATER_EQUAL	include/ttlib.h	/^#define EXPECT_NUM_GREATER_EQUAL(/;"	d
+EXPECT_NUM_GREATER_THAN	include/ttlib.h	/^#define EXPECT_NUM_GREATER_THAN(/;"	d
+EXPECT_NUM_LESS_EQUAL	include/ttlib.h	/^#define EXPECT_NUM_LESS_EQUAL(/;"	d
+EXPECT_NUM_LESS_THAN	include/ttlib.h	/^#define EXPECT_NUM_LESS_THAN(/;"	d
+EXPECT_NUM_NOT_EQUAL	include/ttlib.h	/^#define EXPECT_NUM_NOT_EQUAL(/;"	d
+EXPECT_NUM_ODD	include/ttlib.h	/^#define EXPECT_NUM_ODD(/;"	d
+EXPECT_PTR_EQUAL	include/ttlib.h	/^#define EXPECT_PTR_EQUAL(/;"	d
+EXPECT_PTR_NOT_EQUAL	include/ttlib.h	/^#define EXPECT_PTR_NOT_EQUAL(/;"	d
+EXPECT_STR_EQUAL	include/ttlib.h	/^#define EXPECT_STR_EQUAL(/;"	d
+EXPECT_STR_NOT_EQUAL	include/ttlib.h	/^#define EXPECT_STR_NOT_EQUAL(/;"	d
+ExcludeEmptyString	include/strlib.h	/^	ExcludeEmptyString = 1$/;"	e	enum:SplitOption
+FALSE	include/ttlib.h	/^#define FALSE /;"	d
+False	include/mylib.h	/^    False = 0,$/;"	e	enum:_boolean_t
+False	include/strlib.h	/^	False = -1,$/;"	e	enum:Boolean
+FormatString	samples/strlib/strlib.c	/^char* FormatString(StringPtr str, const char* format, ...)$/;"	f
+GetLength	samples/strlib/strlib.c	/^int GetLength(const StringPtr str)$/;"	f
+GetPtr	samples/strlib/strlib.c	/^char* GetPtr(const StringPtr str)$/;"	f
+IncFailCountTestSuit	src/ttlib.c	/^void IncFailCountTestSuit(TestSuitPtr testSuit)$/;"	f
+IncludeEmptyString	include/strlib.h	/^	IncludeEmptyString = 0,$/;"	e	enum:SplitOption
+InitializeTests	src/ttlib.c	/^static TestInitializationResult InitializeTests(const TestSuitPtr testSuit)$/;"	f	file:
+IsAlpha	samples/strlib/strlib.c	/^Bool IsAlpha(char c)$/;"	f
+IsCRLF	samples/strlib/strlib.c	/^Bool IsCRLF(char c)$/;"	f
+IsDigit	samples/mylib/mylib.c	/^Boolean IsDigit(char c)$/;"	f
+IsDigit	samples/strlib/strlib.c	/^Bool IsDigit(char c)$/;"	f
+IsLetter	samples/strlib/strlib.c	/^Bool IsLetter(char c)$/;"	f
+IsSpace	samples/strlib/strlib.c	/^Bool IsSpace(char c)$/;"	f
+MakeDelimiterPosArray	samples/strlib/strlib.c	/^static int* MakeDelimiterPosArray(const char *s, char delimiter, int *delimiterCount)$/;"	f	file:
+MergeString	samples/strlib/strlib.c	/^char* MergeString(char **sList, char delimiter)$/;"	f
+NULL_FORMAT	include/ttlib.h	/^#define NULL_FORMAT /;"	d
+NUM1_FORMAT	include/ttlib.h	/^#define NUM1_FORMAT /;"	d
+NUM2_FORMAT	include/ttlib.h	/^#define NUM2_FORMAT /;"	d
+NewCharPtrContainer	samples/strlib/strlib.c	/^char** NewCharPtrContainer(int size)$/;"	f
+NewString	samples/strlib/strlib.c	/^StringPtr NewString(const char *s)$/;"	f
+NewTestPtrContainer	src/ttlib.c	/^static TestPtrContainer NewTestPtrContainer(size_t numberOfTests)$/;"	f	file:
+NewTestSuit	src/ttlib.c	/^TestSuitPtr NewTestSuit()$/;"	f
+PRINT_FAIL	include/ttlib.h	/^#define PRINT_FAIL(/;"	d
+PTR_FORMAT	include/ttlib.h	/^#define PTR_FORMAT /;"	d
+REGISTER_TESTS	include/ttlib.h	/^#define REGISTER_TESTS(/;"	d
+RUN_ALL_TESTS	include/ttlib.h	/^#define RUN_ALL_TESTS(/;"	d
+RemoveNullPointerInCharPtrContainer	samples/strlib/strlib.c	/^static char** RemoveNullPointerInCharPtrContainer(char **container, int size)$/;"	f	file:
+RunAllTests	src/ttlib.c	/^void RunAllTests(TestSuitPtr testSuit)$/;"	f
+SEARCH_ERROR	include/strlib.h	/^#define SEARCH_ERROR /;"	d
+STR_FORMAT	include/ttlib.h	/^#define STR_FORMAT /;"	d
+SearchString	samples/strlib/strlib.c	/^Bool SearchString(const StringPtr str, const char *pattern)$/;"	f
+SetExitTestSuit	src/ttlib.c	/^void SetExitTestSuit(TestSuitPtr testSuit)$/;"	f
+SetString	samples/strlib/strlib.c	/^char* SetString(StringPtr str, const char *s)$/;"	f
+SplitOption	include/strlib.h	/^typedef enum SplitOption$/;"	g
+SplitOption	include/strlib.h	/^} SplitOption;$/;"	t	typeref:enum:SplitOption
+SplitString	samples/strlib/strlib.c	/^char** SplitString(const char *s, char delimiter, SplitOption option)$/;"	f
+String	include/strlib.h	/^} String, *StringPtr, **StringPtrContainer;$/;"	t	typeref:struct:_string_t
+StringPtr	include/strlib.h	/^} String, *StringPtr, **StringPtrContainer;$/;"	t	typeref:struct:_string_t
+StringPtrContainer	include/strlib.h	/^} String, *StringPtr, **StringPtrContainer;$/;"	t	typeref:struct:_string_t
+SubString	samples/strlib/strlib.c	/^StringPtr SubString(const StringPtr str, int from, int length)$/;"	f
+TEST	include/ttlib.h	/^#define TEST(/;"	d
+TRUE	include/ttlib.h	/^#define TRUE /;"	d
+Test	include/ttlib.h	/^} Test, *TestPtr, **TestPtrContainer;$/;"	t	typeref:struct:_test_t
+TestContinue	include/ttlib.h	/^	TestContinue$/;"	e	enum:_TestResult_t
+TestExit	include/ttlib.h	/^	TestExit = -2,$/;"	e	enum:_TestResult_t
+TestFail	include/ttlib.h	/^	TestFail = -1,$/;"	e	enum:_TestResult_t
+TestFatal	include/ttlib.h	/^	TestFatal,$/;"	e	enum:_TestResult_t
+TestFunc	include/ttlib.h	/^typedef TestResult (*TestFunc)(struct _test_suit_t* testSuit);$/;"	t
+TestInitializationResult	include/ttlib.h	/^} TestInitializationResult;$/;"	t	typeref:enum:_testInitializationResult_t
+TestInitializationResultFail	include/ttlib.h	/^	TestInitializationResultFail = -1,$/;"	e	enum:_testInitializationResult_t
+TestInitializationResultSuccess	include/ttlib.h	/^	TestInitializationResultSuccess = 1,$/;"	e	enum:_testInitializationResult_t
+TestNonFatal	include/ttlib.h	/^	TestNonFatal,$/;"	e	enum:_TestResult_t
+TestPtr	include/ttlib.h	/^} Test, *TestPtr, **TestPtrContainer;$/;"	t	typeref:struct:_test_t
+TestPtrContainer	include/ttlib.h	/^} Test, *TestPtr, **TestPtrContainer;$/;"	t	typeref:struct:_test_t
+TestResult	include/ttlib.h	/^} TestResult;$/;"	t	typeref:enum:_TestResult_t
+TestSuccess	include/ttlib.h	/^	TestSuccess = 1,$/;"	e	enum:_TestResult_t
+TestSuit	include/ttlib.h	/^} TestSuit, *TestSuitPtr, **TestSuitPtrContainer;$/;"	t	typeref:struct:_test_suit_t
+TestSuitInitializer	include/ttlib.h	/^typedef void (*TestSuitInitializer)();$/;"	t
+TestSuitPtr	include/ttlib.h	/^} TestSuit, *TestSuitPtr, **TestSuitPtrContainer;$/;"	t	typeref:struct:_test_suit_t
+TestSuitPtrContainer	include/ttlib.h	/^} TestSuit, *TestSuitPtr, **TestSuitPtrContainer;$/;"	t	typeref:struct:_test_suit_t
+Trim	samples/strlib/strlib.c	/^char* Trim(StringPtr str)$/;"	f
+TrimLeft	samples/strlib/strlib.c	/^char* TrimLeft(StringPtr str)$/;"	f
+TrimRight	samples/strlib/strlib.c	/^char* TrimRight(StringPtr str)$/;"	f
+True	include/mylib.h	/^    True$/;"	e	enum:_boolean_t
+True	include/strlib.h	/^	True = 1$/;"	e	enum:Boolean
+TruncateString	samples/strlib/strlib.c	/^char* TruncateString(StringPtr str, int from)$/;"	f
+VSN_FAIL	include/strlib.h	/^#define VSN_FAIL /;"	d
+_TestResult_t	include/ttlib.h	/^typedef enum _TestResult_t$/;"	g
+__MYLIB_H__	include/mylib.h	/^#define __MYLIB_H__$/;"	d
+__STRLIB_H__	include/strlib.h	/^#define __STRLIB_H__$/;"	d
+__TTLIB_H__	include/ttlib.h	/^#define __TTLIB_H__$/;"	d
+_actualInt	include/ttlib.h	/^int _actualInt;$/;"	v
+_actualPtr	include/ttlib.h	/^void *_actualPtr;$/;"	v
+_actualStr	include/ttlib.h	/^char *_actualStr;$/;"	v
+_boolean_t	include/mylib.h	/^typedef enum _boolean_t$/;"	g
+_expectedInt	include/ttlib.h	/^int _expectedInt;$/;"	v
+_expectedPtr	include/ttlib.h	/^void *_expectedPtr;$/;"	v
+_expectedStr	include/ttlib.h	/^char *_expectedStr;$/;"	v
+_string_t	include/strlib.h	/^typedef struct _string_t {$/;"	s
+_testInitializationResult_t	include/ttlib.h	/^typedef enum _testInitializationResult_t$/;"	g
+_test_suit_t	include/ttlib.h	/^typedef struct _test_suit_t$/;"	s
+_test_t	include/ttlib.h	/^typedef struct _test_t$/;"	s
+data	include/strlib.h	/^    char *data;$/;"	m	struct:_string_t
+initializers	include/ttlib.h	/^	TestSuitInitializer *initializers;$/;"	m	struct:_test_suit_t
+length	include/strlib.h	/^    int length;$/;"	m	struct:_string_t
+main	samples/mylib/mylib_test.c	/^int main()$/;"	f
+main	samples/strlib/strlib_test.c	/^int main()$/;"	f
+numberOfFailTests	include/ttlib.h	/^	int numberOfFailTests;$/;"	m	struct:_test_suit_t
+numberOfTests	include/ttlib.h	/^	int numberOfTests;$/;"	m	struct:_test_suit_t
+onGoing	include/ttlib.h	/^	int onGoing;$/;"	m	struct:_test_suit_t
+testCase	include/ttlib.h	/^	char *testCase;$/;"	m	struct:_test_t
+testFunc	include/ttlib.h	/^	TestFunc testFunc;$/;"	m	struct:_test_t
+testName	include/ttlib.h	/^	char *testName;$/;"	m	struct:_test_t
+testPtrContainer	include/ttlib.h	/^	TestPtrContainer testPtrContainer;$/;"	m	struct:_test_suit_t
