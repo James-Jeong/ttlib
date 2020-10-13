@@ -14,65 +14,65 @@ DECLARE_TEST()
 //////////////////////////////////////////////////////////////////////////////////
 
 TEST(IsDigit, AcceptableValues, {
-    EXPECT_NUM_EQUAL(IsDigit('0'), True);
-    EXPECT_NUM_EQUAL(IsDigit('1'), True);
-    EXPECT_NUM_EQUAL(IsDigit('2'), True);
-    EXPECT_NUM_EQUAL(IsDigit('3'), True);
-    EXPECT_NUM_EQUAL(IsDigit('4'), True);
-    //ASSERT_NUM_EQUAL(IsDigit('5'), False);
-    EXPECT_NUM_EQUAL(IsDigit('5'), False);
-    EXPECT_NUM_EQUAL(IsDigit('6'), True);
-    EXPECT_NUM_EQUAL(IsDigit('7'), True);
-    EXPECT_NUM_EQUAL(IsDigit('8'), True);
-    EXPECT_NUM_EQUAL(IsDigit('9'), True);
+    EXPECT_NUM_EQUAL(IsDigit('0'), True, int);
+    EXPECT_NUM_EQUAL(IsDigit('1'), True, int);
+    EXPECT_NUM_EQUAL(IsDigit('2'), True, int);
+    EXPECT_NUM_EQUAL(IsDigit('3'), True, int);
+    EXPECT_NUM_EQUAL(IsDigit('4'), True, int);
+    //ASSERT_NUM_EQUAL(IsDigit('5'), False, int);
+    EXPECT_NUM_EQUAL(IsDigit('5'), False, int);
+    EXPECT_NUM_EQUAL(IsDigit('6'), True, int);
+    EXPECT_NUM_EQUAL(IsDigit('7'), True, int);
+    EXPECT_NUM_EQUAL(IsDigit('8'), True, int);
+    EXPECT_NUM_EQUAL(IsDigit('9'), True, int);
 })
 
 TEST(IsDigit, InvalidValues, {
-    EXPECT_NUM_NOT_EQUAL(8, 8);
-    EXPECT_NUM_NOT_EQUAL(IsDigit('A'), True);
-    EXPECT_NUM_NOT_EQUAL(IsDigit('Z'), True);
-    EXPECT_NUM_NOT_EQUAL(IsDigit('a'), True);
-    EXPECT_NUM_NOT_EQUAL(IsDigit('z'), True);
-    EXPECT_NUM_NOT_EQUAL(IsDigit('~'), True);
-    EXPECT_NUM_NOT_EQUAL(IsDigit('+'), True);
+    EXPECT_NUM_NOT_EQUAL(8, 8, int);
+    EXPECT_NUM_NOT_EQUAL(IsDigit('A'), True, int);
+    EXPECT_NUM_NOT_EQUAL(IsDigit('Z'), True, int);
+    EXPECT_NUM_NOT_EQUAL(IsDigit('a'), True, int);
+    EXPECT_NUM_NOT_EQUAL(IsDigit('z'), True, int);
+    EXPECT_NUM_NOT_EQUAL(IsDigit('~'), True, int);
+    EXPECT_NUM_NOT_EQUAL(IsDigit('+'), True, int);
 })
 
 TEST(CompareNumbers, Equal, {
-    EXPECT_NUM_EQUAL(1, 1);
-    EXPECT_NUM_EQUAL(1, 2);
+    EXPECT_NUM_EQUAL(1, 1, int);
+    EXPECT_NUM_EQUAL(1, 2, int);
 })
 
 TEST(CompareNumbers, NotEqual, {
-    EXPECT_NUM_NOT_EQUAL(1, 1);
-    EXPECT_NUM_NOT_EQUAL(1, 2);
+    EXPECT_NUM_NOT_EQUAL(1, 1, int);
+    EXPECT_NUM_NOT_EQUAL(1, 2, int);
 })
 
 TEST(CompareNumbers, Less, {
-    EXPECT_NUM_LESS_EQUAL(1, 1);
-    EXPECT_NUM_LESS_EQUAL(1, 2);
-    EXPECT_NUM_LESS_EQUAL(2, 1);
-    EXPECT_NUM_LESS_THAN(1, 1);
-    EXPECT_NUM_LESS_THAN(1, 2);
-    EXPECT_NUM_LESS_THAN(2, 1);
+    EXPECT_NUM_LESS_EQUAL(1, 1, int);
+    EXPECT_NUM_LESS_EQUAL(1, 2, int);
+    EXPECT_NUM_LESS_EQUAL(2, 1, int);
+    EXPECT_NUM_LESS_THAN(1, 1, int);
+    EXPECT_NUM_LESS_THAN(1, 2, int);
+    EXPECT_NUM_LESS_THAN(2, 1, int);
 })
 
 TEST(CompareNumbers, Greater, {
-    EXPECT_NUM_GREATER_EQUAL(1, 1);
-    EXPECT_NUM_GREATER_EQUAL(1, 2);
-    EXPECT_NUM_GREATER_EQUAL(2, 1);
-    EXPECT_NUM_GREATER_THAN(1, 1);
-    EXPECT_NUM_GREATER_THAN(1, 2);
-    EXPECT_NUM_GREATER_THAN(2, 1);
+    EXPECT_NUM_GREATER_EQUAL(1, 1, int);
+    EXPECT_NUM_GREATER_EQUAL(1, 2, int);
+    EXPECT_NUM_GREATER_EQUAL(2, 1, int);
+    EXPECT_NUM_GREATER_THAN(1, 1, int);
+	EXPECT_NUM_GREATER_THAN(1, 2, int);
+    EXPECT_NUM_GREATER_THAN(2, 1, int);
 })
 
 TEST(CheckNumberType, Even, {
-    EXPECT_NUM_EVEN(1234);
-    EXPECT_NUM_EVEN(2345);
+    EXPECT_NUM_EVEN(1234, int);
+    EXPECT_NUM_EVEN(2345, int);
 })
 
 TEST(CheckNumberType, Odd, {
-    EXPECT_NUM_ODD(1234);
-    EXPECT_NUM_ODD(2345);
+    EXPECT_NUM_ODD(1234, int);
+    EXPECT_NUM_ODD(2345, int);
 })
 
 //////////////////////////////////////////////////////////////////////////////////

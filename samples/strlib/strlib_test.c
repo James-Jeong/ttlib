@@ -40,19 +40,19 @@ TEST(GetLength, LengthOfString, {
     int expected = (int)strlen(s);
 
 	// 반환값 확인 및 기본적인 함수 동작 테스트
-    EXPECT_NUM_EQUAL(GetLength(str), expected);
+    EXPECT_NUM_EQUAL(GetLength(str), expected, int);
     DeleteString(&str);
 
     // 빈 문자열에 대해서, 0을 반환
     s = "";
     str = NewString(s);
     expected = 0;
-    EXPECT_NUM_EQUAL(GetLength(str), expected);
+    EXPECT_NUM_EQUAL(GetLength(str), expected, int);
     DeleteString(&str);
 
     // NULL 값이 들어온 경우, 0을 반환
     expected = 0;
-    EXPECT_NUM_EQUAL(GetLength(NULL), expected);
+    EXPECT_NUM_EQUAL(GetLength(NULL), expected, int);
 })
 
 TEST(GetPtr, PointerToStringData, {
@@ -78,7 +78,7 @@ TEST(CloneString, InstanceClone, {
 	// 기본적인 복제 테스트
     EXPECT_STR_EQUAL(str1->data, str2->data);
     EXPECT_PTR_NOT_EQUAL(str1->data, str2->data);
-    EXPECT_NUM_EQUAL(GetLength(str1), GetLength(str2));
+    EXPECT_NUM_EQUAL(GetLength(str1), GetLength(str2), int);
     DeleteString(&str1);
     DeleteString(&str2);
 
@@ -103,7 +103,7 @@ TEST(SetString, SetNewValue, {
     // 빈 문자열을 정상처리해야 한다.
     expected = "";
     EXPECT_STR_EQUAL(SetString(str, expected), expected);
-    EXPECT_NUM_EQUAL(GetLength(str), (int)strlen(expected));
+    EXPECT_NUM_EQUAL(GetLength(str), (int)strlen(expected), int);
 
     DeleteString(&str);
 })
@@ -496,81 +496,81 @@ TEST(CompareString, CompareString, {
 
 	// 반환값 확인 및 기본 함수 동작 테스트
 	// 길이가 서로 같은 두 개의 문자열이 같은 경우
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), 0);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 0, int);
 
 	// 길이가 서로 같은 두 개의 문자열이 다른 경우
 	// 비교할 문자열이 더 작은 경우
 	// - abc < abf
 	SetString(str1, s1);
 	SetString(str2, s3);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1, int);
 	// - 123 < a12
 	SetString(str1, s6);
 	SetString(str2, s5);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1, int);
 	// - *1* < abf
 	SetString(str1, s7);
 	SetString(str2, s3);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1, int);
 
 	// 비교할 문자열이 더 큰 경우
 	// - abf > abc
 	SetString(str1, s3);
 	SetString(str2, s1);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1, int);
 	// - a12 > 123
 	SetString(str1, s5);
 	SetString(str2, s6);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1, int);
 	// - abf > *1*
 	SetString(str1, s3);
 	SetString(str2, s7);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1, int);
 
 	// 길이가 서로 다른 두 개의 문자열이 다른 경우
 	// 비교할 문자열이 더 작은 경우
 	// - abc < abcf
 	SetString(str1, s1);
 	SetString(str2, s4);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1, int);
 	// - a*1*d < abcf
 	SetString(str1, s8);
 	SetString(str2, s4);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1, int);
 	// abcf < bc
 	SetString(str1, s4);
 	SetString(str2, s9);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1, int);
 
 	// 비교할 문자열이 더 큰 경우
 	// - abcf > abc
 	SetString(str1, s4);
 	SetString(str2, s1);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1, int);
 	// abcf > a*1*d
 	SetString(str1, s4);
 	SetString(str2, s8);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1, int);
 	// bc > abcf
 	SetString(str1, s9);
 	SetString(str2, s4);
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1, int);
 
 	// 비교될 문자열이 빈문자열인 경우, -1 반환
 	SetString(str1, "");
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), -1, int);
 	// 비교할 문자열이 빈문자열인 경우, 1 반환
 	SetString(str1, s1);
 	SetString(str2, "");
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 1, int);
 	SetString(str1, "");
-	EXPECT_NUM_EQUAL(CompareString(str1, str2), 0);
+	EXPECT_NUM_EQUAL(CompareString(str1, str2), 0, int);
 	
 	// NULL 값이 들어온 경우, COMPARE_ERROR 반환
 	SetString(str2, s2);
-	EXPECT_NUM_EQUAL(CompareString(NULL, str2), COMPARE_ERROR);
-	EXPECT_NUM_EQUAL(CompareString(str1, NULL), COMPARE_ERROR);
-	EXPECT_NUM_EQUAL(CompareString(NULL, NULL), COMPARE_ERROR);
+	EXPECT_NUM_EQUAL(CompareString(NULL, str2), COMPARE_ERROR, int);
+	EXPECT_NUM_EQUAL(CompareString(str1, NULL), COMPARE_ERROR, int);
+	EXPECT_NUM_EQUAL(CompareString(NULL, NULL), COMPARE_ERROR, int);
 
 	DeleteString(&str1);
 	DeleteString(&str2);
@@ -589,33 +589,33 @@ TEST(SearchString, SearchString, {
 	// 반환값 확인 및 기본 함수 동작 테스트
 	// 검색할 문자열과 검색될 문자열이 일치하는 경우, True 를 반환
 	// 검색할 문자열의 길이가 1
-	EXPECT_NUM_EQUAL(SearchString(str, s2), True);
+	EXPECT_NUM_EQUAL(SearchString(str, s2), True, int);
 	// 검색할 문자열의 길이가 2
-	EXPECT_NUM_EQUAL(SearchString(str, s3), True);
+	EXPECT_NUM_EQUAL(SearchString(str, s3), True, int);
 	// 검색할 문자열의 길이가 3
-	EXPECT_NUM_EQUAL(SearchString(str, s4), True);
+	EXPECT_NUM_EQUAL(SearchString(str, s4), True, int);
 	// 검색할 문자열의 길이가 4
-	EXPECT_NUM_EQUAL(SearchString(str, s5), True);              
+	EXPECT_NUM_EQUAL(SearchString(str, s5), True, int);
 	// 검색할 문자열의 길이가 5
-	EXPECT_NUM_EQUAL(SearchString(str, s6), True);
+	EXPECT_NUM_EQUAL(SearchString(str, s6), True, int);
 
 	// 검색할 문자열과 검색될 문자열이 일치하지 않는 경우, False 를 반환
 	// 검색할 문자열의 길이가 6 (검색할 문자열의 길이가 5)
-	EXPECT_NUM_EQUAL(SearchString(str, s7), False);
+	EXPECT_NUM_EQUAL(SearchString(str, s7), False, int);
 	// 검색할 문자열이 포함되지 않는 문자열인 경우
 	s7 = "z";
-	EXPECT_NUM_EQUAL(SearchString(str, s7), False);
+	EXPECT_NUM_EQUAL(SearchString(str, s7), False, int);
 	// 검색할 문자열이 빈문자열인 경우
 	s7 = "";
-	EXPECT_NUM_EQUAL(SearchString(str, s7), False);
+	EXPECT_NUM_EQUAL(SearchString(str, s7), False, int);
 	// 검색될 문자열이 빈문자열인 경우
 	SetString(str, "");
-	EXPECT_NUM_EQUAL(SearchString(str, s2), SEARCH_ERROR);
+	EXPECT_NUM_EQUAL(SearchString(str, s2), SEARCH_ERROR, int);
 
 	// NULL 값이 들어온 경우, False 반환
-	EXPECT_NUM_EQUAL(SearchString(NULL, s2), SEARCH_ERROR);
-	EXPECT_NUM_EQUAL(SearchString(str, NULL), SEARCH_ERROR);
-	EXPECT_NUM_EQUAL(SearchString(NULL, NULL), SEARCH_ERROR);
+	EXPECT_NUM_EQUAL(SearchString(NULL, s2), SEARCH_ERROR, int);
+	EXPECT_NUM_EQUAL(SearchString(str, NULL), SEARCH_ERROR, int);
+	EXPECT_NUM_EQUAL(SearchString(NULL, NULL), SEARCH_ERROR, int);
 
 	DeleteString(&str);
 })
@@ -623,74 +623,74 @@ TEST(SearchString, SearchString, {
 TEST(CheckCharIsDigit, IsDigit, {
 	// 정상 케이스
 	// 숫자 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsDigit('0'), True);
-	EXPECT_NUM_EQUAL(IsDigit('4'), True);
-	EXPECT_NUM_EQUAL(IsDigit('9'), True);
+	EXPECT_NUM_EQUAL(IsDigit('0'), True, int);
+	EXPECT_NUM_EQUAL(IsDigit('4'), True, int);
+	EXPECT_NUM_EQUAL(IsDigit('9'), True, int);
 
 	// 비정상 케이스
 	// 다른 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsDigit('a'), False);
-	EXPECT_NUM_EQUAL(IsDigit('*'), False);
-	EXPECT_NUM_EQUAL(IsDigit('A'), False);
-	EXPECT_NUM_EQUAL(IsDigit(' '), False);
-	EXPECT_NUM_EQUAL(IsDigit('\t'), False);
+	EXPECT_NUM_EQUAL(IsDigit('a'), False, int);
+	EXPECT_NUM_EQUAL(IsDigit('*'), False, int);
+	EXPECT_NUM_EQUAL(IsDigit('A'), False, int);
+	EXPECT_NUM_EQUAL(IsDigit(' '), False, int);
+	EXPECT_NUM_EQUAL(IsDigit('\t'), False, int);
 })
 
 TEST(CheckCharIsAlpha, IsAlpha, {
 	// 정상 케이스
 	// 알파벳 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsAlpha('a'), True);
-	EXPECT_NUM_EQUAL(IsAlpha('q'), True);
-	EXPECT_NUM_EQUAL(IsAlpha('z'), True);
-	EXPECT_NUM_EQUAL(IsAlpha('A'), True);
-	EXPECT_NUM_EQUAL(IsAlpha('S'), True);
-	EXPECT_NUM_EQUAL(IsAlpha('Z'), True);
+	EXPECT_NUM_EQUAL(IsAlpha('a'), True, int);
+	EXPECT_NUM_EQUAL(IsAlpha('q'), True, int);
+	EXPECT_NUM_EQUAL(IsAlpha('z'), True, int);
+	EXPECT_NUM_EQUAL(IsAlpha('A'), True, int);
+	EXPECT_NUM_EQUAL(IsAlpha('S'), True, int);
+	EXPECT_NUM_EQUAL(IsAlpha('Z'), True, int);
 
 	// 비정상 케이스
 	// 댜른 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsAlpha('1'), False);
-	EXPECT_NUM_EQUAL(IsAlpha('*'), False);
-	EXPECT_NUM_EQUAL(IsAlpha('0'), False);
-	EXPECT_NUM_EQUAL(IsAlpha(' '), False);
-	EXPECT_NUM_EQUAL(IsAlpha('\t'), False);
+	EXPECT_NUM_EQUAL(IsAlpha('1'), False, int);
+	EXPECT_NUM_EQUAL(IsAlpha('*'), False, int);
+	EXPECT_NUM_EQUAL(IsAlpha('0'), False, int);
+	EXPECT_NUM_EQUAL(IsAlpha(' '), False, int);
+	EXPECT_NUM_EQUAL(IsAlpha('\t'), False, int);
 })
 
 TEST(CheckCharIsLetter, IsLetter, {
 	// 정상 케이스
 	// 알파벳 문자 또는 underscore 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsLetter('a'), True);
-	EXPECT_NUM_EQUAL(IsLetter('_'), True);
-	EXPECT_NUM_EQUAL(IsLetter('Z'), True);
-	EXPECT_NUM_EQUAL(IsLetter('q'), True);
+	EXPECT_NUM_EQUAL(IsLetter('a'), True, int);
+	EXPECT_NUM_EQUAL(IsLetter('_'), True, int);
+	EXPECT_NUM_EQUAL(IsLetter('Z'), True, int);
+	EXPECT_NUM_EQUAL(IsLetter('q'), True, int);
 
 	// 비정상 케이스
 	// 다른 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsLetter('1'), False);
-	EXPECT_NUM_EQUAL(IsLetter('-'), False);
+	EXPECT_NUM_EQUAL(IsLetter('1'), False, int);
+	EXPECT_NUM_EQUAL(IsLetter('-'), False, int);
 })
 
 TEST(CheckCharIsSpace, IsSpace, {
 	// 정상 케이스
 	// 공백 문자 또는 탭 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsSpace(' '), True);
-	EXPECT_NUM_EQUAL(IsSpace('\t'), True);
+	EXPECT_NUM_EQUAL(IsSpace(' '), True, int);
+	EXPECT_NUM_EQUAL(IsSpace('\t'), True, int);
 
 	// 비정상 케이스
 	// 다른 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsSpace('a'), False);
-	EXPECT_NUM_EQUAL(IsSpace('\n'), False);
+	EXPECT_NUM_EQUAL(IsSpace('a'), False, int);
+	EXPECT_NUM_EQUAL(IsSpace('\n'), False, int);
 })
 
 TEST(CheckCharIsCRLF, IsCRLF, {
 	// 정상 케이스
 	// CR('\r') 또는 LF('\n') 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsCRLF('\r'), True);
-	EXPECT_NUM_EQUAL(IsCRLF('\n'), True);
+	EXPECT_NUM_EQUAL(IsCRLF('\r'), True, int);
+	EXPECT_NUM_EQUAL(IsCRLF('\n'), True, int);
 
 	// 비정상 케이스
 	// 다른 문자가 입력일 경우
-	EXPECT_NUM_EQUAL(IsCRLF(' '), False);
-	EXPECT_NUM_EQUAL(IsCRLF('a'), False);
+	EXPECT_NUM_EQUAL(IsCRLF(' '), False, int);
+	EXPECT_NUM_EQUAL(IsCRLF('a'), False, int);
 })
 
 TEST(SplitString, SplitString, {
@@ -842,8 +842,8 @@ TEST(TestStringAPI, StringTest, {
 	TruncateString(str1, 15);
 
 	StringPtr str3 = SubString(str1, 1, 3);
-	EXPECT_NUM_EQUAL(CompareString(str1, str3), 1);
-	EXPECT_NUM_EQUAL(SearchString(str1, "5b"), True);
+	EXPECT_NUM_EQUAL(CompareString(str1, str3), 1, int);
+	EXPECT_NUM_EQUAL(SearchString(str1, "5b"), True, int);
 
 	char **actualCharPtrContainer = SplitString(GetPtr(str1), '@', ExcludeEmptyString);
 	char *actualCharPtr = MergeString(actualCharPtrContainer, '@');
